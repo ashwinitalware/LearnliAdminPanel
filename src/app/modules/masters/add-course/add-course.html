@@ -1,0 +1,1024 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0">
+
+        <!-- Header -->
+        <div class="card-header justify-content-between mb-3">
+            <div class="card-title mb-0">
+                Courses Master
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <button class="btn btn-primary btn-wave" (click)="open(addCourseModal)">
+                    <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                    Add Course
+                </button>
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search courses..." [(ngModel)]="searchTerm" (input)="filterCourses()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card-body py-2 px-3">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <tr>
+                            <th style="width:5%">Sr No.</th>
+                            <th style="width:20%">Course Name</th>
+                            <th style="width:10%">Mentor</th>
+                            <th style="width:15%">Category</th>
+                            <th style="width:15%">Subcategory</th>
+                            <th style="width:15%">Subject</th>
+                            <th style="width:10%">Price</th>
+                            <th style="width:10%">Status</th>
+                            <th style="width:10%">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (course of filteredCourses; track course.id; let i = $index) {
+                        <tr>
+                            <td>{{ i + 1 }}</td>
+                            <td class="fw-semibold">{{ course.course_name }}</td>
+                            <td>{{ course.mentor?.full_name || course.mentor_name || getMentorName(course.mentor_id) || '-' }}</td>
+                            <td>{{ course.category_name }}</td>
+                            <td>{{ course.subcategory_name }}</td>
+                            <td>{{ course.subject_name }}</td>
+                            <td>₹{{ course.price }}</td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox"
+                                        [checked]="course.status === 'active'"
+                                        (change)="toggleStatus(course)">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2">
+                                    <a href="javascript:void(0)" class="text-info fs-14"
+                                        (click)="openEdit(course, editCourseModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="text-primary fs-14"
+                                        (click)="openView(course, eyeCourseModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="text-danger fs-14"
+                                        (click)="openDelete(course, deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No courses found.</td>
+                        </tr>
+                        }
+                    </tbody>
+                </spk-reusable-tables>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add Course Modal -->
+<ng-template #addCourseModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Add Course</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-0">
+        <!-- Tabs Nav -->
+        <ul class="nav nav-tabs justify-content-start px-3 pt-3 bg-light border-bottom">
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="activeTab === 'basic'" href="javascript:void(0)" (click)="setTab('basic')">
+                    <i class="ri-information-line me-1"></i> Basic Details
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="activeTab === 'curriculum'" href="javascript:void(0)" (click)="setTab('curriculum')">
+                    <i class="ri-list-check-2 me-1"></i> Curriculum Builder
+                </a>
+            </li>
+        </ul>
+
+        <div class="p-4">
+            <!-- Tab 1: Basic Info -->
+            <div *ngIf="activeTab === 'basic'">
+                <div class="row gy-3">
+                    <div class="col-xl-4">
+                        <label class="form-label">Category <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="categoryId" (change)="onCategoryChange()">
+                            <option [value]="null" disabled selected>Select Category</option>
+                            @for (cat of categories; track cat.id) {
+                                <option [value]="cat.id">{{ cat.category_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Subcategory <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="subcategoryId" (change)="onSubcategoryChange()" [disabled]="!categoryId">
+                            <option [value]="null" disabled selected>Select Subcategory</option>
+                            @for (sub of filteredSubcategories; track sub.id) {
+                                <option [value]="sub.id">{{ sub.subcategory_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Subject <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="subjectId" [disabled]="!subcategoryId">
+                            <option [value]="null" disabled selected>Select Subject</option>
+                            @for (subj of filteredSubjects; track subj.id) {
+                                <option [value]="subj.id">{{ subj.subject_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Course Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" placeholder="Enter Course Name" [(ngModel)]="courseName">
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Mentor <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="mentorId">
+                            <option [value]="null" disabled selected>Select Mentor</option>
+                            @for (mentor of mentors; track mentor.id) {
+                                <option [value]="mentor.id">{{ mentor.full_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Select Language <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="language">
+                            <option value="" disabled selected>Select Language</option>
+                            @for (lang of languages; track lang.id) {
+                                <option [value]="lang.language_name">{{ lang.language_name }} {{ lang.code ? '(' + lang.code + ')' : '' }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Course Price (₹) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" placeholder="e.g. 4999" [(ngModel)]="coursePrice" (ngModelChange)="updateCourseDiscountedPrice()">
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Discount Type</label>
+                        <select class="form-select" [(ngModel)]="courseDiscountType" (ngModelChange)="updateCourseDiscountedPrice()">
+                            <option value="">No Discount</option>
+                            <option value="flat">₹ (Flat)</option>
+                            <option value="percentage">% (Percentage)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Discount Value</label>
+                        <input type="number" class="form-control" placeholder="e.g. 500 or 10" [(ngModel)]="courseDiscountValue" (ngModelChange)="updateCourseDiscountedPrice()">
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Discounted Price (₹)</label>
+                        <input type="text" class="form-control" placeholder="Auto-calculated" [value]="courseDiscountedPrice != null ? courseDiscountedPrice : ''" readonly disabled>
+                    </div>
+
+                    <div class="col-xl-12 mb-2">
+                        <label class="form-label">Wallet Points</label>
+                        <input type="number" min="0" class="form-control" placeholder="e.g. 100" [(ngModel)]="courseWalletPoints">
+                        <small class="text-muted fs-11">Reward points earned/redeemable for this course.</small>
+                    </div>
+
+                    <div class="col-xl-6 mb-3">
+                        <label class="form-label">Course Image <span class="text-muted fs-11">(Recommended: 800px × 500px)</span></label>
+                        <input type="file" class="form-control" accept="image/*" (change)="onCourseImageChange($event)">
+                        <small class="text-primary d-block mt-1" *ngIf="courseImageName">{{ courseImageName }}</small>
+                    </div>
+
+                    <div class="col-xl-6 mb-3">
+                        <label class="form-label">Trailer / Teaser Video</label>
+                        <input type="file" class="form-control" accept="video/*" (change)="onCourseVideoChange($event)">
+                        <small class="text-primary d-block mt-1" *ngIf="courseVideoName">{{ courseVideoName }}</small>
+                    </div>
+
+                    <div class="col-xl-12 mb-3">
+                        <label class="form-label">Course Description</label>
+                        <div style="display: block; min-height: 180px; margin-bottom: 15px;">
+                            <quill-editor [(ngModel)]="courseDescription" [style]="{height: '120px'}"></quill-editor>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Curriculum Builder -->
+            <div *ngIf="activeTab === 'curriculum'">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0 fw-semibold">Chapters, Lessons & Topics</h6>
+                    <button class="btn btn-outline-primary btn-sm btn-wave" (click)="addChapter()">
+                        <i class="ri-add-line align-middle me-1"></i> Add Chapter
+                    </button>
+                </div>
+
+                <div class="chapters-container">
+                    @for (chapter of chapters; track chapter.id; let cIdx = $index) {
+                    <div class="card custom-card border border-primary-light mb-4 shadow-sm">
+                        <!-- Chapter Header -->
+                        <div class="card-header bg-light d-flex align-items-center justify-content-between flex-nowrap">
+                            <div class="d-flex align-items-center gap-2 flex-grow-1 me-2 flex-wrap">
+                                <span class="badge bg-primary">Chapter {{ cIdx + 1 }}</span>
+                                <input type="text" class="form-control form-control-sm w-25" placeholder="Chapter Title" [(ngModel)]="chapter.title">
+                                <input type="text" class="form-control form-control-sm w-10" placeholder="Duration" [(ngModel)]="chapter.duration">
+                                <input type="number" class="form-control form-control-sm w-10" placeholder="Price (₹)" [(ngModel)]="chapter.price" (ngModelChange)="onChapterPriceChange(chapter, false)">
+                                <select class="form-select form-select-sm w-10" [(ngModel)]="chapter.discount_type" (ngModelChange)="onChapterPriceChange(chapter, false)">
+                                    <option value="">No Disc.</option>
+                                    <option value="flat">₹ (Flat)</option>
+                                    <option value="percentage">%</option>
+                                </select>
+                                <input type="number" class="form-control form-control-sm w-10" placeholder="Disc. Val" [(ngModel)]="chapter.discount_value" (ngModelChange)="onChapterPriceChange(chapter, false)">
+                                <input type="text" class="form-control form-control-sm w-10" placeholder="Final Price" [value]="chapter.discounted_price != null ? chapter.discounted_price : (chapter.price != null ? chapter.price : '')" readonly disabled>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <button class="btn btn-sm btn-icon btn-danger-light" (click)="removeChapter(cIdx)">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chapter Body -->
+                        <div class="card-body bg-white py-3">
+                            <!-- Chapter Media Uploads -->
+                            <div class="row g-2 mb-3 bg-light p-2 rounded">
+                                <div class="col-md-12">
+                                     <small class="text-muted fw-semibold">Chapter Media (Optional)</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-link text-danger me-1"></i>Video URL</label>
+                                    <input type="text" class="form-control form-control-sm" placeholder="https://youtube.com/..." [(ngModel)]="chapter.videoUrl">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-video-line text-secondary me-1"></i>Upload Video File</label>
+                                    <input type="file" class="form-control form-control-sm" accept="video/*" (change)="onChapterFileChange($event, 'video', cIdx)">
+                                    <small class="text-primary d-block mt-1" *ngIf="chapter.videoFileName">{{ chapter.videoFileName }}</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-file-pdf-line text-primary me-1"></i>Upload PDF Note</label>
+                                    <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onChapterFileChange($event, 'pdf', cIdx)">
+                                    <small class="text-primary d-block mt-1" *ngIf="chapter.pdfFileName">{{ chapter.pdfFileName }}</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-music-2-line text-success me-1"></i>Upload Audio File</label>
+                                    <input type="file" class="form-control form-control-sm" accept="audio/*" (change)="onChapterFileChange($event, 'audio', cIdx)">
+                                    <small class="text-primary d-block mt-1" *ngIf="chapter.audioFileName">{{ chapter.audioFileName }}</small>
+                                </div>
+                            </div>
+
+                            <!-- Add Lesson Button -->
+                            <div class="mb-3">
+                                <button class="btn btn-sm btn-primary btn-wave" (click)="addLesson(cIdx)">
+                                    <i class="ri-add-line align-middle me-1"></i> Add Lesson
+                                </button>
+                            </div>
+
+                            <!-- Lessons Loop -->
+                            @for (lesson of chapter.lessons; track lesson.id; let lIdx = $index) {
+                            <div class="border rounded p-3 mb-3 bg-light-gray border-dashed">
+                                <!-- Lesson Header -->
+                                <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+                                    <div class="d-flex align-items-center gap-2 flex-grow-1 me-2 flex-wrap">
+                                        <span class="badge bg-info">Lesson {{ lIdx + 1 }}</span>
+                                        <input type="text" class="form-control form-control-sm w-25" placeholder="Lesson Name" [(ngModel)]="lesson.title">
+                                        <input type="text" class="form-control form-control-sm w-10" placeholder="Duration" [(ngModel)]="lesson.duration">
+                                        <input type="number" class="form-control form-control-sm w-10" placeholder="Price (₹)" [(ngModel)]="lesson.price" (ngModelChange)="onLessonPriceChange(lesson, false)">
+                                        <select class="form-select form-select-sm w-10" [(ngModel)]="lesson.discount_type" (ngModelChange)="onLessonPriceChange(lesson, false)">
+                                            <option value="">No Disc.</option>
+                                            <option value="flat">₹ (Flat)</option>
+                                            <option value="percentage">%</option>
+                                        </select>
+                                        <input type="number" class="form-control form-control-sm w-10" placeholder="Disc. Val" [(ngModel)]="lesson.discount_value" (ngModelChange)="onLessonPriceChange(lesson, false)">
+                                        <input type="text" class="form-control form-control-sm w-10" placeholder="Final Price" [value]="lesson.discounted_price != null ? lesson.discounted_price : (lesson.price != null ? lesson.price : '')" readonly disabled>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                        <button class="btn btn-xs btn-icon btn-danger-light" (click)="removeLesson(cIdx, lIdx)">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Lesson Media Uploads -->
+                                <div class="row g-2 mb-3 bg-white p-2 rounded border ms-1">
+                                    <div class="col-md-12">
+                                        <small class="text-muted fw-semibold">Lesson Media (Optional)</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-link text-danger me-1"></i>Video URL</label>
+                                        <input type="text" class="form-control form-control-sm" placeholder="https://youtube.com/..." [(ngModel)]="lesson.videoUrl">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-video-line text-secondary me-1"></i>Upload Video File</label>
+                                        <input type="file" class="form-control form-control-sm" accept="video/*" (change)="onLessonFileChange($event, 'video', cIdx, lIdx)">
+                                        <small class="text-primary d-block mt-1" *ngIf="lesson.videoFileName">{{ lesson.videoFileName }}</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-file-pdf-line text-primary me-1"></i>Upload PDF Note</label>
+                                        <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onLessonFileChange($event, 'pdf', cIdx, lIdx)">
+                                        <small class="text-primary d-block mt-1" *ngIf="lesson.pdfFileName">{{ lesson.pdfFileName }}</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-music-2-line text-success me-1"></i>Upload Audio File</label>
+                                        <input type="file" class="form-control form-control-sm" accept="audio/*" (change)="onLessonFileChange($event, 'audio', cIdx, lIdx)">
+                                        <small class="text-primary d-block mt-1" *ngIf="lesson.audioFileName">{{ lesson.audioFileName }}</small>
+                                    </div>
+                                </div>
+
+                                <!-- Add Topic Button -->
+                                <div class="mb-3 ms-1">
+                                    <button class="btn btn-xs btn-outline-success btn-wave" (click)="addTopic(cIdx, lIdx)">
+                                        <i class="ri-add-line align-middle me-1"></i> Add Topic
+                                    </button>
+                                </div>
+
+                                <!-- Topics Loop -->
+                                <div class="ps-3 border-start border-2 border-info">
+                                    @for (topic of lesson.topics; track topic.id; let tIdx = $index) {
+                                    <div class="bg-white border rounded p-3 mb-2 shadow-xs ms-2">
+                                        <div class="row g-2 mb-2 align-items-center">
+                                            <div class="col-md-3">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-light text-muted">Topic {{ tIdx + 1 }}</span>
+                                                    <input type="text" class="form-control" placeholder="Topic Name" [(ngModel)]="topic.title">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Duration" [(ngModel)]="topic.duration">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control form-control-sm" placeholder="Price (₹)" [(ngModel)]="topic.price" (ngModelChange)="onTopicPriceChange(topic, false)">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <select class="form-select form-select-sm" [(ngModel)]="topic.discount_type" (ngModelChange)="onTopicPriceChange(topic, false)">
+                                                    <option value="">No Discount</option>
+                                                    <option value="flat">₹ (Flat)</option>
+                                                    <option value="percentage">%</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="number" class="form-control form-control-sm" placeholder="Disc. Val" [(ngModel)]="topic.discount_value" (ngModelChange)="onTopicPriceChange(topic, false)">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Final Price" [value]="topic.discounted_price != null ? topic.discounted_price : (topic.price != null ? topic.price : '')" readonly disabled>
+                                            </div>
+                                            <div class="col-md-1 text-end">
+                                                <button class="btn btn-xs btn-icon btn-danger-light" (click)="removeTopic(cIdx, lIdx, tIdx)">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Topic Media -->
+                                        <div class="row g-2 p-2 bg-light rounded">
+                                            <div class="col-md-12">
+                                                <small class="text-muted fw-semibold">Topic Media (Optional)</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-link text-danger me-1"></i>Video URL</label>
+                                                <input type="text" class="form-control form-control-sm" placeholder="https://youtube.com/..." [(ngModel)]="topic.videoUrl">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-video-line text-secondary me-1"></i>Upload Video File</label>
+                                                <input type="file" class="form-control form-control-sm" accept="video/*" (change)="onTopicFileChange($event, 'video', cIdx, lIdx, tIdx)">
+                                                <small class="text-primary d-block mt-1" *ngIf="topic.videoFileName">{{ topic.videoFileName }}</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-file-pdf-line text-primary me-1"></i>Upload PDF Note</label>
+                                                <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onTopicFileChange($event, 'pdf', cIdx, lIdx, tIdx)">
+                                                <small class="text-primary d-block mt-1" *ngIf="topic.pdfFileName">{{ topic.pdfFileName }}</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-music-2-line text-success me-1"></i>Upload Audio File</label>
+                                                <input type="file" class="form-control form-control-sm" accept="audio/*" (change)="onTopicFileChange($event, 'audio', cIdx, lIdx, tIdx)">
+                                                <small class="text-primary d-block mt-1" *ngIf="topic.audioFileName">{{ topic.audioFileName }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    } @empty {
+                                        <div class="text-muted fs-12 p-2">No topics added in this lesson yet. Click "+ Add Topic" above to add one.</div>
+                                    }
+                                </div>
+                            </div>
+                            } @empty {
+                                <div class="text-muted fs-12 text-center p-2 bg-light rounded border border-dashed">No lessons added in this chapter yet. Click "+ Add Lesson" above to add one.</div>
+                            }
+                        </div>
+                    </div>
+                    } @empty {
+                        <div class="text-center p-5 border border-dashed rounded bg-light">
+                            <i class="ri-list-check-2 display-5 text-muted mb-2 d-block"></i>
+                            <p class="text-muted mb-0">Build your curriculum by adding chapters, lessons, and topic media uploads.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-top bg-light">
+        <button class="btn btn-light" (click)="modal.close()" [disabled]="isUploading">Cancel</button>
+        <button class="btn btn-primary" (click)="addCourse(modal)" [disabled]="isUploading">
+            @if (isUploading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                <span>Creating Course...</span>
+            } @else {
+                <span>Create Course</span>
+            }
+        </button>
+    </div>
+</ng-template>
+
+<!-- Edit Course Modal -->
+<ng-template #editCourseModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Edit Course</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-0">
+        <!-- Tabs Nav -->
+        <ul class="nav nav-tabs justify-content-start px-3 pt-3 bg-light border-bottom">
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="activeTab === 'basic'" href="javascript:void(0)" (click)="setTab('basic')">
+                    <i class="ri-information-line me-1"></i> Basic Details
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" [class.active]="activeTab === 'curriculum'" href="javascript:void(0)" (click)="setTab('curriculum')">
+                    <i class="ri-list-check-2 me-1"></i> Curriculum Builder
+                </a>
+            </li>
+        </ul>
+
+        <div class="p-4">
+            <!-- Tab 1: Basic Info -->
+            <div *ngIf="activeTab === 'basic'">
+                <div class="row gy-3">
+                    <div class="col-xl-4">
+                        <label class="form-label">Category <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="editCategoryId" (change)="onEditCategoryChange()">
+                            <option [value]="null" disabled>Select Category</option>
+                            @for (cat of categories; track cat.id) {
+                                <option [value]="cat.id">{{ cat.category_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Subcategory <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="editSubcategoryId" (change)="onEditSubcategoryChange()" [disabled]="!editCategoryId">
+                            <option [value]="null" disabled>Select Subcategory</option>
+                            @for (sub of editFilteredSubcategories; track sub.id) {
+                                <option [value]="sub.id">{{ sub.subcategory_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Subject <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="editSubjectId" [disabled]="!editSubcategoryId">
+                            <option [value]="null" disabled>Select Subject</option>
+                            @for (subj of editFilteredSubjects; track subj.id) {
+                                <option [value]="subj.id">{{ subj.subject_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Course Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" [(ngModel)]="editCourseName">
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Mentor <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="editMentorId">
+                            <option [value]="null" disabled>Select Mentor</option>
+                            @for (mentor of mentors; track mentor.id) {
+                                <option [value]="mentor.id">{{ mentor.full_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4">
+                        <label class="form-label">Select Language <span class="text-danger">*</span></label>
+                        <select class="form-select" [(ngModel)]="editLanguage">
+                            <option value="" disabled>Select Language</option>
+                            @for (lang of languages; track lang.id) {
+                                <option [value]="lang.language_name">{{ lang.language_name }} {{ lang.code ? '(' + lang.code + ')' : '' }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Course Price (₹) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" placeholder="e.g. 4999" [(ngModel)]="editCoursePrice" (ngModelChange)="updateEditCourseDiscountedPrice()">
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Discount Type</label>
+                        <select class="form-select" [(ngModel)]="editCourseDiscountType" (ngModelChange)="updateEditCourseDiscountedPrice()">
+                            <option value="">No Discount</option>
+                            <option value="flat">₹ (Flat)</option>
+                            <option value="percentage">% (Percentage)</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Discount Value</label>
+                        <input type="number" class="form-control" placeholder="e.g. 500 or 10" [(ngModel)]="editCourseDiscountValue" (ngModelChange)="updateEditCourseDiscountedPrice()">
+                    </div>
+
+                    <div class="col-xl-3">
+                        <label class="form-label">Discounted Price (₹)</label>
+                        <input type="text" class="form-control" placeholder="Auto-calculated" [value]="editCourseDiscountedPrice != null ? editCourseDiscountedPrice : ''" readonly disabled>
+                    </div>
+
+                    <div class="col-xl-12 mb-2">
+                        <label class="form-label">Wallet Points</label>
+                        <input type="number" min="0" class="form-control" placeholder="e.g. 100" [(ngModel)]="editCourseWalletPoints">
+                        <small class="text-muted fs-11">Reward points earned/redeemable for this course.</small>
+                    </div>
+
+                    <div class="col-xl-6 mb-3">
+                        <label class="form-label">Course Image <span class="text-muted fs-11">(Recommended: 800px × 500px)</span></label>
+                        <input type="file" class="form-control" accept="image/*" (change)="onEditCourseImageChange($event)">
+                        <small class="text-primary d-block mt-1" *ngIf="editCourseImageName">{{ editCourseImageName }}</small>
+                        <div class="mt-2" *ngIf="selectedCourse?.image || selectedCourse?.course_image">
+                            <label class="form-label text-muted fs-11 d-block mb-1">Current Image:</label>
+                            <img [src]="getCourseImageUrl(selectedCourse?.image || selectedCourse?.course_image)" alt="Current Course Image" class="img-fluid rounded border" style="max-height: 120px; object-fit: cover;">
+                        </div>
+                    </div>
+
+                    <div class="col-xl-6 mb-3">
+                        <label class="form-label">Trailer / Teaser Video</label>
+                        <input type="file" class="form-control" accept="video/*" (change)="onEditCourseVideoChange($event)">
+                        <small class="text-primary d-block mt-1" *ngIf="editCourseVideoName">{{ editCourseVideoName }}</small>
+                        <div class="mt-2" *ngIf="selectedCourse?.video || selectedCourse?.course_video">
+                            <label class="form-label text-muted fs-11 d-block mb-1">Current Video Trailer:</label>
+                            <video [src]="getCourseVideoUrl(selectedCourse?.video || selectedCourse?.course_video)" controls class="w-100 rounded border" style="max-height: 120px; object-fit: contain; background: #000;"></video>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-12 mb-3">
+                        <label class="form-label">Course Description</label>
+                        <div style="display: block; min-height: 180px; margin-bottom: 15px;">
+                            <quill-editor [(ngModel)]="editCourseDescription" [style]="{height: '120px'}"></quill-editor>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Curriculum Builder -->
+            <div *ngIf="activeTab === 'curriculum'">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0 fw-semibold">Chapters, Lessons & Topics</h6>
+                    <button class="btn btn-outline-primary btn-sm btn-wave" (click)="addEditChapter()">
+                        <i class="ri-add-line align-middle me-1"></i> Add Chapter
+                    </button>
+                </div>
+
+                <div class="chapters-container">
+                    @for (chapter of editChapters; track chapter.id; let cIdx = $index) {
+                    <div class="card custom-card border border-primary-light mb-4 shadow-sm">
+                        <!-- Chapter Header -->
+                        <div class="card-header bg-light d-flex align-items-center justify-content-between flex-nowrap">
+                            <div class="d-flex align-items-center gap-2 flex-grow-1 me-2 flex-wrap">
+                                <span class="badge bg-primary">Chapter {{ cIdx + 1 }}</span>
+                                <input type="text" class="form-control form-control-sm w-25" placeholder="Chapter Title" [(ngModel)]="chapter.title">
+                                <input type="text" class="form-control form-control-sm w-10" placeholder="Duration" [(ngModel)]="chapter.duration">
+                                <input type="number" class="form-control form-control-sm w-10" placeholder="Price (₹)" [(ngModel)]="chapter.price" (ngModelChange)="onChapterPriceChange(chapter, true)">
+                                <select class="form-select form-select-sm w-10" [(ngModel)]="chapter.discount_type" (ngModelChange)="onChapterPriceChange(chapter, true)">
+                                    <option value="">No Disc.</option>
+                                    <option value="flat">₹ (Flat)</option>
+                                    <option value="percentage">%</option>
+                                </select>
+                                <input type="number" class="form-control form-control-sm w-10" placeholder="Disc. Val" [(ngModel)]="chapter.discount_value" (ngModelChange)="onChapterPriceChange(chapter, true)">
+                                <input type="text" class="form-control form-control-sm w-10" placeholder="Final Price" [value]="chapter.discounted_price != null ? chapter.discounted_price : (chapter.price != null ? chapter.price : '')" readonly disabled>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                <button class="btn btn-sm btn-icon btn-danger-light" (click)="removeEditChapter(cIdx)">
+                                    <i class="ri-delete-bin-line"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Chapter Body -->
+                        <div class="card-body bg-white py-3">
+                            <!-- Chapter Media Uploads -->
+                            <div class="row g-2 mb-3 bg-light p-2 rounded">
+                                <div class="col-md-12">
+                                    <small class="text-muted fw-semibold">Chapter Media (Optional)</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-link text-danger me-1"></i>Video URL</label>
+                                    <input type="text" class="form-control form-control-sm" placeholder="https://youtube.com/..." [(ngModel)]="chapter.videoUrl">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-video-line text-secondary me-1"></i>Upload Video File</label>
+                                    <input type="file" class="form-control form-control-sm" accept="video/*" (change)="onEditChapterFileChange($event, 'video', cIdx)">
+                                    <small class="text-primary d-block mt-1" *ngIf="chapter.videoFileName">{{ chapter.videoFileName }}</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-file-pdf-line text-primary me-1"></i>Upload PDF Note</label>
+                                    <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onEditChapterFileChange($event, 'pdf', cIdx)">
+                                    <small class="text-primary d-block mt-1" *ngIf="chapter.pdfFileName">{{ chapter.pdfFileName }}</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-music-2-line text-success me-1"></i>Upload Audio File</label>
+                                    <input type="file" class="form-control form-control-sm" accept="audio/*" (change)="onEditChapterFileChange($event, 'audio', cIdx)">
+                                    <small class="text-primary d-block mt-1" *ngIf="chapter.audioFileName">{{ chapter.audioFileName }}</small>
+                                </div>
+                            </div>
+
+                            <!-- Add Lesson Button -->
+                            <div class="mb-3">
+                                <button class="btn btn-sm btn-primary btn-wave" (click)="addEditLesson(cIdx)">
+                                    <i class="ri-add-line align-middle me-1"></i> Add Lesson
+                                </button>
+                            </div>
+
+                            <!-- Lessons Loop -->
+                            @for (lesson of chapter.lessons; track lesson.id; let lIdx = $index) {
+                            <div class="border rounded p-3 mb-3 bg-light-gray border-dashed">
+                                <!-- Lesson Header -->
+                                <div class="d-flex justify-content-between align-items-center mb-2 flex-nowrap">
+                                    <div class="d-flex align-items-center gap-2 flex-grow-1 me-2 flex-wrap">
+                                        <span class="badge bg-info">Lesson {{ lIdx + 1 }}</span>
+                                        <input type="text" class="form-control form-control-sm w-25" placeholder="Lesson Name" [(ngModel)]="lesson.title">
+                                        <input type="text" class="form-control form-control-sm w-10" placeholder="Duration" [(ngModel)]="lesson.duration">
+                                        <input type="number" class="form-control form-control-sm w-10" placeholder="Price (₹)" [(ngModel)]="lesson.price" (ngModelChange)="onLessonPriceChange(lesson, true)">
+                                        <select class="form-select form-select-sm w-10" [(ngModel)]="lesson.discount_type" (ngModelChange)="onLessonPriceChange(lesson, true)">
+                                            <option value="">No Disc.</option>
+                                            <option value="flat">₹ (Flat)</option>
+                                            <option value="percentage">%</option>
+                                        </select>
+                                        <input type="number" class="form-control form-control-sm w-10" placeholder="Disc. Val" [(ngModel)]="lesson.discount_value" (ngModelChange)="onLessonPriceChange(lesson, true)">
+                                        <input type="text" class="form-control form-control-sm w-10" placeholder="Final Price" [value]="lesson.discounted_price != null ? lesson.discounted_price : (lesson.price != null ? lesson.price : '')" readonly disabled>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                        <button class="btn btn-xs btn-icon btn-danger-light" (click)="removeEditLesson(cIdx, lIdx)">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Lesson Media Uploads -->
+                                <div class="row g-2 mb-3 bg-white p-2 rounded border ms-1">
+                                    <div class="col-md-12">
+                                        <small class="text-muted fw-semibold">Lesson Media (Optional)</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-link text-danger me-1"></i>Video URL</label>
+                                        <input type="text" class="form-control form-control-sm" placeholder="https://youtube.com/..." [(ngModel)]="lesson.videoUrl">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-video-line text-secondary me-1"></i>Upload Video File</label>
+                                        <input type="file" class="form-control form-control-sm" accept="video/*" (change)="onEditLessonFileChange($event, 'video', cIdx, lIdx)">
+                                        <small class="text-primary d-block mt-1" *ngIf="lesson.videoFileName">{{ lesson.videoFileName }}</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-file-pdf-line text-primary me-1"></i>Upload PDF Note</label>
+                                        <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onEditLessonFileChange($event, 'pdf', cIdx, lIdx)">
+                                        <small class="text-primary d-block mt-1" *ngIf="lesson.pdfFileName">{{ lesson.pdfFileName }}</small>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-music-2-line text-success me-1"></i>Upload Audio File</label>
+                                        <input type="file" class="form-control form-control-sm" accept="audio/*" (change)="onEditLessonFileChange($event, 'audio', cIdx, lIdx)">
+                                        <small class="text-primary d-block mt-1" *ngIf="lesson.audioFileName">{{ lesson.audioFileName }}</small>
+                                    </div>
+                                </div>
+
+                                <!-- Add Topic Button -->
+                                <div class="mb-3 ms-1">
+                                    <button class="btn btn-xs btn-outline-success btn-wave" (click)="addEditTopic(cIdx, lIdx)">
+                                        <i class="ri-add-line align-middle me-1"></i> Add Topic
+                                    </button>
+                                </div>
+
+                                <!-- Topics Loop -->
+                                <div class="ps-3 border-start border-2 border-info">
+                                    @for (topic of lesson.topics; track topic.id; let tIdx = $index) {
+                                    <div class="bg-white border rounded p-3 mb-2 shadow-xs ms-2">
+                                        <div class="row g-2 mb-2 align-items-center">
+                                            <div class="col-md-3">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-light text-muted">Topic {{ tIdx + 1 }}</span>
+                                                    <input type="text" class="form-control" placeholder="Topic Name" [(ngModel)]="topic.title">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Duration" [(ngModel)]="topic.duration">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="number" class="form-control form-control-sm" placeholder="Price (₹)" [(ngModel)]="topic.price" (ngModelChange)="onTopicPriceChange(topic, true)">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <select class="form-select form-select-sm" [(ngModel)]="topic.discount_type" (ngModelChange)="onTopicPriceChange(topic, true)">
+                                                    <option value="">No Discount</option>
+                                                    <option value="flat">₹ (Flat)</option>
+                                                    <option value="percentage">%</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <input type="number" class="form-control form-control-sm" placeholder="Disc. Val" [(ngModel)]="topic.discount_value" (ngModelChange)="onTopicPriceChange(topic, true)">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <input type="text" class="form-control form-control-sm" placeholder="Final Price" [value]="topic.discounted_price != null ? topic.discounted_price : (topic.price != null ? topic.price : '')" readonly disabled>
+                                            </div>
+                                            <div class="col-md-1 text-end">
+                                                <button class="btn btn-xs btn-icon btn-danger-light" (click)="removeEditTopic(cIdx, lIdx, tIdx)">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Topic Media -->
+                                        <div class="row g-2 p-2 bg-light rounded">
+                                            <div class="col-md-12">
+                                                <small class="text-muted fw-semibold">Topic Media (Optional)</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-link text-danger me-1"></i>Video URL</label>
+                                                <input type="text" class="form-control form-control-sm" placeholder="https://youtube.com/..." [(ngModel)]="topic.videoUrl">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-video-line text-secondary me-1"></i>Upload Video File</label>
+                                                <input type="file" class="form-control form-control-sm" accept="video/*" (change)="onEditTopicFileChange($event, 'video', cIdx, lIdx, tIdx)">
+                                                <small class="text-primary d-block mt-1" *ngIf="topic.videoFileName">{{ topic.videoFileName }}</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-file-pdf-line text-primary me-1"></i>Upload PDF Note</label>
+                                                <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onEditTopicFileChange($event, 'pdf', cIdx, lIdx, tIdx)">
+                                                <small class="text-primary d-block mt-1" *ngIf="topic.pdfFileName">{{ topic.pdfFileName }}</small>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label fs-11 fw-semibold text-muted mb-1"><i class="ri-music-2-line text-success me-1"></i>Upload Audio File</label>
+                                                <input type="file" class="form-control form-control-sm" accept="audio/*" (change)="onEditTopicFileChange($event, 'audio', cIdx, lIdx, tIdx)">
+                                                <small class="text-primary d-block mt-1" *ngIf="topic.audioFileName">{{ topic.audioFileName }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    } @empty {
+                                        <div class="text-muted fs-12 p-2">No topics added in this chapter yet. Click "+ Add Topic" above to add one.</div>
+                                    }
+                                </div>
+                            </div>
+                            } @empty {
+                                <div class="text-muted fs-12 text-center p-2 bg-light rounded border border-dashed">No lessons added in this chapter yet. Click "+ Add Lesson" above to add one.</div>
+                            }
+                        </div>
+                    </div>
+                    } @empty {
+                        <div class="text-center p-5 border border-dashed rounded bg-light">
+                            <i class="ri-list-check-2 display-5 text-muted mb-2 d-block"></i>
+                            <p class="text-muted mb-0">Build your curriculum by adding chapters, lessons, and topic media uploads.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-top bg-light">
+        <button class="btn btn-light" (click)="modal.close()" [disabled]="isUploading">Cancel</button>
+        <button class="btn btn-primary" (click)="updateCourse(modal)" [disabled]="isUploading">
+            @if (isUploading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                <span>Saving Changes...</span>
+            } @else {
+                <span>Save Changes</span>
+            }
+        </button>
+    </div>
+</ng-template>
+
+<!-- View Course (Eye Modal) -->
+<ng-template #eyeCourseModal let-modal>
+    <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title text-white">Course Syllabus & Details</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="mb-4 pb-3 border-bottom">
+            <h4 class="mb-1 text-primary">{{ selectedCourse?.course_name }}</h4>
+            <div class="text-muted fs-13 mb-3" [innerHTML]="selectedCourse?.description"></div>
+
+            <!-- Course Media Section (Image & Video) -->
+            <div class="row g-3 mb-3" *ngIf="(selectedCourse?.image || selectedCourse?.course_image) || (selectedCourse?.video || selectedCourse?.course_video)">
+                <div class="col-md-6" *ngIf="selectedCourse?.image || selectedCourse?.course_image">
+                    <label class="form-label fw-semibold text-secondary mb-1">Course Cover Image</label>
+                    <div class="position-relative overflow-hidden rounded border bg-light text-center" style="height: 200px;">
+                        <img [src]="getCourseImageUrl(selectedCourse?.image || selectedCourse?.course_image)" alt="Course Cover" class="w-100 h-100" style="object-fit: cover;">
+                    </div>
+                </div>
+                <div class="col-md-6" *ngIf="selectedCourse?.video || selectedCourse?.course_video">
+                    <label class="form-label fw-semibold text-secondary mb-1">Trailer / Preview Video</label>
+                    <div class="rounded border bg-black text-center overflow-hidden" style="height: 200px;">
+                        <video [src]="getCourseVideoUrl(selectedCourse?.video || selectedCourse?.course_video)" controls class="w-100 h-100" style="object-fit: contain; background: #000;"></video>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3 bg-light rounded p-3">
+                <div class="col-md-2">
+                    <span class="d-block text-muted fs-11 uppercase fw-semibold">Category</span>
+                    <span class="fs-13 fw-semibold">{{ selectedCourse?.category_name }}</span>
+                </div>
+                <div class="col-md-2">
+                    <span class="d-block text-muted fs-11 uppercase fw-semibold">Subcategory</span>
+                    <span class="fs-13 fw-semibold">{{ selectedCourse?.subcategory_name }}</span>
+                </div>
+                <div class="col-md-2">
+                    <span class="d-block text-muted fs-11 uppercase fw-semibold">Subject</span>
+                    <span class="fs-13 fw-semibold">{{ selectedCourse?.subject_name }}</span>
+                </div>
+                <div class="col-md-2">
+                    <span class="d-block text-muted fs-11 uppercase fw-semibold">Mentor</span>
+                    <span class="fs-13 fw-semibold">{{ selectedCourse?.mentor?.full_name || selectedCourse?.mentor_name || getMentorName(selectedCourse?.mentor_id) || '-' }}</span>
+                </div>
+                <div class="col-md-2">
+                    <span class="d-block text-muted fs-11 uppercase fw-semibold">Language</span>
+                    <span class="fs-13 fw-semibold">{{ selectedCourse?.language || '-' }}</span>
+                </div>
+                <div class="col-md-2">
+                    <span class="d-block text-muted fs-11 uppercase fw-semibold">Course Price</span>
+                    <span class="fs-13 fw-semibold text-success">
+                        @if (selectedCourse?.discount_type && selectedCourse?.discount_value) {
+                            <del class="text-muted fs-11 me-1">₹{{ selectedCourse?.price }}</del> 
+                            ₹{{ selectedCourse?.discounted_price }}
+                            <span class="badge bg-danger-light text-danger fs-9 ms-1">
+                                {{ selectedCourse?.discount_type === 'percentage' ? selectedCourse?.discount_value + '%' : '₹' + selectedCourse?.discount_value + ' Off' }}
+                            </span>
+                        } @else {
+                            ₹{{ selectedCourse?.price }}
+                        }
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h5 class="mb-3 fw-semibold text-secondary">Course Structure (Curriculum)</h5>
+            @for (chapter of selectedCourse?.chapters; track chapter.id; let cIdx = $index) {
+            <div class="border rounded mb-3 overflow-hidden shadow-xs">
+                <!-- Chapter Header -->
+                <div class="bg-light p-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <h6 class="mb-0 fw-semibold text-primary">Chapter {{ cIdx + 1 }}: {{ chapter.title }}</h6>
+                        <div class="d-flex gap-2 align-items-center">
+                            <span class="badge bg-primary-light text-primary">Duration: {{ chapter.duration }}</span>
+                            <span class="badge bg-success-light text-success">
+                                Price: 
+                                @if (chapter.discount_type && chapter.discount_value) {
+                                    <del class="text-muted fs-10 me-1">₹{{ chapter.price }}</del> ₹{{ chapter.discounted_price }}
+                                } @else {
+                                    ₹{{ chapter.price }}
+                                }
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Chapter Attachments -->
+                    <div class="d-flex flex-wrap gap-3 mt-2 fs-11 text-muted bg-white p-1 rounded border border-light" *ngIf="chapter.videoUrl || chapter.videoFileName || chapter.video || chapter.pdfFileName || chapter.pdf_file || chapter.audioFileName || chapter.audio_file">
+                        <span *ngIf="chapter.videoUrl">
+                            <i class="ri-youtube-line text-danger me-1"></i>Video URL: 
+                            <a [href]="chapter.videoUrl" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ chapter.videoUrl }}</a>
+                        </span>
+                        <span *ngIf="chapter.videoFileName || chapter.video">
+                            <i class="ri-video-line text-secondary me-1"></i>Video: 
+                            <a [href]="getMediaUrl(chapter.videoFileName || chapter.video)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(chapter.videoFileName || chapter.video) }}</a>
+                        </span>
+                        <span *ngIf="chapter.pdfFileName || chapter.pdf_file">
+                            <i class="ri-file-pdf-line text-primary me-1"></i>PDF Note: 
+                            <a [href]="getMediaUrl(chapter.pdfFileName || chapter.pdf_file)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(chapter.pdfFileName || chapter.pdf_file) }}</a>
+                        </span>
+                        <span *ngIf="chapter.audioFileName || chapter.audio_file">
+                            <i class="ri-music-2-line text-success me-1"></i>Audio Note: 
+                            <a [href]="getMediaUrl(chapter.audioFileName || chapter.audio_file)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(chapter.audioFileName || chapter.audio_file) }}</a>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Lessons under Chapter -->
+                <div class="p-3 bg-white">
+                    @for (lesson of chapter.lessons; track lesson.id; let lIdx = $index) {
+                    <div class="border-start border-2 border-info ps-3 mb-3">
+                        <div class="bg-light-gray p-2 rounded">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <span class="fw-semibold text-secondary">Lesson {{ lIdx + 1 }}: {{ lesson.title }}</span>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <small class="text-muted">Duration: {{ lesson.duration }}</small>
+                                    <small class="text-success fw-semibold">
+                                        Price: 
+                                        @if (lesson.discount_type && lesson.discount_value) {
+                                            <del class="text-muted fs-10 me-1">₹{{ lesson.price }}</del> ₹{{ lesson.discounted_price }}
+                                        } @else {
+                                            ₹{{ lesson.price }}
+                                        }
+                                    </small>
+                                </div>
+                            </div>
+                            <!-- Lesson Attachments -->
+                            <div class="d-flex flex-wrap gap-3 mt-1 fs-11 text-muted bg-white p-1 rounded border border-light" *ngIf="lesson.videoUrl || lesson.videoFileName || lesson.video || lesson.pdfFileName || lesson.pdf_file || lesson.audioFileName || lesson.audio_file">
+                                <span *ngIf="lesson.videoUrl">
+                                    <i class="ri-youtube-line text-danger me-1"></i>Video URL: 
+                                    <a [href]="lesson.videoUrl" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ lesson.videoUrl }}</a>
+                                </span>
+                                <span *ngIf="lesson.videoFileName || lesson.video">
+                                    <i class="ri-video-line text-secondary me-1"></i>Video: 
+                                    <a [href]="getMediaUrl(lesson.videoFileName || lesson.video)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(lesson.videoFileName || lesson.video) }}</a>
+                                </span>
+                                <span *ngIf="lesson.pdfFileName || lesson.pdf_file">
+                                    <i class="ri-file-pdf-line text-primary me-1"></i>PDF Note: 
+                                    <a [href]="getMediaUrl(lesson.pdfFileName || lesson.pdf_file)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(lesson.pdfFileName || lesson.pdf_file) }}</a>
+                                </span>
+                                <span *ngIf="lesson.audioFileName || lesson.audio_file">
+                                    <i class="ri-music-2-line text-success me-1"></i>Audio Note: 
+                                    <a [href]="getMediaUrl(lesson.audioFileName || lesson.audio_file)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(lesson.audioFileName || lesson.audio_file) }}</a>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Topics list -->
+                        <div class="ms-3 mt-2">
+                            @for (topic of lesson.topics; track topic.id; let tIdx = $index) {
+                            <div class="border rounded p-2 mb-2 bg-white d-flex flex-column gap-1">
+                                <div class="d-flex justify-content-between align-items-center fs-13">
+                                    <span class="fw-semibold text-dark"><i class="ri-play-circle-line text-info me-1"></i>Topic {{ tIdx + 1 }}: {{ topic.title }}</span>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <small class="text-muted">Duration: {{ topic.duration }}</small>
+                                        <small class="text-success fw-semibold">
+                                            Price: 
+                                            @if (topic.discount_type && topic.discount_value) {
+                                                <del class="text-muted fs-10 me-1">₹{{ topic.price }}</del> ₹{{ topic.discounted_price }}
+                                            } @else {
+                                                ₹{{ topic.price }}
+                                            }
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap gap-3 mt-1 fs-11 text-muted">
+                                    <span *ngIf="topic.videoUrl">
+                                        <i class="ri-youtube-line text-danger me-1"></i>Video URL: 
+                                        <a [href]="topic.videoUrl" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ topic.videoUrl }}</a>
+                                    </span>
+                                    <span *ngIf="topic.videoFileName || topic.video">
+                                        <i class="ri-video-line text-secondary me-1"></i>Uploaded Video: 
+                                        <a [href]="getMediaUrl(topic.videoFileName || topic.video)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(topic.videoFileName || topic.video) }}</a>
+                                    </span>
+                                    <span *ngIf="topic.pdfFileName || topic.pdf_file">
+                                        <i class="ri-file-pdf-line text-primary me-1"></i>PDF Note: 
+                                        <a [href]="getMediaUrl(topic.pdfFileName || topic.pdf_file)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(topic.pdfFileName || topic.pdf_file) }}</a>
+                                    </span>
+                                    <span *ngIf="topic.audioFileName || topic.audio_file">
+                                        <i class="ri-music-2-line text-success me-1"></i>Audio Note: 
+                                        <a [href]="getMediaUrl(topic.audioFileName || topic.audio_file)" target="_blank" class="text-primary text-decoration-underline fw-semibold">{{ getFileName(topic.audioFileName || topic.audio_file) }}</a>
+                                    </span>
+                                </div>
+                            </div>
+                            } @empty {
+                                <div class="text-muted fs-11 py-1">No topics added in this lesson.</div>
+                            }
+                        </div>
+                    </div>
+                    } @empty {
+                        <div class="text-muted fs-12 py-1">No lessons added in this chapter.</div>
+                    }
+                </div>
+            </div>
+            } @empty {
+                <div class="text-center py-4 text-muted border border-dashed rounded">
+                    No curriculum structure has been created for this course.
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    </div>
+</ng-template>
+
+<!-- Delete Modal -->
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+        <h5>Are you sure?</h5>
+        <p class="text-muted">Do you want to delete this course and all its curriculum data?</p>
+        <button class="btn me-2" style="background:#845ef7;color:#fff;" (click)="deleteCourse(selectedCourse!.id, modal)">
+            Delete
+        </button>
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+    </div>
+</ng-template>

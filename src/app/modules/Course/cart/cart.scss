@@ -1,0 +1,9 @@
+.avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.875rem;
+  
+  &.bg-primary-transparent {
+    background-color: rgba(var(--primary-rgb), 0.1) !important;
+  }
+}

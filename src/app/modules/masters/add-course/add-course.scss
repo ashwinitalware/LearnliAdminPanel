@@ -1,0 +1,116 @@
+.bg-light-gray {
+  background-color: #f7f9fc !important;
+}
+
+.border-dashed {
+  border: 1px dashed #dee2e6 !important;
+}
+
+.shadow-xs {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04) !important;
+}
+
+.nav-tabs .nav-link {
+  border-radius: 0.25rem 0.25rem 0 0;
+  color: #495057;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid transparent;
+  border-bottom: none;
+
+  &:hover {
+    border-color: #e9ecef #e9ecef transparent;
+    color: #845ef7;
+  }
+
+  &.active {
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+    color: #845ef7;
+  }
+}
+
+.lessons-container {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+// Styling for nested components
+.card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.fs-11 {
+  font-size: 11px;
+}
+
+.fs-12 {
+  font-size: 12px;
+}
+
+.fs-13 {
+  font-size: 13px;
+}
+
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 11px;
+  border-radius: 0.15rem;
+}
+
+.w-40 {
+  width: 40% !important;
+}
+
+.w-35 {
+  width: 35% !important;
+}
+
+.w-30 {
+  width: 30% !important;
+}
+
+.w-25 {
+  width: 25% !important;
+}
+
+.w-20 {
+  width: 20% !important;
+}
+
+.w-15 {
+  width: 15% !important;
+}
+
+.w-12 {
+  width: 12% !important;
+}
+
+.w-10 {
+  width: 10% !important;
+}
+
+.w-8 {
+  width: 8% !important;
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.border-primary-light {
+  border-color: rgba(132, 94, 247, 0.2) !important;
+}
+
+::ng-deep quill-editor {
+  display: block !important;
+  width: 100% !important;
+  margin-bottom: 45px !important;
+  clear: both !important;
+}
+
+::ng-deep .ql-container {
+  min-height: 120px !important;
+  height: auto !important;
+}

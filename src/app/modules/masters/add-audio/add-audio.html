@@ -1,0 +1,834 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0 shadow-sm">
+
+        <!-- Header -->
+        <div class="card-header justify-content-between mb-0 border-bottom py-3">
+            <div class="card-title mb-0 d-flex align-items-center gap-2">
+                <i class="ri-headphone-line fs-18 text-primary"></i>
+                <span class="fw-semibold">Audios Master List</span>
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <button class="btn btn-primary btn-wave btn-sm" (click)="open(addAudioModal)">
+                    <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                    Add Audio
+                </button>
+
+                <div class="position-relative">
+                    <input class="form-control form-control-sm pe-4" type="text" placeholder="Search audios..."
+                        [(ngModel)]="searchTerm" (input)="filterAudios()">
+                    <i class="ri-search-line position-absolute top-50 end-0 translate-middle-y me-2 text-muted fs-12"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table: Showing Global Audio Details -->
+        <div class="card-body py-2 px-3">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap align-middle w-100" [showCheckbox]="false">
+                    <thead>
+                        <tr>
+                            <th style="width:5%">Sr No.</th>
+                            <th style="width:22%">Audio Main Title</th>
+                            <th style="width:14%">Mentor</th>
+                            <th style="width:14%">Level Bound</th>
+                            <th style="width:10%">Total Price</th>
+                            <th style="width:10%">Points</th>
+                            <th style="width:10%">Total Duration</th>
+                            <th style="width:5%">Status</th>
+                            <th style="width:10%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+                        @for (audio of filteredAudios; track audio.id; let i = $index) {
+                        <tr cdkDrag [cdkDragData]="audio">
+                            <td>
+                                <span class="drag-handle cursor-grab me-2" cdkDragHandle title="Drag to reorder">
+                                    <i class="ri-drag-move-2-fill fs-14 align-middle text-muted"></i>
+                                </span>
+                                {{ i + 1 }}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar avatar-sm bg-primary-transparent rounded-circle text-primary flex-shrink-0">
+                                        <i class="ri-music-2-line"></i>
+                                    </div>
+                                    <div>
+                                        <span class="fw-semibold text-dark d-block">{{ audio.audio_title || audio.audio_main_title }}</span>
+                                        <small class="text-muted fs-11 d-block" *ngIf="audio.course_name || getCourseName(audio.course_id) !== '-'">
+                                            Course: {{ audio.course_name || getCourseName(audio.course_id) }}
+                                        </small>
+                                        <small class="text-success fs-11" *ngIf="audio.audio_preview || audio.sample_audio_file || audio.preview_file">
+                                            <i class="ri-volume-up-line text-success me-1"></i>Sample preview
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-medium">
+                                    {{ audio.mentor_name || audio.mentor?.full_name || getMentorName(audio.mentor_id) }}
+                                </span>
+                            </td>
+                            <td>
+                                @if (audio.topic_title) {
+                                    <span class="badge bg-info-light text-info">Topic: {{ audio.topic_title }}</span>
+                                } @else if (audio.chapter_title) {
+                                    <span class="badge bg-secondary-light text-secondary">Chapter: {{ audio.chapter_title }}</span>
+                                } @else if (audio.lesson_title) {
+                                    <span class="badge bg-primary-light text-primary">Lesson: {{ audio.lesson_title }}</span>
+                                } @else if (audio.course_name || getCourseName(audio.course_id) !== '-') {
+                                    <span class="badge bg-light text-dark">Course Level</span>
+                                } @else {
+                                    <span class="text-muted fs-11">-</span>
+                                }
+                            </td>
+                            <td class="fw-semibold text-primary">
+                                {{ (audio.price == 0 || audio.total_price == 0) ? 'Free' : '₹' + (audio.total_price || audio.price) }}
+                            </td>
+                            <td>
+                                <span class="badge bg-warning-transparent text-warning">
+                                    <i class="ri-coin-line me-1"></i>{{ audio.wallet_points || 0 }} pts
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted">
+                                    <i class="ri-time-line me-1 fs-12"></i>{{ audio.duration || audio.total_duration || '-' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox"
+                                        [checked]="audio.status === 'active'" (change)="toggleStatus(audio)">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-1">
+                                    <a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light text-primary" title="View Tracks & Details"
+                                        (click)="openView(audio, viewAudioModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light text-info" title="Edit Audio"
+                                        (click)="openEdit(audio, editAudioModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn btn-icon btn-sm btn-light text-danger" title="Delete Audio"
+                                        (click)="openDelete(audio, deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="ri-music-2-line fs-32 d-block mb-1 text-muted opacity-50"></i>
+                                No audio records found.
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </spk-reusable-tables>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!--            ADD AUDIO MODAL                 -->
+<!-- ========================================== -->
+<ng-template #addAudioModal let-modal>
+    <div class="modal-header border-bottom bg-light py-2 px-3">
+        <h6 class="modal-title fw-semibold mb-0 fs-15">
+            <i class="ri-music-2-line text-primary me-1"></i> Add Audio
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-3" style="max-height: 80vh; overflow-y: auto;">
+        <!-- SECTION 1: Category & Curriculum Hierarchy -->
+        <div class="border rounded-2 p-3 mb-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-folder-settings-line text-primary"></i> Category & Curriculum Binding
+            </h6>
+
+            <!-- Row 1: Category | Subcategory | Subject | Course -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Category <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="categoryId" (change)="onCategoryChange()">
+                        <option [ngValue]="null" disabled selected>Select Category</option>
+                        @for (cat of categories; track cat.id) {
+                            <option [ngValue]="cat.id">{{ cat.category_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subcategory <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="subcategoryId" (change)="onSubcategoryChange()" [disabled]="!categoryId">
+                        <option [ngValue]="null" disabled selected>Select Subcategory</option>
+                        @for (sub of filteredSubcategories; track sub.id) {
+                            <option [ngValue]="sub.id">{{ sub.subcategory_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subject <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="subjectId" (change)="onSubjectChange()" [disabled]="!subcategoryId">
+                        <option [ngValue]="null" disabled selected>Select Subject</option>
+                        @for (subj of filteredSubjects; track subj.id) {
+                            <option [ngValue]="subj.id">{{ subj.subject_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Course <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="courseId" (change)="onCourseChange(courseId, false)" [disabled]="!subjectId">
+                        <option [ngValue]="null" disabled selected>Select Course</option>
+                        @for (course of filteredCourses; track course.id) {
+                            <option [ngValue]="course.id">{{ course.course_name }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 2: Mentor | Lesson | Chapter | Topic -->
+            <div class="row g-2">
+                <div [ngClass]="(lessonsList && lessonsList.length > 0) ? 'col-md-3' : 'col-md-12'">
+                    <label class="form-label fs-12 fw-medium mb-1">Mentor <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="mentorId">
+                        <option [ngValue]="null" selected>Select Mentor (None)</option>
+                        @for (mentor of mentors; track mentor.id) {
+                            <option [ngValue]="mentor.id">{{ mentor.full_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="lessonsList && lessonsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Lesson <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="lessonId" (change)="onLessonChange(false)">
+                        <option [ngValue]="null">Course Level (None)</option>
+                        @for (lesson of lessonsList; track lesson.id) {
+                            <option [ngValue]="lesson.id">{{ lesson.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="chaptersList && chaptersList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Chapter <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="chapterId" (change)="onChapterChange(false)">
+                        <option [ngValue]="null">Lesson Level (None)</option>
+                        @for (chapter of chaptersList; track chapter.id) {
+                            <option [ngValue]="chapter.id">{{ chapter.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="topicsList && topicsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Topic <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="topicId">
+                        <option [ngValue]="null">Chapter Level (None)</option>
+                        @for (topic of topicsList; track topic.id) {
+                            <option [ngValue]="topic.id">{{ topic.title }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: GLOBAL AUDIO DETAILS -->
+        <div class="border rounded-2 p-3 mb-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-settings-4-line text-primary"></i> Global Audio Details
+            </h6>
+
+            <!-- Row 1: Audio Main Title | Audio Preview Sample File -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">Audio Main Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-sm" placeholder="Enter Audio Main Title" [(ngModel)]="audioTitle">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">Audio Preview / Sample File <span class="badge bg-info-transparent text-info ms-1 fs-10">Optional</span></label>
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="file" class="form-control form-control-sm" accept="audio/*"
+                            (change)="onPreviewFileSelected($event, false)">
+                        <button *ngIf="previewAudioFileName" type="button" class="btn btn-sm btn-outline-danger btn-icon"
+                            title="Clear" (click)="clearPreviewFile(false)">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <small class="text-primary d-block mt-1 fs-11 text-truncate" *ngIf="previewAudioFileName" title="{{ previewAudioFileName }}">
+                        <i class="ri-file-music-line me-1"></i> {{ previewAudioFileName }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Row 2: Total Price | Wallet Points | Total Duration (3 cols) -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-4">
+                    <label class="form-label fs-12 fw-medium mb-1">Total Price (₹)</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" placeholder="0.00" [(ngModel)]="audioPrice">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fs-12 fw-medium mb-1">Wallet Points</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="ri-coin-line text-warning"></i></span>
+                        <input type="number" class="form-control" placeholder="0" [(ngModel)]="audioWalletPoints">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fs-12 fw-medium mb-1">Total Duration</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="ri-time-line text-info"></i></span>
+                        <input type="text" class="form-control" placeholder="e.g. 1 hr 30 mins" [(ngModel)]="audioDuration">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Description -->
+            <div class="row g-2">
+                <div class="col-12">
+                    <label class="form-label fs-12 fw-medium mb-1">Description <span class="text-muted">(Optional)</span></label>
+                    <textarea class="form-control form-control-sm" rows="2" placeholder="Enter audio description..."
+                        [(ngModel)]="audioDescription"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: AUDIO FILES & TRACKS (LIST/CARD TABLE) -->
+        <div class="border rounded-2 p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
+                <span class="fw-semibold text-dark fs-13 d-flex align-items-center gap-1">
+                    <i class="ri-play-list-2-line text-primary"></i> Audio Files & Tracks
+                    <span class="badge bg-primary-transparent text-primary ms-1">{{ audioTracks.length }}</span>
+                </span>
+                <button type="button" class="btn btn-primary btn-sm py-1 px-2 fs-12" (click)="addTrack()">
+                    <i class="ri-add-line align-middle me-1"></i> Add Track
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle mb-0">
+                    <thead class="table-light fs-12">
+                        <tr>
+                            <th style="width: 5%" class="text-center">#</th>
+                            <th style="width: 40%">Audio Track Title <span class="text-danger">*</span></th>
+                            <th style="width: 18%">Duration</th>
+                            <th style="width: 25%">Audio File <span class="text-danger">*</span></th>
+                            <th style="width: 12%" class="text-center">Order / Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (track of audioTracks; track track; let idx = $index) {
+                        <tr>
+                            <td class="text-center fw-semibold fs-12 text-muted">{{ idx + 1 }}</td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="e.g. Track {{ idx + 1 }} / Chapter Title"
+                                    [(ngModel)]="track.title">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="e.g. 05:20"
+                                    [(ngModel)]="track.duration">
+                            </td>
+                            <td>
+                                <input type="file" class="form-control form-control-sm" accept="audio/*"
+                                    (change)="onTrackFileSelected($event, idx, false)">
+                                <small class="text-success d-block fs-11 text-truncate mt-1" *ngIf="track.fileName" title="{{ track.fileName }}">
+                                    <i class="ri-check-line me-1"></i>{{ track.fileName }}
+                                </small>
+                            </td>
+                            <td class="text-center">
+                                <div class="hstack gap-1 justify-content-center">
+                                    <button type="button" class="btn btn-icon btn-xs btn-light"
+                                        [disabled]="idx === 0" (click)="moveTrack(idx, 'up', false)" title="Move Up">
+                                        <i class="ri-arrow-up-s-line fs-13"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-icon btn-xs btn-light"
+                                        [disabled]="idx === audioTracks.length - 1" (click)="moveTrack(idx, 'down', false)" title="Move Down">
+                                        <i class="ri-arrow-down-s-line fs-13"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-icon btn-xs btn-outline-danger"
+                                        (click)="removeTrack(idx)"
+                                        [disabled]="audioTracks.length === 1 && idx === 0 && !track.title && !track.file"
+                                        title="Remove">
+                                        <i class="ri-delete-bin-line fs-13"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-2">
+                <button type="button" class="btn btn-outline-primary btn-sm w-100 py-1 border-dashed fs-12"
+                    (click)="addTrack()">
+                    <i class="ri-add-line me-1 align-middle"></i> + Add Another Track
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-top bg-light py-2 px-3">
+        <button class="btn btn-light btn-sm" (click)="modal.close()" [disabled]="isUploading">Cancel</button>
+        <button class="btn btn-primary btn-sm" (click)="addAudio(modal)" [disabled]="isUploading">
+            <span *ngIf="isUploading"><i class="ri-loader-4-line align-middle me-1 animate-spin"></i> Saving...</span>
+            <span *ngIf="!isUploading"><i class="ri-check-line me-1"></i> Create Audio</span>
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- ========================================== -->
+<!--            EDIT AUDIO MODAL                -->
+<!-- ========================================== -->
+<ng-template #editAudioModal let-modal>
+    <div class="modal-header border-bottom bg-light py-2 px-3">
+        <h6 class="modal-title fw-semibold mb-0 fs-15">
+            <i class="ri-edit-line text-info me-1"></i> Edit Audio
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-3" style="max-height: 80vh; overflow-y: auto;">
+        <!-- SECTION 1: Category & Curriculum Hierarchy -->
+        <div class="border rounded-2 p-3 mb-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-folder-settings-line text-primary"></i> Category & Curriculum Binding
+            </h6>
+
+            <!-- Row 1: Category | Subcategory | Subject | Course -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Category <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editCategoryId" (change)="onEditCategoryChange()">
+                        <option [ngValue]="null" disabled selected>Select Category</option>
+                        @for (cat of categories; track cat.id) {
+                            <option [ngValue]="cat.id">{{ cat.category_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subcategory <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editSubcategoryId" (change)="onEditSubcategoryChange()" [disabled]="!editCategoryId">
+                        <option [ngValue]="null" disabled selected>Select Subcategory</option>
+                        @for (sub of editFilteredSubcategories; track sub.id) {
+                            <option [ngValue]="sub.id">{{ sub.subcategory_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subject <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editSubjectId" (change)="onEditSubjectChange()" [disabled]="!editSubcategoryId">
+                        <option [ngValue]="null" disabled selected>Select Subject</option>
+                        @for (subj of editFilteredSubjects; track subj.id) {
+                            <option [ngValue]="subj.id">{{ subj.subject_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Course <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editCourseId" (change)="onCourseChange(editCourseId, true)" [disabled]="!editSubjectId">
+                        <option [ngValue]="null" disabled selected>Select Course</option>
+                        @for (course of editFilteredCourses; track course.id) {
+                            <option [ngValue]="course.id">{{ course.course_name }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 2: Mentor | Lesson | Chapter | Topic -->
+            <div class="row g-2">
+                <div [ngClass]="(editLessonsList && editLessonsList.length > 0) ? 'col-md-3' : 'col-md-12'">
+                    <label class="form-label fs-12 fw-medium mb-1">Mentor <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editMentorId">
+                        <option [ngValue]="null">Select Mentor (None)</option>
+                        @for (mentor of mentors; track mentor.id) {
+                            <option [ngValue]="mentor.id">{{ mentor.full_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="editLessonsList && editLessonsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Lesson <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editLessonId" (change)="onLessonChange(true)">
+                        <option [ngValue]="null">Course Level (None)</option>
+                        @for (lesson of editLessonsList; track lesson.id) {
+                            <option [ngValue]="lesson.id">{{ lesson.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="editChaptersList && editChaptersList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Chapter <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editChapterId" (change)="onChapterChange(true)">
+                        <option [ngValue]="null">Lesson Level (None)</option>
+                        @for (chapter of editChaptersList; track chapter.id) {
+                            <option [ngValue]="chapter.id">{{ chapter.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="editTopicsList && editTopicsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Topic <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editTopicId">
+                        <option [ngValue]="null">Chapter Level (None)</option>
+                        @for (topic of editTopicsList; track topic.id) {
+                            <option [ngValue]="topic.id">{{ topic.title }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: GLOBAL AUDIO DETAILS (EDIT) -->
+        <div class="border rounded-2 p-3 mb-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-settings-4-line text-primary"></i> Global Audio Details
+            </h6>
+
+            <!-- Row 1: Audio Main Title | Audio Preview Sample File -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">Audio Main Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="editAudioTitle">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">Audio Preview / Sample File <span class="badge bg-info-transparent text-info ms-1 fs-10">Optional</span></label>
+                    <div class="d-flex align-items-center gap-1">
+                        <input type="file" class="form-control form-control-sm" accept="audio/*"
+                            (change)="onPreviewFileSelected($event, true)">
+                        <button *ngIf="existingPreviewAudioFile || editPreviewAudioFileName" type="button"
+                            class="btn btn-sm btn-outline-danger btn-icon" title="Clear" (click)="clearPreviewFile(true)">
+                            <i class="ri-close-line"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted d-block mt-1 fs-11 text-truncate" *ngIf="existingPreviewAudioFile && !editPreviewAudioFileName" title="{{ existingPreviewAudioFile }}">
+                        <i class="ri-file-check-line text-success me-1"></i>Current: {{ existingPreviewAudioFile }}
+                    </small>
+                    <small class="text-primary d-block mt-1 fs-11 text-truncate" *ngIf="editPreviewAudioFileName" title="{{ editPreviewAudioFileName }}">
+                        <i class="ri-file-music-line me-1"></i>New: {{ editPreviewAudioFileName }}
+                    </small>
+                </div>
+            </div>
+
+            <!-- Row 2: Total Price | Wallet Points | Total Duration (3 cols) -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-4">
+                    <label class="form-label fs-12 fw-medium mb-1">Total Price (₹)</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" placeholder="0.00" [(ngModel)]="editAudioPrice">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fs-12 fw-medium mb-1">Wallet Points</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="ri-coin-line text-warning"></i></span>
+                        <input type="number" class="form-control" placeholder="0" [(ngModel)]="editAudioWalletPoints">
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fs-12 fw-medium mb-1">Total Duration</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="ri-time-line text-info"></i></span>
+                        <input type="text" class="form-control" placeholder="e.g. 1 hr 30 mins" [(ngModel)]="editAudioDuration">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Description -->
+            <div class="row g-2">
+                <div class="col-12">
+                    <label class="form-label fs-12 fw-medium mb-1">Description <span class="text-muted">(Optional)</span></label>
+                    <textarea class="form-control form-control-sm" rows="2" placeholder="Enter audio description..."
+                        [(ngModel)]="editAudioDescription"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: AUDIO FILES & TRACKS (EDIT TABLE) -->
+        <div class="border rounded-2 p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
+                <span class="fw-semibold text-dark fs-13 d-flex align-items-center gap-1">
+                    <i class="ri-play-list-2-line text-primary"></i> Audio Files & Tracks
+                    <span class="badge bg-primary-transparent text-primary ms-1">{{ editAudioTracks.length }}</span>
+                </span>
+                <button type="button" class="btn btn-primary btn-sm py-1 px-2 fs-12" (click)="addEditTrack()">
+                    <i class="ri-add-line align-middle me-1"></i> Add Track
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle mb-0">
+                    <thead class="table-light fs-12">
+                        <tr>
+                            <th style="width: 5%" class="text-center">#</th>
+                            <th style="width: 40%">Audio Track Title <span class="text-danger">*</span></th>
+                            <th style="width: 18%">Duration</th>
+                            <th style="width: 25%">Audio File</th>
+                            <th style="width: 12%" class="text-center">Order / Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (track of editAudioTracks; track track; let idx = $index) {
+                        <tr>
+                            <td class="text-center fw-semibold fs-12 text-muted">{{ idx + 1 }}</td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="e.g. Track {{ idx + 1 }}"
+                                    [(ngModel)]="track.title">
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm" placeholder="e.g. 05:20"
+                                    [(ngModel)]="track.duration">
+                            </td>
+                            <td>
+                                <input type="file" class="form-control form-control-sm" accept="audio/*"
+                                    (change)="onTrackFileSelected($event, idx, true)">
+                                <small class="text-muted d-block fs-11 text-truncate mt-1" *ngIf="track.existingFile && !track.fileName" title="{{ track.existingFile }}">
+                                    <i class="ri-file-check-line text-success me-1"></i>Current: {{ track.existingFile }}
+                                </small>
+                                <small class="text-primary d-block fs-11 text-truncate mt-1" *ngIf="track.fileName" title="{{ track.fileName }}">
+                                    <i class="ri-file-music-line me-1"></i>New: {{ track.fileName }}
+                                </small>
+                            </td>
+                            <td class="text-center">
+                                <div class="hstack gap-1 justify-content-center">
+                                    <button type="button" class="btn btn-icon btn-xs btn-light"
+                                        [disabled]="idx === 0" (click)="moveTrack(idx, 'up', true)" title="Move Up">
+                                        <i class="ri-arrow-up-s-line fs-13"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-icon btn-xs btn-light"
+                                        [disabled]="idx === editAudioTracks.length - 1" (click)="moveTrack(idx, 'down', true)" title="Move Down">
+                                        <i class="ri-arrow-down-s-line fs-13"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-icon btn-xs btn-outline-danger"
+                                        (click)="removeEditTrack(idx)"
+                                        [disabled]="editAudioTracks.length === 1 && idx === 0 && !track.title && !track.file && !track.existingFile"
+                                        title="Remove">
+                                        <i class="ri-delete-bin-line fs-13"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-2">
+                <button type="button" class="btn btn-outline-primary btn-sm w-100 py-1 border-dashed fs-12"
+                    (click)="addEditTrack()">
+                    <i class="ri-add-line me-1 align-middle"></i> + Add Another Track
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-top bg-light py-2 px-3">
+        <button class="btn btn-light btn-sm" (click)="modal.close()" [disabled]="isUploading">Cancel</button>
+        <button class="btn btn-primary btn-sm" (click)="updateAudio(modal)" [disabled]="isUploading">
+            <span *ngIf="isUploading"><i class="ri-loader-4-line align-middle me-1 animate-spin"></i> Saving...</span>
+            <span *ngIf="!isUploading"><i class="ri-check-line me-1"></i> Save Changes</span>
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- ========================================== -->
+<!--            VIEW AUDIO DETAILS MODAL        -->
+<!-- ========================================== -->
+<ng-template #viewAudioModal let-modal>
+    <div class="modal-header border-bottom bg-light py-2 px-3">
+        <h6 class="modal-title fw-semibold mb-0 fs-15">
+            <i class="ri-information-line text-primary me-1"></i> Audio Details & Tracklist
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-3" style="max-height: 80vh; overflow-y: auto;">
+        <!-- Global Info Card -->
+        <div class="border rounded-2 p-3 mb-3 bg-light">
+            <div class="row gy-2 gx-3 text-sm">
+                <!-- Main Title -->
+                <div class="col-md-6 col-lg-4">
+                    <span class="text-muted fs-11 text-uppercase fw-semibold d-block">Audio Main Title</span>
+                    <h6 class="mb-0 fw-semibold text-dark fs-14">{{ viewingAudio?.audio_title || viewingAudio?.audio_main_title }}</h6>
+                </div>
+
+                <!-- Mentor -->
+                <div class="col-md-6 col-lg-4">
+                    <span class="text-muted fs-11 text-uppercase fw-semibold d-block">Mentor</span>
+                    <h6 class="mb-0 fw-semibold text-dark fs-14">
+                        {{ viewingAudio?.mentor_name || viewingAudio?.mentor?.full_name || getMentorName(viewingAudio?.mentor_id) }}
+                    </h6>
+                </div>
+
+                <!-- Bound Course & Level -->
+                <div class="col-md-6 col-lg-4">
+                    <span class="text-muted fs-11 text-uppercase fw-semibold d-block">Level Bound / Course</span>
+                    <div>
+                        <span class="fw-semibold text-dark d-block fs-13" *ngIf="viewingAudio?.course_name || getCourseName(viewingAudio?.course_id) !== '-'">
+                            {{ viewingAudio?.course_name || getCourseName(viewingAudio?.course_id) }}
+                        </span>
+                        @if (viewingAudio?.topic_title) {
+                            <span class="badge bg-info-light text-info">Topic: {{ viewingAudio.topic_title }}</span>
+                        } @else if (viewingAudio?.chapter_title) {
+                            <span class="badge bg-secondary-light text-secondary">Chapter: {{ viewingAudio.chapter_title }}</span>
+                        } @else if (viewingAudio?.lesson_title) {
+                            <span class="badge bg-primary-light text-primary">Lesson: {{ viewingAudio.lesson_title }}</span>
+                        } @else if (viewingAudio?.course_name || getCourseName(viewingAudio?.course_id) !== '-') {
+                            <span class="badge bg-light text-dark">Course Level</span>
+                        } @else {
+                            <span class="text-muted fs-11">-</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Price, Points & Status -->
+                <div class="col-md-6 col-lg-4">
+                    <span class="text-muted fs-11 text-uppercase fw-semibold d-block">Price, Points & Status</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-semibold text-dark fs-14">
+                            {{ (viewingAudio?.price == 0 || viewingAudio?.total_price == 0) ? 'Free' : '₹' + (viewingAudio?.total_price || viewingAudio?.price) }}
+                        </span>
+                        <span class="badge bg-warning-transparent text-warning fs-11">
+                            <i class="ri-coin-line me-1"></i>{{ viewingAudio?.wallet_points || 0 }} pts
+                        </span>
+                        <span class="badge" [class.bg-success-transparent]="viewingAudio?.status === 'active'"
+                            [class.text-success]="viewingAudio?.status === 'active'"
+                            [class.bg-danger-transparent]="viewingAudio?.status !== 'active'"
+                            [class.text-danger]="viewingAudio?.status !== 'active'">
+                            {{ viewingAudio?.status | titlecase }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Duration -->
+                <div class="col-md-6 col-lg-4">
+                    <span class="text-muted fs-11 text-uppercase fw-semibold d-block">Total Duration</span>
+                    <span class="fw-medium text-dark fs-13">
+                        <i class="ri-time-line text-info me-1"></i>{{ viewingAudio?.duration || viewingAudio?.total_duration || '-' }}
+                    </span>
+                </div>
+
+                <!-- Description -->
+                <div class="col-12" *ngIf="viewingAudio?.description">
+                    <span class="text-muted fs-11 text-uppercase fw-semibold d-block">Description</span>
+                    <p class="mb-0 text-muted fs-12">{{ viewingAudio?.description }}</p>
+                </div>
+
+                <!-- Audio Preview Sample Player -->
+                <div class="col-12 mt-1 pt-2 border-top" *ngIf="viewingAudio?.audio_preview || viewingAudio?.sample_audio_file || viewingAudio?.preview_file">
+                    <span class="text-primary fs-11 text-uppercase fw-semibold d-block mb-1">
+                        <i class="ri-play-circle-line me-1"></i> Audio Preview Sample
+                    </span>
+                    <audio controls class="w-100" style="height: 36px;"
+                        [src]="getAudioUrl(viewingAudio.audio_preview || viewingAudio.sample_audio_file || viewingAudio.preview_file)"></audio>
+                    <small class="text-muted d-block mt-1 fs-11">
+                        File: {{ viewingAudio.audio_preview || viewingAudio.sample_audio_file || viewingAudio.preview_file }}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tracks List Section (Displayed on View Modal Click) -->
+        <div class="border rounded-2 p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
+                <span class="fw-semibold text-dark fs-13 d-flex align-items-center gap-1">
+                    <i class="ri-play-list-2-line text-primary"></i> Audio Tracklist & Files
+                    <span class="badge bg-primary-transparent text-primary ms-1">
+                        {{ getTrackCount(viewingAudio) }} {{ getTrackCount(viewingAudio) === 1 ? 'Track' : 'Tracks' }}
+                    </span>
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered text-nowrap align-middle mb-0">
+                    <thead class="table-light fs-12">
+                        <tr>
+                            <th style="width: 5%" class="text-center">#</th>
+                            <th style="width: 35%">Track Title</th>
+                            <th style="width: 15%">Duration</th>
+                            <th style="width: 45%">Audio Player / File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (track of getTracks(viewingAudio); track track; let idx = $index) {
+                        <tr>
+                            <td class="fw-semibold text-center fs-12 text-muted">{{ idx + 1 }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="ri-disc-line text-primary fs-14"></i>
+                                    <span class="fw-medium text-dark fs-13">{{ track.title || track.audio_title || 'Track ' + (idx + 1) }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-muted fs-11">
+                                    <i class="ri-time-line me-1"></i>{{ track.duration || '-' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div *ngIf="track.audio_file || track.file" class="d-flex align-items-center gap-2">
+                                    <audio controls class="flex-grow-1" style="height: 32px;"
+                                        [src]="getAudioUrl(track.audio_file || track.file)"></audio>
+                                    <a [href]="getAudioUrl(track.audio_file || track.file)" target="_blank"
+                                        class="btn btn-icon btn-sm btn-light text-primary" title="Download Audio">
+                                        <i class="ri-download-2-line"></i>
+                                    </a>
+                                </div>
+                                <span *ngIf="!track.audio_file && !track.file" class="text-muted fs-11">No audio file attached</span>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-3 fs-12">No individual tracks found.</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-top bg-light py-2 px-3">
+        <button class="btn btn-primary btn-sm" (click)="modal.close()">Close</button>
+    </div>
+</ng-template>
+
+
+<!-- ========================================== -->
+<!--            DELETE CONFIRMATION MODAL       -->
+<!-- ========================================== -->
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+        <i class="ri-error-warning-line mb-3" style="font-size:45px;color:#845ef7;"></i>
+        <h6 class="fw-semibold fs-16">Are you sure?</h6>
+        <p class="text-muted fs-13 mb-4">
+            Do you want to delete <strong class="text-dark">{{ selectedAudio?.audio_title || selectedAudio?.audio_main_title }}</strong> from the master list?
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+            <button class="btn btn-sm px-3" style="background:#845ef7;color:#fff;" (click)="deleteAudio(selectedAudio!.id, modal)">
+                Delete
+            </button>
+            <button class="btn btn-sm btn-light px-3" (click)="modal.close()">Cancel</button>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,1191 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0">
+
+        <div class="card-header justify-content-end mb-3">
+            <button class="btn btn-primary btn-wave" (click)="open(content)">
+                <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                Add Instructor
+            </button>
+
+
+            <div class="d-flex flex-align-items-center flex-wrap gap-2 ms-auto">
+                <div class="card-title mb-0">
+                    Instructor List
+                </div>
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search Here"
+                        aria-label=".form-control-sm example">
+                </div>
+                <spk-dropdowns [Customclass]="'dropdown '" [Toggletext]="'Sort By'" [Icon]="true"
+                    [IconClass]="'ri-arrow-down-s-line align-middle ms-1 d-inline-block'"
+                    [class]="'btn btn-primary btn-sm btn-wave waves-effect waves-light no-caret'"
+                    [Menuclass]="'dropdown-menu dropdown-menu-end'">
+                    <li><a class="dropdown-item" href="javascript:void(0);">New</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Popular</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Relevant</a></li>
+                </spk-dropdowns>
+
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <th>Sr No.</th>
+                        <th>Ranking</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Last Login</th>
+
+                        <th>Status</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+                            <td>201</td>
+
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+
+
+                                </div>
+                            </td>
+                            <td>Hikaime</td>
+                            <td>
+                                hikaimesharma@example.com
+                            </td>
+                            <td>
+                                +880823186196
+                            </td>
+                            <td>
+                                Active 1 year ago
+                            </td>
+
+
+
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editInstructorModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewInstructorModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(viewDetailsModal)">
+                                                View Details
+                                            </a>
+                                        </li>
+
+                                       <li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openVerifyModal(verifiedInstructorModal)">
+        Verify Instructor
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openBanModal(banInstructorModal)">
+        Ban Instructor
+    </a>
+</li>
+
+                                    </spk-dropdowns>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>02</td>
+                            <td>203</td>
+
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+
+                                </div>
+                            </td>
+                            <td>Shamim</td>
+                            <td>
+                                shamimyadav@example.com
+                            </td>
+                            <td>
+                                +8807854123615
+                            </td>
+                            <td>
+                                Active 2 years ago
+                            </td>
+
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editInstructorModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewInstructorModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(viewDetailsModal)">
+                                                View Details
+                                            </a>
+                                        </li>
+<li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openVerifyModal(verifiedInstructorModal)">
+        Verify Instructor
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openBanModal(banInstructorModal)">
+        Ban Instructor
+    </a>
+</li>
+
+                                    </spk-dropdowns>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>03</td>
+                            <td>203</td>
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+
+                                </div>
+                            </td>
+                            <td>Zabedh</td>
+                            <td>
+                                zabedhchavhan@example.com
+                            </td>
+                            <td>
+                                +8801256325412
+                            </td>
+                            <td>
+                                Active 2 years ago
+                            </td>
+
+
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editInstructorModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewInstructorModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(viewDetailsModal)">
+                                                View Details
+                                            </a>
+                                        </li>
+
+                                      <li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openVerifyModal(verifiedInstructorModal)">
+        Verify Instructor
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openBanModal(banInstructorModal)">
+        Ban Instructor
+    </a>
+</li>
+
+                                    </spk-dropdowns>
+                                </div>
+                            </td>
+                        </tr>
+
+                </spk-reusable-tables>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="d-flex align-items-center">
+                <div> Showing 6 Entries <i class="bi bi-arrow-right ms-2 fw-semibold"></i> </div>
+                <div class="ms-auto">
+                    <nav aria-label="Page navigation" class="pagination-style-2">
+                        <ul class="pagination mb-0 flex-wrap">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="javascript:void(0);">
+                                    Prev
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">1</a></li>
+                            <li class="page-item active"><a class="page-link" href="javascript:void(0);">2</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="javascript:void(0);">
+                                    <i class="bi bi-three-dots"></i>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">17</a></li>
+                            <li class="page-item">
+                                <a class="page-link text-primary" href="javascript:void(0);">
+                                    next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- add instructor modal content -->
+<ng-template #content let-modal>
+
+    <div class="modal-header">
+        <h6 class="modal-title">Add Instructor</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+
+
+
+        <div class="row gy-1">
+
+            <div class="col-xl-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" placeholder="Enter Full Name">
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Phone Number</label>
+                <input type="text" class="form-control" placeholder="Enter Phone Number">
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control" placeholder="Enter Email">
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" placeholder="Password">
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" placeholder="Confirm Password">
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Qualification</label>
+
+                <ng-select [items]="qualificationList" [multiple]="true" [searchable]="true" [closeOnSelect]="false"
+                    placeholder="Select Qualification">
+                </ng-select>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Designation</label>
+                <input type="text" class="form-control" placeholder="Enter Designation">
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Organization</label>
+                <select class="form-select">
+                    <option>Select Organization</option>
+                </select>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="form-label">Website</label>
+                <input type="text" class="form-control" placeholder="Enter Website">
+            </div>
+
+
+
+            <div class="col-xl-4">
+                <label class="form-label">Expertises</label>
+
+                <ng-select [items]="expertiseList" [multiple]="true" [searchable]="true" [closeOnSelect]="false"
+                    placeholder="Select Expertise">
+                </ng-select>
+            </div>
+
+
+            <div class="col-xl-2">
+                <label class="form-label">Video Source</label>
+
+                <select class="form-select" #videoSource (change)="0">
+                    <option value="">Select Video Source</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="Vimeo">Vimeo</option>
+                    <option value="MP4">MP4</option>
+                    <option value="Local">Local Upload</option>
+                </select>
+            </div>
+
+
+            <div class="col-xl-3" *ngIf="videoSource.value === 'YouTube' || videoSource.value === 'Vimeo'">
+
+                <label class="form-label">Video Link</label>
+                <input type="text" class="form-control" placeholder="Enter Video Link">
+            </div>
+
+            <div class="col-xl-3" *ngIf="videoSource.value === 'MP4'">
+
+                <label class="form-label">Upload MP4</label>
+                <input type="file" class="form-control">
+            </div>
+
+            <div class="col-xl-3" *ngIf="videoSource.value === 'Local'">
+
+                <label class="form-label">Upload Video</label>
+                <input type="file" class="form-control">
+            </div>
+
+            <div class="col-xl-12">
+                <h6>Social Links</h6>
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">Facebook</label>
+                <input type="text" class="form-control" placeholder="Facebook Link">
+
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">Twitter</label>
+                <input type="text" class="form-control" placeholder="Twitter Link">
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">Instagram</label>
+                <input type="text" class="form-control" placeholder="Instagram Link">
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">LinkedIn</label>
+                <input type="text" class="form-control" placeholder="LinkedIn Link">
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">Youtube</label>
+                <input type="text" class="form-control" placeholder="Youtube Link">
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">Upload Profile Photo</label>
+                <input type="file" class="form-control">
+            </div>
+
+            <div class="col-xl-12">
+                <h6 class="mt-0">Permissions</h6>
+            </div>
+
+            <div class="col-xl-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Profile Edit</label>
+                </div>
+            </div>
+
+            <div class="col-xl-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Students</label>
+                </div>
+            </div>
+
+            <div class="col-xl-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Course</label>
+                </div>
+            </div>
+
+            <div class="col-xl-2">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label">Certificates</label>
+                </div>
+            </div>
+
+            <form [formGroup]="instructorForm">
+                <h6>About</h6>
+                <quill-editor formControlName="about" [style]="{height: '80px', marginBottom: '8%'}"
+                    placeholder="Write something about this instructor...">
+                </quill-editor>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary" (click)="onSubmit()">
+            Save Instructor
+        </button>
+    </div>
+
+</ng-template>
+
+
+<!-- edit instructor modal content-->
+<ng-template #editInstructorModal let-modal>
+
+    <div class="modal-header">
+        <h6 class="modal-title">Edit Instructor</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <!-- Yaha Add Instructor wale modal ka pura form copy-paste kar do -->
+        <div class="modal-body">
+
+
+
+            <div class="row gy-1">
+
+                <div class="col-xl-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" placeholder="Enter Full Name">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" placeholder="Enter Phone Number">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control" placeholder="Enter Email">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" placeholder="Password">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" placeholder="Confirm Password">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Qualification</label>
+
+                    <ng-select [items]="qualificationList" [multiple]="true" [searchable]="true" [closeOnSelect]="false"
+                        placeholder="Select Qualification">
+                    </ng-select>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Designation</label>
+                    <input type="text" class="form-control" placeholder="Enter Designation">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Organization</label>
+                    <select class="form-select">
+                        <option>Select Organization</option>
+                    </select>
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">Website</label>
+                    <input type="text" class="form-control" placeholder="Enter Website">
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">Expertises</label>
+
+                    <ng-select [items]="expertiseList" [multiple]="true" [searchable]="true" [closeOnSelect]="false"
+                        placeholder="Select Expertise">
+                    </ng-select>
+                </div>
+
+                <div class="col-xl-12">
+                    <h6>Social Links</h6>
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">Facebook</label>
+                    <input type="text" class="form-control" placeholder="Facebook Link">
+
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">Twitter</label>
+                    <input type="text" class="form-control" placeholder="Twitter Link">
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">Instagram</label>
+                    <input type="text" class="form-control" placeholder="Instagram Link">
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">LinkedIn</label>
+                    <input type="text" class="form-control" placeholder="LinkedIn Link">
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">Youtube</label>
+                    <input type="text" class="form-control" placeholder="Youtube Link">
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">Upload Profile Photo</label>
+                    <input type="file" class="form-control">
+                </div>
+
+                <div class="col-xl-12">
+                    <h6 class="mt-0">Permissions</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label">Profile Edit</label>
+                    </div>
+                </div>
+
+                <div class="col-xl-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label">Students</label>
+                    </div>
+                </div>
+
+                <div class="col-xl-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label">Course</label>
+                    </div>
+                </div>
+
+                <div class="col-xl-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox">
+                        <label class="form-check-label">Certificates</label>
+                    </div>
+                </div>
+
+                <form [formGroup]="instructorForm">
+                    <h6>About</h6>
+                    <quill-editor formControlName="about" [style]="{height: '80px', marginBottom: '8%'}"
+                        placeholder="Write something about this instructor...">
+                    </quill-editor>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary">
+            Save
+        </button>
+    </div>
+
+</ng-template>
+
+<!-- delete instructor modal content-->
+
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+
+        <h5 class="mb-2">Are you sure?</h5>
+
+        <p class="text-muted mb-4">
+            Do you want to delete this ?
+        </p>
+
+        <button class="btn me-2" style="background:#845ef7;color:#fff;" (click)="modal.close()">
+            Delete
+        </button>
+
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+</ng-template>
+
+
+<!--view details-->
+<ng-template #viewDetailsModal let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">Instructor Details</h5>
+
+        <button type="button" class="btn-close" (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row">
+
+            <!-- LEFT PROFILE -->
+
+            <div class="col-xl-3">
+
+                <div class="card">
+                    <div class="card-body p-2">
+
+                        <div class="d-flex align-items-center mb-3">
+
+                            <img src="./assets/images/media/media-52.jpg" class="rounded-circle me-2" width="55"
+                                height="55">
+
+                            <div>
+                                <h6 class="mb-0">Raj Chaudhari</h6>
+                                <small class="text-muted">
+                                    Senior Angular Instructor
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <p class="mb-2">
+                            <strong>Email:</strong><br>
+                            raj@gmail.com
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Phone:</strong><br>
+                            +91 9876543210
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Organization:</strong><br>
+                            WebMedia
+                        </p>
+
+                        <p class="mb-0">
+                            <strong>Website:</strong><br>
+                            www.webmedia.com
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SECTION -->
+
+            <div class="col-xl-9">
+
+                <ul ngbNav #nav="ngbNav" [activeId]="1" class="nav nav-tabs">
+
+                    <!-- DETAILS -->
+
+                    <li [ngbNavItem]="1">
+
+                        <button ngbNavLink>
+                            Details
+                        </button>
+
+                        <ng-template ngbNavContent>
+
+                            <div class="row mt-3">
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        Qualification
+                                    </label>
+                                    <p>MCA, B.Sc</p>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        Designation
+                                    </label>
+                                    <p>Senior Trainer</p>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        Expertises
+                                    </label>
+                                    <p>Angular, React, Flutter</p>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        Permissions
+                                    </label>
+
+                                    <div>
+                                        <span class="badge bg-primary me-1">
+                                            Profile Edit
+                                        </span>
+
+                                        <span class="badge bg-success me-1">
+                                            Students
+                                        </span>
+
+                                        <span class="badge bg-info me-1">
+                                            Course
+                                        </span>
+
+                                        <span class="badge bg-warning">
+                                            Certificates
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        Facebook
+                                    </label>
+                                    <p>facebook.com/raj</p>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        LinkedIn
+                                    </label>
+                                    <p>linkedin.com/raj</p>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        Instagram
+                                    </label>
+                                    <p>instagram.com/raj</p>
+                                </div>
+
+                                <div class="col-md-6 mb-2">
+                                    <label class="fw-semibold">
+                                        Youtube
+                                    </label>
+                                    <p>youtube.com/raj</p>
+                                </div>
+
+                                <div class="col-12">
+
+                                    <label class="fw-semibold">
+                                        About
+                                    </label>
+
+                                    <p class="mb-0">
+                                        Experienced Instructor with expertise in Angular,
+                                        React, Flutter and Web Development.
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </ng-template>
+
+                    </li>
+
+                    <!-- COURSES -->
+
+                    <li [ngbNavItem]="2">
+
+                        <button ngbNavLink>
+                            Courses
+                        </button>
+
+                        <ng-template ngbNavContent>
+
+                            <table class="table mt-2 mb-0">
+
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Course Name</th>
+                                        <th>Category</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Angular Masterclass</td>
+                                        <td>Web Development</td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                Active
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>2</td>
+                                        <td>React Advanced</td>
+                                        <td>Frontend</td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                Active
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Flutter Bootcamp</td>
+                                        <td>Mobile App</td>
+                                        <td>
+                                            <span class="badge bg-warning">
+                                                Draft
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </ng-template>
+
+                    </li>
+
+                    <!-- LIVE CLASSES -->
+
+                    <li [ngbNavItem]="3">
+
+                        <button ngbNavLink>
+                            Live Classes
+                        </button>
+
+                        <ng-template ngbNavContent>
+
+                            <table class="table mt-2 mb-0">
+
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Title</th>
+                                        <th>Platform</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Angular Live Session</td>
+                                        <td>Zoom</td>
+                                        <td>15 Jun 2026</td>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                Scheduled
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>2</td>
+                                        <td>React Workshop</td>
+                                        <td>Google Meet</td>
+                                        <td>20 Jun 2026</td>
+                                        <td>
+                                            <span class="badge bg-success">
+                                                Completed
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        </ng-template>
+
+                    </li>
+
+                </ul>
+
+                <div [ngbNavOutlet]="nav"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button class="btn btn-secondary" (click)="modal.close()">
+            Close
+        </button>
+
+    </div>
+
+</ng-template>
+
+<!-- eye modal content-->
+
+<ng-template #viewInstructorModal let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">Instructor Details</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row g-3">
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Full Name</label>
+                <div>Raj Chaudhari</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Phone</label>
+                <div>+91 9876543210</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Email</label>
+                <div>raj@gmail.com</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Qualification</label>
+                <div>MCA, B.Sc</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Designation</label>
+                <div>Senior Trainer</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Organization</label>
+                <div>WebMedia</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Website</label>
+                <div>www.webmedia.com</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Expertises</label>
+                <div>Angular, React, Flutter</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Facebook</label>
+                <div>facebook.com/raj</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Twitter</label>
+                <div>twitter.com/raj</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Instagram</label>
+                <div>instagram.com/raj</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">LinkedIn</label>
+                <div>linkedin.com/raj</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Youtube</label>
+                <div>youtube.com/raj</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Profile Edit</label>
+                <div>Yes</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Students</label>
+                <div>Yes</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Course</label>
+                <div>Yes</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Certificates</label>
+                <div>Yes</div>
+            </div>
+
+            <div class="col-xl-12">
+                <label class="fw-bold text-muted">About</label>
+                <div>
+                    Experienced Instructor with expertise in Angular,
+                    React, Flutter and Web Development.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">
+            Close
+        </button>
+    </div>
+
+</ng-template>
+
+
+<!-- verify modal content-->
+<ng-template #verifiedInstructorModal let-modal>
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-checkbox-circle-line mb-3"
+            style="font-size:50px;color:#845ef7;">
+        </i>
+
+        <h5 class="mb-2">Verify Instructor?</h5>
+
+        <p class="text-muted mb-4">
+            Do you want to verify this instructor?
+        </p>
+
+        <button class="btn me-2"
+            style="background:#845ef7;color:#fff;"
+            (click)="modal.close()">
+            Verify
+        </button>
+
+        <button class="btn btn-light"
+            (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+</ng-template>
+
+
+<!-- ban modal content-->
+<ng-template #banInstructorModal let-modal>
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-user-unfollow-line mb-3"
+            style="font-size:50px;color:#dc3545;">
+        </i>
+
+        <h5 class="mb-2">Ban Instructor?</h5>
+
+        <p class="text-muted mb-4">
+            Do you want to ban this instructor?
+        </p>
+
+        <button class="btn btn-danger me-2"
+            (click)="modal.close()">
+            Ban
+        </button>
+
+        <button class="btn btn-light"
+            (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+</ng-template>

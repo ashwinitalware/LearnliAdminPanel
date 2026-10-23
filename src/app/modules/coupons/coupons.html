@@ -1,0 +1,1317 @@
+<!-- ========================================================================= -->
+<!-- 1. PAGE HEADER & BREADCRUMB -->
+<!-- ========================================================================= -->
+<div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2 mb-4">
+  <div>
+    <h1 class="page-title fw-medium fs-18 mb-1">Coupons & Offers Management</h1>
+    <p class="text-muted mb-0 fs-13">Create, configure, and monitor promotional discounts, cashback wallet points, and free access offers.</p>
+  </div>
+  <div class="btn-list d-flex gap-2">
+    <button type="button" class="btn btn-outline-light btn-wave" (click)="loadAll()" [disabled]="isLoadingStats || isLoadingCoupons">
+      <i class="ri-refresh-line me-1" [class.ri-spin]="isLoadingStats || isLoadingCoupons"></i> Refresh Data
+    </button>
+    <button type="button" class="btn btn-primary btn-wave d-flex align-items-center gap-1 shadow-sm" (click)="openAddCouponModal()">
+      <i class="ri-add-circle-line fs-16"></i>
+      <span>Add New Coupon</span>
+    </button>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 2. SUMMARY STATISTIC CARDS -->
+<!-- ========================================================================= -->
+<div class="row mb-4">
+  <!-- Total Coupons -->
+  <div class="col-xxl-2 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+    <div class="card custom-card stat-card overflow-hidden h-100 shadow-sm border-0">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 fw-medium text-uppercase d-block mb-1">Total Coupons</span>
+            <div *ngIf="isLoadingStats" class="spinner-border spinner-border-sm text-primary my-1" role="status"></div>
+            <h4 *ngIf="!isLoadingStats" class="fw-bold mb-0 text-primary">
+              {{ statistics.total_coupons | number }}
+            </h4>
+            <span class="text-muted fs-11 mt-1 d-block">All created promo rules</span>
+          </div>
+          <div class="avatar avatar-md bg-primary-transparent rounded-circle">
+            <i class="ri-coupon-3-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Coupons -->
+  <div class="col-xxl-2 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+    <div class="card custom-card stat-card overflow-hidden h-100 shadow-sm border-0">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 fw-medium text-uppercase d-block mb-1">Active Coupons</span>
+            <div *ngIf="isLoadingStats" class="spinner-border spinner-border-sm text-success my-1" role="status"></div>
+            <h4 *ngIf="!isLoadingStats" class="fw-bold mb-0 text-success">
+              {{ statistics.active_coupons | number }}
+            </h4>
+            <span class="text-muted fs-11 mt-1 d-block">Enabled & redeemable</span>
+          </div>
+          <div class="avatar avatar-md bg-success-transparent rounded-circle">
+            <i class="ri-checkbox-circle-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expired Coupons -->
+  <div class="col-xxl-2 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+    <div class="card custom-card stat-card overflow-hidden h-100 shadow-sm border-0">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 fw-medium text-uppercase d-block mb-1">Expired Coupons</span>
+            <div *ngIf="isLoadingStats" class="spinner-border spinner-border-sm text-danger my-1" role="status"></div>
+            <h4 *ngIf="!isLoadingStats" class="fw-bold mb-0 text-danger">
+              {{ statistics.expired_coupons | number }}
+            </h4>
+            <span class="text-muted fs-11 mt-1 d-block">Past valid_until date</span>
+          </div>
+          <div class="avatar avatar-md bg-danger-transparent rounded-circle">
+            <i class="ri-time-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Redemptions -->
+  <div class="col-xxl-2 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+    <div class="card custom-card stat-card overflow-hidden h-100 shadow-sm border-0">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 fw-medium text-uppercase d-block mb-1">Total Redemptions</span>
+            <div *ngIf="isLoadingStats" class="spinner-border spinner-border-sm text-info my-1" role="status"></div>
+            <h4 *ngIf="!isLoadingStats" class="fw-bold mb-0 text-info">
+              {{ statistics.total_redemptions | number }}
+            </h4>
+            <span class="text-muted fs-11 mt-1 d-block">Applied orders</span>
+          </div>
+          <div class="avatar avatar-md bg-info-transparent rounded-circle">
+            <i class="ri-shopping-bag-3-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Discount Given -->
+  <div class="col-xxl-2 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+    <div class="card custom-card stat-card overflow-hidden h-100 shadow-sm border-0">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 fw-medium text-uppercase d-block mb-1">Total Discount</span>
+            <div *ngIf="isLoadingStats" class="spinner-border spinner-border-sm text-secondary my-1" role="status"></div>
+            <h4 *ngIf="!isLoadingStats" class="fw-bold mb-0 text-secondary">
+              ₹{{ statistics.total_discount_given | number:'1.2-2' }}
+            </h4>
+            <span class="text-muted fs-11 mt-1 d-block">Student savings</span>
+          </div>
+          <div class="avatar avatar-md bg-secondary-transparent rounded-circle">
+            <i class="ri-money-dollar-box-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Wallet Points Credited -->
+  <div class="col-xxl-2 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-3">
+    <div class="card custom-card stat-card overflow-hidden h-100 shadow-sm border-0">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 fw-medium text-uppercase d-block mb-1">Wallet Credited</span>
+            <div *ngIf="isLoadingStats" class="spinner-border spinner-border-sm text-warning my-1" role="status"></div>
+            <h4 *ngIf="!isLoadingStats" class="fw-bold mb-0 text-warning">
+              {{ statistics.total_wallet_points_credited | number }} <span class="fs-12 fw-normal text-muted">Pts</span>
+            </h4>
+            <span class="text-muted fs-11 mt-1 d-block">Cashback rewards</span>
+          </div>
+          <div class="avatar avatar-md bg-warning-transparent rounded-circle">
+            <i class="ri-copper-coin-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 3. MAIN CARD: FILTER TOOLBAR & COUPONS TABLE -->
+<!-- ========================================================================= -->
+<div class="card custom-card border-0 shadow-sm">
+  <div class="card-header border-bottom-0 py-3">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 w-100">
+      <div class="d-flex align-items-center gap-2">
+        <span class="fw-bold fs-15">All Coupons & Promotional Offers</span>
+        <span class="badge bg-primary-transparent text-primary rounded-pill">{{ totalCount }} total</span>
+      </div>
+
+      <!-- Quick Action: Add Coupon -->
+      <button class="btn btn-primary btn-sm btn-wave d-flex align-items-center gap-1" (click)="openAddCouponModal()">
+        <i class="ri-add-line fs-14 fw-bold"></i>
+        <span>Add Coupon</span>
+      </button>
+    </div>
+
+    <!-- Filters Row -->
+    <div class="row g-2 mt-2 w-100 align-items-center">
+      <!-- Search -->
+      <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-12">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-light border-end-0">
+            <i class="ri-search-line text-muted"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control form-control-sm border-start-0"
+            placeholder="Search by code, title, description..."
+            [(ngModel)]="searchTerm"
+            (input)="onSearchChange()"
+          />
+          <button *ngIf="searchTerm" class="btn btn-sm btn-light border" (click)="searchTerm = ''; onSearchChange()" title="Clear">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Type Filter -->
+      <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-3 col-sm-6">
+        <select class="form-select form-select-sm" [(ngModel)]="selectedTypeFilter" (change)="onFilterChange()">
+          <option value="all">All Coupon Types</option>
+          <option value="percentage_discount">Percentage OFF</option>
+          <option value="fixed_discount">Fixed Discount</option>
+          <option value="wallet_credit">Wallet Points</option>
+          <option value="free_access">Free Access</option>
+        </select>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="col-xxl-2 col-xl-2 col-lg-2 col-md-3 col-sm-6">
+        <select class="form-select form-select-sm" [(ngModel)]="selectedStatusFilter" (change)="onFilterChange()">
+          <option value="all">All Statuses</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
+      </div>
+
+      <!-- Validity Filter -->
+      <div class="col-xxl-2 col-xl-2 col-lg-3 col-md-6 col-sm-6">
+        <select class="form-select form-select-sm" [(ngModel)]="selectedValidityFilter" (change)="onValidityFilterChange()">
+          <option value="all">All Dates</option>
+          <option value="valid">Currently Valid</option>
+          <option value="expired">Expired</option>
+          <option value="upcoming">Upcoming</option>
+        </select>
+      </div>
+
+      <!-- Reset -->
+      <div class="col-xxl-2 col-xl-2 col-lg-12 col-md-6 col-sm-6 d-flex justify-content-end">
+        <button class="btn btn-sm btn-outline-secondary w-100" (click)="resetFilters()" title="Reset All Filters">
+          <i class="ri-refresh-line me-1"></i> Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Body -->
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover text-nowrap align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" style="width: 15%;">Coupon Code</th>
+            <th scope="col" style="width: 20%;">Title & Description</th>
+            <th scope="col" style="width: 12%;">Type</th>
+            <th scope="col" style="width: 15%;">Value / Benefit</th>
+            <th scope="col" style="width: 14%;">Validity Period</th>
+            <th scope="col" style="width: 10%;">Usage</th>
+            <th scope="col" style="width: 7%;">Status</th>
+            <th scope="col" style="width: 7%; text-align: center;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loading State -->
+          <tr *ngIf="isLoadingCoupons">
+            <td colspan="8" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading coupons...</span>
+              </div>
+              <p class="text-muted fs-13 mt-2 mb-0">Loading coupon records...</p>
+            </td>
+          </tr>
+
+          <!-- Data Rows -->
+          <ng-container *ngIf="!isLoadingCoupons">
+            <tr *ngFor="let coupon of filteredCoupons" [class.table-light]="!coupon.is_active">
+              <!-- Code -->
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="code-badge" (click)="copyToClipboard(coupon.code)" [title]="'Click to copy: ' + coupon.code">
+                    <span class="fw-bold fs-13 text-monospace">{{ coupon.code }}</span>
+                    <i class="ri-file-copy-line fs-12 text-muted copy-icon"></i>
+                  </div>
+                </div>
+                <div *ngIf="coupon.product_mappings && coupon.product_mappings.length > 0" class="mt-1">
+                  <span class="badge bg-purple-transparent text-purple fs-10">
+                    <i class="ri-links-line me-1"></i>{{ coupon.product_mappings.length }} Products Mapped
+                  </span>
+                </div>
+                <div *ngIf="!coupon.product_mappings || coupon.product_mappings.length === 0" class="mt-1">
+                  <span class="badge bg-light text-muted fs-10 border">Marketplace Wide</span>
+                </div>
+              </td>
+
+              <!-- Title & Description -->
+              <td>
+                <div class="fw-semibold text-dark fs-13 mb-0">{{ coupon.title }}</div>
+                <small *ngIf="coupon.description" class="text-muted d-block text-truncate" style="max-width: 250px;" [title]="coupon.description">
+                  {{ coupon.description }}
+                </small>
+                <small *ngIf="!coupon.description" class="text-muted fst-italic fs-11">No description provided</small>
+              </td>
+
+              <!-- Type -->
+              <td>
+                <span class="badge d-inline-flex align-items-center gap-1 px-2 py-1 fs-11" [ngClass]="getTypeMeta(coupon.coupon_type).class">
+                  <i [class]="getTypeMeta(coupon.coupon_type).icon"></i>
+                  {{ getTypeMeta(coupon.coupon_type).label }}
+                </span>
+              </td>
+
+              <!-- Value / Benefit -->
+              <td>
+                <!-- Percentage -->
+                <div *ngIf="coupon.coupon_type === 'percentage_discount'">
+                  <div class="fw-bold text-primary fs-14">
+                    {{ coupon.discount_value }}% OFF
+                  </div>
+                  <div class="fs-11 text-muted">
+                    <span *ngIf="coupon.maximum_discount_amount">Max ₹{{ coupon.maximum_discount_amount | number }} | </span>
+                    <span>Min ₹{{ coupon.minimum_order_amount | number }}</span>
+                  </div>
+                </div>
+
+                <!-- Fixed Discount -->
+                <div *ngIf="coupon.coupon_type === 'fixed_discount'">
+                  <div class="fw-bold text-info fs-14">
+                    ₹{{ coupon.discount_value | number:'1.2-2' }} FLAT OFF
+                  </div>
+                  <div class="fs-11 text-muted">
+                    <span>Min Order ₹{{ coupon.minimum_order_amount | number }}</span>
+                  </div>
+                </div>
+
+                <!-- Wallet Credit -->
+                <div *ngIf="coupon.coupon_type === 'wallet_credit'">
+                  <div class="fw-bold text-warning fs-14 d-flex align-items-center gap-1">
+                    <i class="ri-copper-coin-fill"></i> +{{ coupon.wallet_credit_points }} Pts
+                  </div>
+                  <div class="fs-11 text-muted">
+                    <span>Min Order ₹{{ coupon.minimum_order_amount | number }}</span>
+                  </div>
+                </div>
+
+                <!-- Free Access -->
+                <div *ngIf="coupon.coupon_type === 'free_access'">
+                  <div class="fw-bold text-success fs-13 d-flex align-items-center gap-1">
+                    <i class="ri-gift-line"></i> 100% Free Access
+                  </div>
+                  <div class="fs-11 text-muted text-capitalize">
+                    Type: <span class="fw-medium text-dark">{{ coupon.free_access_type || 'Product' }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <!-- Validity Period -->
+              <td>
+                <div class="fs-12">
+                  <span class="text-muted d-block fs-11">
+                    <i class="ri-calendar-check-line me-1"></i>From: {{ coupon.valid_from ? (coupon.valid_from | date:'mediumDate') : 'Immediate' }}
+                  </span>
+                  <span class="d-block fs-11" [ngClass]="coupon.valid_until ? 'text-dark' : 'text-muted'">
+                    <i class="ri-calendar-event-line me-1"></i>Until: {{ coupon.valid_until ? (coupon.valid_until | date:'mediumDate') : 'No Expiry' }}
+                  </span>
+                </div>
+                <div class="mt-1">
+                  <span [ngClass]="getValidityStatus(coupon).class" class="fs-10 px-2 py-0">
+                    <i [class]="getValidityStatus(coupon).icon + ' me-1'"></i>{{ getValidityStatus(coupon).label }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- Usage -->
+              <td>
+                <div class="d-flex align-items-center justify-content-between mb-1">
+                  <span class="fs-12 fw-semibold text-dark">{{ coupon.used_count }}</span>
+                  <span class="fs-11 text-muted">/ {{ coupon.usage_limit ? coupon.usage_limit : '∞' }}</span>
+                </div>
+                <div class="progress progress-xs" *ngIf="coupon.usage_limit">
+                  <div
+                    class="progress-bar"
+                    [ngClass]="(coupon.used_count >= coupon.usage_limit) ? 'bg-danger' : 'bg-primary'"
+                    role="progressbar"
+                    [style.width.%]="(coupon.used_count / coupon.usage_limit) * 100"
+                  ></div>
+                </div>
+                <div class="fs-10 text-muted mt-1">
+                  Max {{ coupon.per_user_limit }}/user
+                </div>
+              </td>
+
+              <!-- Status Toggle -->
+              <td>
+                <div class="form-check form-switch d-inline-flex align-items-center gap-2 mb-0">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    [checked]="coupon.is_active"
+                    [disabled]="togglingCouponId === coupon.id"
+                    (change)="toggleStatus(coupon)"
+                    role="switch"
+                    [title]="coupon.is_active ? 'Click to deactivate' : 'Click to activate'"
+                  />
+                  <div *ngIf="togglingCouponId === coupon.id" class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                </div>
+              </td>
+
+              <!-- Actions -->
+              <td class="text-center">
+                <div class="hstack gap-1 justify-content-center">
+                  <!-- View Details -->
+                  <button class="btn btn-icon btn-sm btn-outline-primary table-action-btn" (click)="openViewModal(coupon)" title="View Details & Products">
+                    <i class="ri-eye-line"></i>
+                  </button>
+
+                  <!-- Usage History -->
+                  <button class="btn btn-icon btn-sm btn-outline-info table-action-btn" (click)="openUsageModal(coupon)" title="View Redemption History">
+                    <i class="ri-history-line"></i>
+                  </button>
+
+                  <!-- Edit -->
+                  <button class="btn btn-icon btn-sm btn-outline-secondary table-action-btn" (click)="openEditCouponModal(coupon)" title="Edit Coupon">
+                    <i class="ri-edit-line"></i>
+                  </button>
+
+                  <!-- Delete -->
+                  <button class="btn btn-icon btn-sm btn-outline-danger table-action-btn" (click)="openDeleteModal(coupon)" title="Delete Coupon">
+                    <i class="ri-delete-bin-line"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+
+          <!-- Empty State -->
+          <tr *ngIf="!isLoadingCoupons && filteredCoupons.length === 0">
+            <td colspan="8" class="text-center text-muted py-5">
+              <div class="d-flex flex-column align-items-center justify-content-center">
+                <div class="avatar avatar-xl bg-light text-muted rounded-circle mb-3">
+                  <i class="ri-coupon-3-line fs-36 text-muted"></i>
+                </div>
+                <h6 class="fw-bold mb-1">No Coupons Found</h6>
+                <p class="text-muted fs-13 mb-3">No promotional coupons match your current filter criteria.</p>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-outline-secondary" (click)="resetFilters()">
+                    <i class="ri-refresh-line me-1"></i> Reset Filters
+                  </button>
+                  <button class="btn btn-sm btn-primary" (click)="openAddCouponModal()">
+                    <i class="ri-add-line me-1"></i> Create Coupon
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination Footer -->
+  <div class="card-footer border-top-0 py-3 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2" *ngIf="!isLoadingCoupons && filteredCoupons.length > 0">
+    <div class="fs-12 text-muted">
+      Showing <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> to
+      <strong>{{ ((currentPage * pageSize) > totalCount) ? totalCount : (currentPage * pageSize) }}</strong> of
+      <strong>{{ totalCount }}</strong> coupons
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      <div class="d-flex align-items-center gap-1 fs-12 text-muted">
+        <span>Rows per page:</span>
+        <select class="form-select form-select-sm" style="width: 70px;" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+          <option [ngValue]="10">10</option>
+          <option [ngValue]="20">20</option>
+          <option [ngValue]="50">50</option>
+        </select>
+      </div>
+
+      <ngb-pagination
+        [collectionSize]="totalCount"
+        [(page)]="currentPage"
+        [pageSize]="pageSize"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="onPageChange($event)"
+        class="pagination-sm mb-0"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 4. MODAL: CREATE / EDIT COUPON (DYNAMIC FORM) -->
+<!-- ========================================================================= -->
+<ng-template #couponFormModal let-modal>
+  <div class="modal-header bg-light">
+    <h5 class="modal-title fw-bold d-flex align-items-center gap-2 mb-0">
+      <i class="ri-coupon-3-line text-primary fs-20"></i>
+      <span>{{ isEditMode ? 'Edit Coupon: ' + formCode : 'Create New Coupon & Offer' }}</span>
+    </h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-4">
+    <form (ngSubmit)="submitCouponForm()">
+      <!-- Basic Details Section -->
+      <h6 class="fw-bold text-uppercase fs-11 text-muted mb-3 border-bottom pb-2">
+        <i class="ri-information-line me-1"></i> Basic Information
+      </h6>
+
+      <div class="row g-3 mb-3">
+        <!-- Coupon Code -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium fs-13">Coupon Code <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-monospace"><i class="ri-qr-code-line"></i></span>
+            <input
+              type="text"
+              class="form-control text-uppercase text-monospace fw-bold"
+              placeholder="e.g. LEARNLI20"
+              [value]="formCode"
+              (input)="onCouponCodeInput($event)"
+              [class.is-invalid]="formErrors['code']"
+              maxlength="50"
+            />
+          </div>
+          <div *ngIf="formErrors['code']" class="invalid-feedback d-block">{{ formErrors['code'] }}</div>
+          <small class="text-muted fs-11">Auto-converts to uppercase alphanumeric characters.</small>
+        </div>
+
+        <!-- Coupon Title -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium fs-13">Coupon Title <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="e.g. 20% OFF Mega Sale"
+            [(ngModel)]="formTitle"
+            name="formTitle"
+            [class.is-invalid]="formErrors['title']"
+          />
+          <div *ngIf="formErrors['title']" class="invalid-feedback d-block">{{ formErrors['title'] }}</div>
+        </div>
+
+        <!-- Description -->
+        <div class="col-12">
+          <label class="form-label fw-medium fs-13">Description / Terms (Optional)</label>
+          <textarea
+            class="form-control"
+            rows="2"
+            placeholder="e.g. Valid on all courses during festive season. Max discount ₹150."
+            [(ngModel)]="formDescription"
+            name="formDescription"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Coupon Type Selection (Segmented Cards) -->
+      <h6 class="fw-bold text-uppercase fs-11 text-muted mb-2 border-bottom pb-2 mt-4">
+        <i class="ri-gift-line me-1"></i> Coupon Type & Benefit <span class="text-danger">*</span>
+      </h6>
+
+      <div class="row g-2 mb-3">
+        <!-- Percentage Discount -->
+        <div class="col-md-3 col-sm-6">
+          <div
+            class="type-select-card p-3 rounded border text-center h-100 cursor-pointer"
+            [class.active-type]="formType === 'percentage_discount'"
+            (click)="formType = 'percentage_discount'; onFormTypeChange()"
+          >
+            <i class="ri-percent-line fs-24 text-primary d-block mb-1"></i>
+            <span class="fw-bold fs-12 d-block">Percentage OFF</span>
+            <small class="text-muted fs-10">e.g. 20% discount</small>
+          </div>
+        </div>
+
+        <!-- Fixed Discount -->
+        <div class="col-md-3 col-sm-6">
+          <div
+            class="type-select-card p-3 rounded border text-center h-100 cursor-pointer"
+            [class.active-type]="formType === 'fixed_discount'"
+            (click)="formType = 'fixed_discount'; onFormTypeChange()"
+          >
+            <i class="ri-money-dollar-circle-line fs-24 text-info d-block mb-1"></i>
+            <span class="fw-bold fs-12 d-block">Fixed Discount</span>
+            <small class="text-muted fs-10">e.g. ₹100 Flat off</small>
+          </div>
+        </div>
+
+        <!-- Wallet Credit -->
+        <div class="col-md-3 col-sm-6">
+          <div
+            class="type-select-card p-3 rounded border text-center h-100 cursor-pointer"
+            [class.active-type]="formType === 'wallet_credit'"
+            (click)="formType = 'wallet_credit'; onFormTypeChange()"
+          >
+            <i class="ri-copper-coin-line fs-24 text-warning d-block mb-1"></i>
+            <span class="fw-bold fs-12 d-block">Wallet Cashback</span>
+            <small class="text-muted fs-10">e.g. 100 Reward pts</small>
+          </div>
+        </div>
+
+        <!-- Free Access -->
+        <div class="col-md-3 col-sm-6">
+          <div
+            class="type-select-card p-3 rounded border text-center h-100 cursor-pointer"
+            [class.active-type]="formType === 'free_access'"
+            (click)="formType = 'free_access'; onFormTypeChange()"
+          >
+            <i class="ri-gift-line fs-24 text-success d-block mb-1"></i>
+            <span class="fw-bold fs-12 d-block">Free Access</span>
+            <small class="text-muted fs-10">100% unlocked item</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Fields By Coupon Type -->
+      <div class="p-3 bg-light rounded mb-3 border">
+        <!-- 1. Percentage Discount Fields -->
+        <div *ngIf="formType === 'percentage_discount'" class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label fw-medium fs-13">Discount Percentage (%) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                placeholder="20"
+                min="0.1"
+                max="100"
+                step="0.1"
+                [(ngModel)]="formDiscountValue"
+                name="formDiscountValue"
+                [class.is-invalid]="formErrors['discount_value']"
+              />
+              <span class="input-group-text">%</span>
+            </div>
+            <div *ngIf="formErrors['discount_value']" class="invalid-feedback d-block">{{ formErrors['discount_value'] }}</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-medium fs-13">Maximum Discount Cap (₹)</label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Optional (e.g. 150)"
+                min="0"
+                step="1"
+                [(ngModel)]="formMaxDiscount"
+                name="formMaxDiscount"
+                [class.is-invalid]="formErrors['maximum_discount_amount']"
+              />
+            </div>
+            <div *ngIf="formErrors['maximum_discount_amount']" class="invalid-feedback d-block">{{ formErrors['maximum_discount_amount'] }}</div>
+            <small class="text-muted fs-11">Leave blank for no upper cap.</small>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-medium fs-13">Minimum Order Amount (₹)</label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="0"
+                min="0"
+                step="1"
+                [(ngModel)]="formMinOrder"
+                name="formMinOrder"
+                [class.is-invalid]="formErrors['minimum_order_amount']"
+              />
+            </div>
+            <div *ngIf="formErrors['minimum_order_amount']" class="invalid-feedback d-block">{{ formErrors['minimum_order_amount'] }}</div>
+          </div>
+        </div>
+
+        <!-- 2. Fixed Discount Fields -->
+        <div *ngIf="formType === 'fixed_discount'" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-medium fs-13">Fixed Discount Amount (₹) <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="100"
+                min="1"
+                step="1"
+                [(ngModel)]="formDiscountValue"
+                name="formDiscountValue"
+                [class.is-invalid]="formErrors['discount_value']"
+              />
+            </div>
+            <div *ngIf="formErrors['discount_value']" class="invalid-feedback d-block">{{ formErrors['discount_value'] }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-medium fs-13">Minimum Order Amount (₹)</label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="0"
+                min="0"
+                step="1"
+                [(ngModel)]="formMinOrder"
+                name="formMinOrder"
+                [class.is-invalid]="formErrors['minimum_order_amount']"
+              />
+            </div>
+            <div *ngIf="formErrors['minimum_order_amount']" class="invalid-feedback d-block">{{ formErrors['minimum_order_amount'] }}</div>
+          </div>
+        </div>
+
+        <!-- 3. Wallet Credit Fields -->
+        <div *ngIf="formType === 'wallet_credit'" class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-medium fs-13">Wallet Credit Points <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="ri-copper-coin-fill text-warning"></i></span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="100"
+                min="1"
+                step="1"
+                [(ngModel)]="formWalletPoints"
+                name="formWalletPoints"
+                [class.is-invalid]="formErrors['wallet_credit_points']"
+              />
+              <span class="input-group-text">Points</span>
+            </div>
+            <div *ngIf="formErrors['wallet_credit_points']" class="invalid-feedback d-block">{{ formErrors['wallet_credit_points'] }}</div>
+            <small class="text-muted fs-11">Automatically credited to user wallet after successful order.</small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-medium fs-13">Minimum Order Amount (₹)</label>
+            <div class="input-group">
+              <span class="input-group-text">₹</span>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="0"
+                min="0"
+                step="1"
+                [(ngModel)]="formMinOrder"
+                name="formMinOrder"
+                [class.is-invalid]="formErrors['minimum_order_amount']"
+              />
+            </div>
+            <div *ngIf="formErrors['minimum_order_amount']" class="invalid-feedback d-block">{{ formErrors['minimum_order_amount'] }}</div>
+          </div>
+        </div>
+
+        <!-- 4. Free Access Fields -->
+        <div *ngIf="formType === 'free_access'" class="row g-3">
+          <div class="col-md-5">
+            <label class="form-label fw-medium fs-13">Free Access Product Type <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="formFreeAccessType" name="formFreeAccessType" (change)="formFreeAccessItemId = null">
+              <option value="course">Course</option>
+              <option value="pdf">PDF</option>
+              <option value="audiobook">Audiobook</option>
+            </select>
+          </div>
+
+          <div class="col-md-7">
+            <label class="form-label fw-medium fs-13">Target Product <span class="text-danger">*</span></label>
+            <select
+              class="form-select"
+              [(ngModel)]="formFreeAccessItemId"
+              name="formFreeAccessItemId"
+              [class.is-invalid]="formErrors['free_access_item_id']"
+            >
+              <option [ngValue]="null" disabled>-- Select {{ formFreeAccessType | titlecase }} --</option>
+              <option *ngFor="let item of getFilteredFreeAccessProducts()" [ngValue]="item.id">
+                #{{ item.id }} - {{ item.title }} (₹{{ item.price | number }})
+              </option>
+            </select>
+            <div *ngIf="formErrors['free_access_item_id']" class="invalid-feedback d-block">{{ formErrors['free_access_item_id'] }}</div>
+            <small class="text-muted fs-11">User gets 100% free enrollment on this item.</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Applicability Section -->
+      <h6 class="fw-bold text-uppercase fs-11 text-muted mb-2 border-bottom pb-2 mt-4">
+        <i class="ri-shopping-basket-line me-1"></i> Product Applicability
+      </h6>
+
+      <div class="mb-3">
+        <div class="d-flex gap-4 mb-2">
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="formApplicability"
+              id="appAll"
+              value="all"
+              [(ngModel)]="formApplicability"
+            />
+            <label class="form-check-label fw-medium" for="appAll">
+              Marketplace Wide (Applies to all Courses, PDFs & Audiobooks)
+            </label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="formApplicability"
+              id="appSpecific"
+              value="specific"
+              [(ngModel)]="formApplicability"
+            />
+            <label class="form-check-label fw-medium" for="appSpecific">
+              Specific Products Only
+            </label>
+          </div>
+        </div>
+
+        <!-- Specific Products Picker -->
+        <div *ngIf="formApplicability === 'specific'" class="p-3 bg-light rounded border mt-2">
+          <div class="row g-2 align-items-center mb-3">
+            <div class="col-md-4">
+              <label class="form-label fs-12 mb-1">Product Type</label>
+              <select class="form-select form-select-sm" [(ngModel)]="formPickerType" name="formPickerType" (change)="formPickerProductId = null">
+                <option value="course">Course</option>
+                <option value="pdf">PDF</option>
+                <option value="audiobook">Audiobook</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fs-12 mb-1">Select {{ formPickerType | titlecase }}</label>
+              <select class="form-select form-select-sm" [(ngModel)]="formPickerProductId" name="formPickerProductId">
+                <option [ngValue]="null" disabled>-- Choose {{ formPickerType }} --</option>
+                <option *ngFor="let item of getFilteredFormPickerProducts()" [ngValue]="item.id">
+                  #{{ item.id }} - {{ item.title }} (₹{{ item.price | number }})
+                </option>
+              </select>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+              <button
+                type="button"
+                class="btn btn-sm btn-primary w-100 mt-md-4"
+                (click)="addFormProductMapping()"
+                [disabled]="!formPickerProductId"
+              >
+                <i class="ri-add-line me-1"></i> Add
+              </button>
+            </div>
+          </div>
+
+          <!-- Mapped Products Chips -->
+          <div *ngIf="formProductMappings.length > 0">
+            <label class="form-label fs-12 fw-medium mb-1">Mapped Products ({{ formProductMappings.length }}):</label>
+            <div class="d-flex flex-wrap gap-2">
+              <span
+                *ngFor="let m of formProductMappings; let idx = index"
+                class="badge bg-white text-dark border d-inline-flex align-items-center gap-2 p-2 shadow-sm"
+              >
+                <span class="badge bg-primary-transparent text-primary text-uppercase fs-10">{{ m.product_type }}</span>
+                <span class="fs-12">{{ m.title }}</span>
+                <button
+                  type="button"
+                  class="btn-close fs-10"
+                  aria-label="Remove"
+                  (click)="removeFormProductMapping(idx)"
+                ></button>
+              </span>
+            </div>
+          </div>
+
+          <div *ngIf="formProductMappings.length === 0" class="text-muted fs-12 fst-italic">
+            <i class="ri-information-line me-1"></i>No specific products added yet. Please add at least one product mapping.
+          </div>
+        </div>
+      </div>
+
+      <!-- Limits & Validity Section -->
+      <h6 class="fw-bold text-uppercase fs-11 text-muted mb-3 border-bottom pb-2 mt-4">
+        <i class="ri-shield-user-line me-1"></i> Usage Limits & Validity Dates
+      </h6>
+
+      <div class="row g-3 mb-3">
+        <!-- Global Usage Limit -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium fs-13">Total Global Usage Limit</label>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="e.g. 500 (Leave blank for unlimited)"
+            min="1"
+            step="1"
+            [(ngModel)]="formUsageLimit"
+            name="formUsageLimit"
+            [class.is-invalid]="formErrors['usage_limit']"
+          />
+          <div *ngIf="formErrors['usage_limit']" class="invalid-feedback d-block">{{ formErrors['usage_limit'] }}</div>
+          <small class="text-muted fs-11">Total times this coupon can be redeemed platform-wide.</small>
+        </div>
+
+        <!-- Per User Limit -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium fs-13">Per-User Redemption Limit <span class="text-danger">*</span></label>
+          <input
+            type="number"
+            class="form-control"
+            placeholder="1"
+            min="1"
+            step="1"
+            [(ngModel)]="formPerUserLimit"
+            name="formPerUserLimit"
+            [class.is-invalid]="formErrors['per_user_limit']"
+          />
+          <div *ngIf="formErrors['per_user_limit']" class="invalid-feedback d-block">{{ formErrors['per_user_limit'] }}</div>
+          <small class="text-muted fs-11">Default is 1 redemption per student.</small>
+        </div>
+
+        <!-- Valid From -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium fs-13">Valid From</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            [(ngModel)]="formValidFrom"
+            name="formValidFrom"
+          />
+          <small class="text-muted fs-11">Leave blank to activate immediately.</small>
+        </div>
+
+        <!-- Valid Until -->
+        <div class="col-md-6">
+          <label class="form-label fw-medium fs-13">Valid Until (Expiry)</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            [(ngModel)]="formValidUntil"
+            name="formValidUntil"
+            [class.is-invalid]="formErrors['valid_until']"
+          />
+          <div *ngIf="formErrors['valid_until']" class="invalid-feedback d-block">{{ formErrors['valid_until'] }}</div>
+          <small class="text-muted fs-11">Leave blank for no expiration date.</small>
+        </div>
+
+        <!-- Is Active Switch -->
+        <div class="col-12 mt-3">
+          <div class="form-check form-switch d-flex align-items-center gap-2">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="formIsActiveSwitch"
+              [(ngModel)]="formIsActive"
+              name="formIsActive"
+              role="switch"
+            />
+            <label class="form-check-label fw-semibold fs-13" for="formIsActiveSwitch">
+              Enable & Activate Coupon immediately
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer Buttons -->
+      <div class="modal-footer border-top px-0 pb-0 pt-3">
+        <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()" [disabled]="isSubmitting">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary d-flex align-items-center gap-2" [disabled]="isSubmitting">
+          <div *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"></div>
+          <i *ngIf="!isSubmitting" class="ri-check-line"></i>
+          <span>{{ isEditMode ? 'Update Coupon' : 'Create Coupon' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- 5. MODAL: VIEW COUPON DETAILS -->
+<!-- ========================================================================= -->
+<ng-template #viewCouponModal let-modal>
+  <div class="modal-header bg-light">
+    <div class="d-flex align-items-center gap-2">
+      <div class="avatar avatar-md bg-primary-transparent rounded-circle">
+        <i class="ri-coupon-3-line fs-20 text-primary"></i>
+      </div>
+      <div>
+        <h5 class="modal-title fw-bold mb-0">{{ selectedCoupon?.title }}</h5>
+        <span class="text-monospace fw-bold text-primary fs-12">{{ selectedCoupon?.code }}</span>
+      </div>
+    </div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-4" *ngIf="selectedCoupon">
+    <!-- Top Highlights Banner -->
+    <div class="card bg-primary-transparent border-0 mb-4">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div>
+            <span class="text-muted fs-11 text-uppercase fw-medium d-block">Coupon Type & Benefit</span>
+            <h4 class="fw-bold text-primary mb-0 mt-1">
+              <ng-container [ngSwitch]="selectedCoupon.coupon_type">
+                <span *ngSwitchCase="'percentage_discount'">{{ selectedCoupon.discount_value }}% OFF</span>
+                <span *ngSwitchCase="'fixed_discount'">₹{{ selectedCoupon.discount_value | number:'1.2-2' }} FLAT OFF</span>
+                <span *ngSwitchCase="'wallet_credit'">+{{ selectedCoupon.wallet_credit_points }} Wallet Points</span>
+                <span *ngSwitchCase="'free_access'">100% Free Access</span>
+              </ng-container>
+            </h4>
+          </div>
+          <div class="d-flex gap-2 align-items-center">
+            <span [ngClass]="getValidityStatus(selectedCoupon).class" class="fs-12 px-3 py-1 rounded-pill">
+              <i [class]="getValidityStatus(selectedCoupon).icon + ' me-1'"></i>
+              {{ getValidityStatus(selectedCoupon).label }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="p-3 bg-light rounded border h-100">
+          <span class="text-muted fs-11 d-block text-uppercase">Minimum Order</span>
+          <span class="fw-bold fs-14 text-dark">₹{{ selectedCoupon.minimum_order_amount | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4" *ngIf="selectedCoupon.coupon_type === 'percentage_discount'">
+        <div class="p-3 bg-light rounded border h-100">
+          <span class="text-muted fs-11 d-block text-uppercase">Maximum Discount Cap</span>
+          <span class="fw-bold fs-14 text-dark">
+            {{ selectedCoupon.maximum_discount_amount ? '₹' + (selectedCoupon.maximum_discount_amount | number:'1.2-2') : 'No Cap' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="p-3 bg-light rounded border h-100">
+          <span class="text-muted fs-11 d-block text-uppercase">Global Usage Limit</span>
+          <span class="fw-bold fs-14 text-dark">
+            {{ selectedCoupon.used_count }} / {{ selectedCoupon.usage_limit ? selectedCoupon.usage_limit : 'Unlimited' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="p-3 bg-light rounded border h-100">
+          <span class="text-muted fs-11 d-block text-uppercase">Per-User Limit</span>
+          <span class="fw-bold fs-14 text-dark">{{ selectedCoupon.per_user_limit }} per student</span>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="p-3 bg-light rounded border h-100">
+          <span class="text-muted fs-11 d-block text-uppercase">Valid From</span>
+          <span class="fw-semibold fs-13 text-dark">
+            {{ selectedCoupon.valid_from ? (selectedCoupon.valid_from | date:'medium') : 'Immediate' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="p-3 bg-light rounded border h-100">
+          <span class="text-muted fs-11 d-block text-uppercase">Valid Until</span>
+          <span class="fw-semibold fs-13 text-dark">
+            {{ selectedCoupon.valid_until ? (selectedCoupon.valid_until | date:'medium') : 'No Expiry' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12" *ngIf="selectedCoupon.coupon_type === 'free_access'">
+        <div class="p-3 bg-success-transparent rounded border border-success-subtle">
+          <span class="text-muted fs-11 d-block text-uppercase fw-medium">Free Access Target Item</span>
+          <span class="fw-bold fs-14 text-success text-capitalize">
+            {{ selectedCoupon.free_access_type }}: {{ selectedCoupon.free_access_item_name || '#' + selectedCoupon.free_access_item_id }}
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12" *ngIf="selectedCoupon.description">
+        <div class="p-3 bg-light rounded border">
+          <span class="text-muted fs-11 d-block text-uppercase">Description & Rules</span>
+          <p class="fs-13 text-dark mb-0">{{ selectedCoupon.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Applicable Products Manager -->
+    <div class="border rounded p-3 mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="fw-bold fs-13 text-uppercase text-muted mb-0">
+          <i class="ri-links-line me-1"></i> Applicable Product Mappings
+        </h6>
+        <span class="badge bg-light text-dark border">
+          {{ selectedCoupon.product_mappings?.length || 0 }} mapped
+        </span>
+      </div>
+
+      <!-- Add Mapping Inline -->
+      <div class="row g-2 align-items-center mb-3 p-2 bg-light rounded">
+        <div class="col-md-3">
+          <select class="form-select form-select-sm" [(ngModel)]="viewPickerType" (change)="viewPickerProductId = null">
+            <option value="course">Course</option>
+            <option value="pdf">PDF</option>
+            <option value="audiobook">Audiobook</option>
+          </select>
+        </div>
+        <div class="col-md-7">
+          <select class="form-select form-select-sm" [(ngModel)]="viewPickerProductId">
+            <option [ngValue]="null" disabled>-- Select {{ viewPickerType }} to add --</option>
+            <option *ngFor="let item of getFilteredViewPickerProducts()" [ngValue]="item.id">
+              #{{ item.id }} - {{ item.title }} (₹{{ item.price | number }})
+            </option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button
+            type="button"
+            class="btn btn-sm btn-primary w-100 d-flex align-items-center justify-content-center gap-1"
+            (click)="addViewProductMapping()"
+            [disabled]="!viewPickerProductId || isAddingViewMapping"
+          >
+            <div *ngIf="isAddingViewMapping" class="spinner-border spinner-border-sm" role="status"></div>
+            <i *ngIf="!isAddingViewMapping" class="ri-add-line"></i>
+            <span>Add</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mappings List -->
+      <div *ngIf="selectedCoupon.product_mappings && selectedCoupon.product_mappings.length > 0" class="table-responsive">
+        <table class="table table-sm table-bordered align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Type</th>
+              <th>Product #ID</th>
+              <th>Title / Name</th>
+              <th style="width: 50px; text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of selectedCoupon.product_mappings">
+              <td>
+                <span class="badge bg-primary-transparent text-primary text-uppercase fs-10">{{ m.product_type }}</span>
+              </td>
+              <td><span class="badge bg-light text-dark">#{{ m.product_id }}</span></td>
+              <td class="fw-medium fs-12">{{ m.product_name || m.title || 'Product #' + m.product_id }}</td>
+              <td class="text-center">
+                <button
+                  type="button"
+                  class="btn btn-icon btn-sm btn-outline-danger"
+                  (click)="removeViewProductMapping(m)"
+                  [disabled]="removingMappingId === m.id"
+                  title="Remove mapping"
+                >
+                  <div *ngIf="removingMappingId === m.id" class="spinner-border spinner-border-sm" role="status"></div>
+                  <i *ngIf="removingMappingId !== m.id" class="ri-delete-bin-line"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!selectedCoupon.product_mappings || selectedCoupon.product_mappings.length === 0" class="text-muted fs-12 p-2 text-center">
+        <i class="ri-checkbox-circle-line text-success me-1"></i> This coupon applies to <strong>All Marketplace Products</strong>.
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer border-top">
+    <button type="button" class="btn btn-outline-info d-flex align-items-center gap-1" (click)="modal.close(); openUsageModal(selectedCoupon!)">
+      <i class="ri-history-line"></i> View Redemptions ({{ selectedCoupon?.used_count }})
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- 6. MODAL: USAGE / REDEMPTION HISTORY -->
+<!-- ========================================================================= -->
+<ng-template #usageHistoryModal let-modal>
+  <div class="modal-header bg-light">
+    <div class="d-flex align-items-center gap-2">
+      <div class="avatar avatar-md bg-info-transparent rounded-circle">
+        <i class="ri-history-line fs-20 text-info"></i>
+      </div>
+      <div>
+        <h5 class="modal-title fw-bold mb-0">Redemption History</h5>
+        <span class="text-muted fs-12">Coupon: <strong class="text-dark">{{ usageCoupon?.code }}</strong> ({{ usageTotalCount }} total uses)</span>
+      </div>
+    </div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>User</th>
+            <th>Order #</th>
+            <th>Discount / Points</th>
+            <th>Coupon Type</th>
+            <th>Redeemed At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loading -->
+          <tr *ngIf="isLoadingUsage">
+            <td colspan="5" class="text-center py-4">
+              <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+              <span class="text-muted fs-12 ms-2">Loading redemption records...</span>
+            </td>
+          </tr>
+
+          <!-- Data -->
+          <ng-container *ngIf="!isLoadingUsage">
+            <tr *ngFor="let u of usageList">
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="avatar avatar-sm bg-primary-transparent rounded-circle">
+                    <i class="ri-user-line fs-14 text-primary"></i>
+                  </div>
+                  <div>
+                    <div class="fw-semibold fs-12 text-dark">{{ u.user_name || u.full_name || 'User #' + u.user_id }}</div>
+                    <small class="text-muted fs-11">{{ u.user_email || u.email || u.user_mobile || u.mobile || 'ID: ' + u.user_id }}</small>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span class="badge bg-light text-dark border">
+                  {{ u.order_id ? '#' + u.order_id : 'Direct' }}
+                </span>
+                <div *ngIf="u.order_total" class="fs-11 text-muted">Total: ₹{{ u.order_total | number:'1.2-2' }}</div>
+              </td>
+
+              <td>
+                <div *ngIf="u.discount_amount > 0" class="fw-bold text-success fs-13">
+                  -₹{{ u.discount_amount | number:'1.2-2' }}
+                </div>
+                <div *ngIf="u.wallet_credit_points > 0" class="fw-bold text-warning fs-13 d-flex align-items-center gap-1">
+                  <i class="ri-copper-coin-fill"></i> +{{ u.wallet_credit_points }} Pts
+                </div>
+                <div *ngIf="u.discount_amount === 0 && u.wallet_credit_points === 0" class="text-muted fs-12">
+                  Free Access
+                </div>
+              </td>
+
+              <td>
+                <span class="badge bg-light text-muted border text-capitalize fs-11">
+                  {{ u.coupon_type ? (u.coupon_type.replace('_', ' ')) : 'Discount' }}
+                </span>
+              </td>
+
+              <td>
+                <span class="fs-12 text-muted d-block">
+                  <i class="ri-calendar-line me-1"></i>{{ u.used_at ? (u.used_at | date:'mediumDate') : (u.created_at | date:'mediumDate') }}
+                </span>
+                <span class="fs-11 text-muted">
+                  {{ u.used_at ? (u.used_at | date:'shortTime') : (u.created_at | date:'shortTime') }}
+                </span>
+              </td>
+            </tr>
+          </ng-container>
+
+          <!-- Empty -->
+          <tr *ngIf="!isLoadingUsage && usageList.length === 0">
+            <td colspan="5" class="text-center text-muted py-5">
+              <i class="ri-inbox-line fs-32 text-muted d-block mb-1"></i>
+              <span>No redemptions found for this coupon yet.</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Usage Pagination -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-top" *ngIf="!isLoadingUsage && usageList.length > 0">
+      <small class="text-muted fs-12">
+        Showing <strong>{{ (usagePage - 1) * usagePageSize + 1 }}</strong> to
+        <strong>{{ ((usagePage * usagePageSize) > usageTotalCount) ? usageTotalCount : (usagePage * usagePageSize) }}</strong> of
+        <strong>{{ usageTotalCount }}</strong> redemptions
+      </small>
+      <ngb-pagination
+        [collectionSize]="usageTotalCount"
+        [(page)]="usagePage"
+        [pageSize]="usagePageSize"
+        [maxSize]="4"
+        [rotate]="true"
+        (pageChange)="onUsagePageChange($event)"
+        class="pagination-sm mb-0"
+      ></ngb-pagination>
+    </div>
+  </div>
+
+  <div class="modal-footer border-top">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- 7. MODAL: DELETE CONFIRMATION -->
+<!-- ========================================================================= -->
+<ng-template #deleteConfirmModal let-modal>
+  <div class="modal-body text-center p-4">
+    <div class="avatar avatar-xl bg-danger-transparent text-danger rounded-circle mb-3 mx-auto">
+      <i class="ri-delete-bin-line fs-32"></i>
+    </div>
+    <h5 class="fw-bold mb-2">Delete Coupon?</h5>
+    <p class="text-muted fs-13 mb-3">
+      Are you sure you want to delete coupon <strong class="text-dark">{{ deleteTargetCoupon?.code }}</strong> ({{ deleteTargetCoupon?.title }})?
+    </p>
+    <div *ngIf="deleteTargetCoupon && deleteTargetCoupon.used_count > 0" class="alert alert-warning py-2 fs-12 text-start mb-3">
+      <i class="ri-alert-line me-1"></i> This coupon has already been redeemed <strong>{{ deleteTargetCoupon.used_count }}</strong> times. Backend rules might prevent deletion if linked to completed orders.
+    </div>
+
+    <div class="d-flex justify-content-center gap-2">
+      <button type="button" class="btn btn-outline-secondary px-4" (click)="modal.dismiss()" [disabled]="isDeleting">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-danger px-4 d-flex align-items-center gap-1" (click)="confirmDelete()" [disabled]="isDeleting">
+        <div *ngIf="isDeleting" class="spinner-border spinner-border-sm" role="status"></div>
+        <span *ngIf="!isDeleting">Yes, Delete</span>
+      </button>
+    </div>
+  </div>
+</ng-template>

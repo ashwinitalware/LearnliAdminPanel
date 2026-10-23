@@ -1,0 +1,772 @@
+
+
+<div class="col-xl-12">
+<div class="card custom-card border-0">
+
+    <div class="card-header justify-content-end mb-3">
+    
+        <button class="btn btn-primary btn-wave" (click)="open(content)">
+            <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+            Add Instructor Subscription
+        </button>
+
+        <div class="d-flex flex-align-items-center flex-wrap gap-2 ms-auto">
+
+            <div class="card-title mb-0">
+                Instructor Subscription List 
+            </div>
+
+            <div>
+                <input class="form-control form-control-sm" type="text" placeholder="Search Here">
+            </div>
+
+            <spk-dropdowns [Customclass]="'dropdown'" [Toggletext]="'Sort By'" [Icon]="true"
+                [IconClass]="'ri-arrow-down-s-line align-middle ms-1 d-inline-block'"
+                [class]="'btn btn-primary btn-sm btn-wave waves-effect waves-light no-caret'"
+                [Menuclass]="'dropdown-menu dropdown-menu-end'">
+
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0);">
+                        Active
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0);">
+                        Expired
+                    </a>
+                </li>
+
+                <li>
+                    <a class="dropdown-item" href="javascript:void(0);">
+                        All
+                    </a>
+                </li>
+
+            </spk-dropdowns>
+
+        </div>
+
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+
+            <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+
+                <thead>
+                    <tr>
+                        <th>Sr No.</th>
+                        <th>Instructor</th>
+                        <th>Expertise</th>
+                        <th>Experience</th>
+                        <th>No. of Students</th>
+                        <th>Plan Name</th>
+                        <th>Duration</th>
+                        <th>Amount</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>01</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <div class="fw-semibold">
+                                        Amit Sharma
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>React</td>
+                        <td>5 Years</td>
+                        <td>120 Students</td>
+                        <td>Premium Plan</td>
+                        <td>12 Months</td>
+                        <td>
+                            ₹2999
+                        </td>
+                        <td class="text-">
+                            01-01-2026
+                        </td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </td>
+
+                        <td>
+
+                            <div class="hstack gap-2 flex-wrap">
+
+                                <a href="javascript:void(0);" class="text-info fs-14 lh-1" (click)="open(editModal)">
+                                    <i class="ri-edit-line"></i>
+                                </a>
+
+                                <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                    (click)="open(subscriptionDetailsModal)">
+                                    <i class="ri-eye-line"></i>
+                                </a>
+
+                                <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                    (click)="openDeleteModal(deleteModal)">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td>02</td>
+
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <div class="fw-semibold">
+                                        Rahul Verma
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Flutter</td>
+                        <td>3 Years</td>
+                        <td>85 Students</td>
+                        <td>Basic Plan</td>
+                        <td>6 Months</td>
+                        <td>
+                            ₹1500
+                        </td>
+                        <td>
+                            15-02-2026
+                        </td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 flex-wrap">
+                                <a href="javascript:void(0);" class="text-info fs-14 lh-1" (click)="open(editModal)">
+                                    <i class="ri-edit-line"></i>
+                                </a>
+                                <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                    (click)="open(subscriptionDetailsModal)">
+                                    <i class="ri-eye-line"></i>
+                                </a>
+                                <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                    (click)="openDeleteModal(deleteModal)">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>03</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div>
+                                    <div class="fw-semibold">
+                                        Priya Patel
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>PHP</td>
+                        <td>7 Years</td>
+                        <td>150 Students</td>
+                        <td>Gold Plan</td>
+                        <td>12 Months</td>
+                        <td>
+                            ₹3500
+                        </td>
+                        <td>
+                            10-03-2026
+                        </td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="hstack gap-2 flex-wrap">
+                                <a href="javascript:void(0);" class="text-info fs-14 lh-1" (click)="open(editModal)">
+                                    <i class="ri-edit-line"></i>
+                                </a>
+                                <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                    (click)="open(subscriptionDetailsModal)">
+                                    <i class="ri-eye-line"></i>
+                                </a>
+                                <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                    (click)="openDeleteModal(deleteModal)">
+                                    <i class="ri-delete-bin-line"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </spk-reusable-tables>
+
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <div class="d-flex align-items-center">
+
+            <div>
+                Showing 3 Entries
+                <i class="bi bi-arrow-right ms-2 fw-semibold"></i>
+            </div>
+
+            <div class="ms-auto">
+
+                <nav aria-label="Page navigation" class="pagination-style-2">
+
+                    <ul class="pagination mb-0 flex-wrap">
+
+                        <li class="page-item disabled">
+                            <a class="page-link" href="javascript:void(0);">
+                                Prev
+                            </a>
+                        </li>
+
+                        <li class="page-item active">
+                            <a class="page-link" href="javascript:void(0);">
+                                1
+                            </a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link" href="javascript:void(0);">
+                                Next
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!--add model-->
+
+    <ng-template #content let-modal>
+
+        <div class="modal-header">
+            <h6 class="modal-title">
+                Add Instructor Subscription
+            </h6>
+
+            <button type="button" class="btn-close" (click)="modal.close()">
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="row gy-3">
+
+                <!-- Instructor -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Instructor
+                    </label>
+
+                    <select class="form-select">
+                        <option>Select Instructor</option>
+                        <option>Amit Sharma</option>
+                        <option>Rahul Verma</option>
+                        <option>Priya Patel</option>
+                    </select>
+                </div>
+
+                <!-- Expertise Multiple Select -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Expertise
+                    </label>
+
+                    <ng-select [items]="expertiseList" [multiple]="true" [searchable]="true" [closeOnSelect]="false"
+                        placeholder="Select Expertise">
+                    </ng-select>
+                </div>
+
+                <!-- Experience -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Experience
+                    </label>
+
+                    <select class="form-select">
+                        <option>Select Experience</option>
+                        <option>1 Year</option>
+                        <option>2 Years</option>
+                        <option>3 Years</option>
+                        <option>5 Years</option>
+                        <option>7 Years</option>
+                        <option>10+ Years</option>
+                    </select>
+                </div>
+
+                <!-- No. of Students -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        No. of Students
+                    </label>
+
+                    <input type="number" class="form-control" placeholder="Enter No. of Students">
+                </div>
+
+                <!-- Plan -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Plan Name
+                    </label>
+
+                    <select class="form-select">
+                        <option>Basic Plan</option>
+                        <option>Premium Plan</option>
+                        <option>Gold Plan</option>
+                    </select>
+                </div>
+
+                <!-- Duration -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Duration
+                    </label>
+
+                    <select class="form-select">
+                        <option>1 Month</option>
+                        <option>3 Months</option>
+                        <option>6 Months</option>
+                        <option>12 Months</option>
+                    </select>
+                </div>
+
+                <!-- Amount -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Amount
+                    </label>
+
+                    <input type="number" class="form-control" placeholder="Enter Amount">
+                </div>
+
+                <!-- Expiry Date -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Expiry Date
+                    </label>
+
+                    <input type="date" class="form-control">
+                </div>
+
+                <!-- Payment Method -->
+
+                <div class="col-xl-2">
+                    <label class="form-label">
+                        Payment Method
+                    </label>
+
+                    <select class="form-select">
+                        <option>UPI</option>
+                        <option>Card</option>
+                        <option>Cash</option>
+                        <option>Net Banking</option>
+                    </select>
+                </div>
+
+                <!-- Transaction Id -->
+
+                <div class="col-xl-2">
+                    <label class="form-label">
+                        Transaction Id
+                    </label>
+
+                    <input type="text" class="form-control" placeholder="Enter Transaction Id">
+                </div>
+
+                <!-- Payment Status -->
+
+                <div class="col-xl-2">
+                    <label class="form-label">
+                        Payment Status
+                    </label>
+
+                    <select class="form-select">
+                        <option>Paid</option>
+                        <option>Pending</option>
+                        <option>Failed</option>
+                    </select>
+                </div>
+
+                <!-- Remarks -->
+
+                <div class="col-xl-6">
+                    <label class="form-label">
+                        Remarks
+                    </label>
+
+                    <textarea rows="3" class="form-control" placeholder="Enter Remarks">
+                </textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button class="btn btn-light" (click)="modal.close()">
+                Cancel
+            </button>
+
+            <button class="btn btn-primary">
+                Save Subscription
+            </button>
+
+        </div>
+
+    </ng-template>
+
+
+    <!--edit model-->
+    <ng-template #editModal let-modal>
+
+        <div class="modal-header">
+            <h6 class="modal-title">
+                Edit Instructor Subscription
+            </h6>
+
+            <button type="button" class="btn-close" (click)="modal.close()">
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="row gy-3">
+
+                <!-- Instructor -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Instructor
+                    </label>
+
+                    <select class="form-select">
+                        <option>Select Instructor</option>
+                        <option>Amit Sharma</option>
+                        <option>Rahul Verma</option>
+                        <option>Priya Patel</option>
+                    </select>
+                </div>
+
+                <!-- Expertise Multiple Select -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Expertise
+                    </label>
+
+                    <ng-select [items]="expertiseList" [multiple]="true" [searchable]="true" [closeOnSelect]="false"
+                        placeholder="Select Expertise">
+                    </ng-select>
+                </div>
+
+                <!-- Experience -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Experience
+                    </label>
+
+                    <select class="form-select">
+                        <option>Select Experience</option>
+                        <option>1 Year</option>
+                        <option>2 Years</option>
+                        <option>3 Years</option>
+                        <option>5 Years</option>
+                        <option>7 Years</option>
+                        <option>10+ Years</option>
+                    </select>
+                </div>
+
+                <!-- No. of Students -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        No. of Students
+                    </label>
+
+                    <input type="number" class="form-control" placeholder="Enter No. of Students">
+                </div>
+
+                <!-- Plan -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Plan Name
+                    </label>
+
+                    <select class="form-select">
+                        <option>Basic Plan</option>
+                        <option>Premium Plan</option>
+                        <option>Gold Plan</option>
+                    </select>
+                </div>
+
+                <!-- Duration -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Duration
+                    </label>
+
+                    <select class="form-select">
+                        <option>1 Month</option>
+                        <option>3 Months</option>
+                        <option>6 Months</option>
+                        <option>12 Months</option>
+                    </select>
+                </div>
+
+                <!-- Amount -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Amount
+                    </label>
+
+                    <input type="number" class="form-control" placeholder="Enter Amount">
+                </div>
+
+                <!-- Expiry Date -->
+
+                <div class="col-xl-3">
+                    <label class="form-label">
+                        Expiry Date
+                    </label>
+
+                    <input type="date" class="form-control">
+                </div>
+
+                <!-- Payment Method -->
+
+                <div class="col-xl-2">
+                    <label class="form-label">
+                        Payment Method
+                    </label>
+
+                    <select class="form-select">
+                        <option>UPI</option>
+                        <option>Card</option>
+                        <option>Cash</option>
+                        <option>Net Banking</option>
+                    </select>
+                </div>
+
+                <!-- Transaction Id -->
+
+                <div class="col-xl-2">
+                    <label class="form-label">
+                        Transaction Id
+                    </label>
+
+                    <input type="text" class="form-control" placeholder="Enter Transaction Id">
+                </div>
+
+                <!-- Payment Status -->
+
+                <div class="col-xl-2">
+                    <label class="form-label">
+                        Payment Status
+                    </label>
+
+                    <select class="form-select">
+                        <option>Paid</option>
+                        <option>Pending</option>
+                        <option>Failed</option>
+                    </select>
+                </div>
+
+                <!-- Remarks -->
+
+                <div class="col-xl-6">
+                    <label class="form-label">
+                        Remarks
+                    </label>
+
+                    <textarea rows="3" class="form-control" placeholder="Enter Remarks">
+                </textarea>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button class="btn btn-light" (click)="modal.close()">
+                Cancel
+            </button>
+
+            <button class="btn btn-primary">
+                Update Subscription
+            </button>
+
+        </div>
+
+    </ng-template>
+
+
+    <!--delete model-->
+    <ng-template #deleteModal let-modal>
+
+        <div class="modal-body text-center py-4">
+
+            <i class="ri-delete-bin-6-line mb-3" style="font-size:50px;color:#dc3545;">
+            </i>
+
+            <h5 class="mb-2">
+                Delete Subscription?
+            </h5>
+
+            <p class="text-muted mb-4">
+                Do you really want to delete this subscription?
+            </p>
+
+            <button class="btn btn-danger me-2" (click)="modal.close()">
+                Delete
+            </button>
+
+            <button class="btn btn-light" (click)="modal.close()">
+                Cancel
+            </button>
+
+        </div>
+
+    </ng-template>
+
+
+    <!--EYE model-->
+    <ng-template #subscriptionDetailsModal let-modal>
+
+        <div class="modal-header">
+            <h5 class="modal-title">
+                Subscription Details
+            </h5>
+
+            <button type="button" class="btn-close" (click)="modal.dismiss()">
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="row g-3">
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Instructor</label>
+                    <div>Amit Sharma</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Expertise</label>
+                    <div>Angular, React</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Experience</label>
+                    <div>5 Years</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">No. of Students</label>
+                    <div>120 Students</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Plan Name</label>
+                    <div>Premium Plan</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Duration</label>
+                    <div>12 Months</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Amount</label>
+                    <div>₹2999</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Expiry Date</label>
+                    <div>31-12-2026</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Payment Method</label>
+                    <div>UPI</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Transaction ID</label>
+                    <div>TXN784512</div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Payment Status</label>
+                    <div>
+                        <span class="badge bg-success">
+                            Paid
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="fw-bold text-muted">Status</label>
+                    <div>
+                        <span class="badge bg-primary">
+                            Active
+                        </span>
+                    </div>
+                </div>
+
+                <div class="col-xl-12">
+                    <label class="fw-bold text-muted">Remarks</label>
+                    <div>
+                        Instructor has purchased Premium Plan for Angular and React expertise.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="modal.dismiss()">
+                Close
+            </button>
+        </div>
+
+    </ng-template>
+
+</div>

@@ -1,0 +1,389 @@
+<div class="col-xl-12 mx-auto">
+
+    <!-- Main Content Card -->
+    <div class="card custom-card border-0 shadow-sm">
+
+        <!-- Card Header -->
+        <div class="card-header justify-content-between align-items-center py-3 flex-wrap gap-2">
+            <div class="card-title mb-0 d-flex align-items-center gap-2">
+
+                <span class="fw-bold">Referral Points Configurations</span>
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <!-- Search Input -->
+                <div class="input-group input-group-sm" style="max-width: 220px;">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="ri-search-line text-muted"></i>
+                    </span>
+                    <input class="form-control form-control-sm border-start-0" type="text"
+                        placeholder="Search points..." [(ngModel)]="searchText" (input)="onSearchChange()">
+                </div>
+
+                <!-- Add Button -->
+                <button class="btn btn-primary btn-sm btn-wave d-flex align-items-center gap-1"
+                    (click)="openAddModal(addModal)">
+                    <i class="ri-add-line fs-14 fw-bold"></i>
+                    <span>Add Configuration</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="card-body py-2 px-3">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table table-hover text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;"># ID</th>
+                            <th style="width: 22%;">Reward Points</th>
+                            <th style="width: 18%;">Status</th>
+                            <th style="width: 18%;">System State</th>
+                            <th style="width: 17%;">Created Date</th>
+                            <th style="width: 17%; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (item of filteredConfigs; track item.id; let i = $index) {
+                        <tr [class.table-primary-transparent]="item.status === 'active'">
+                            <td>
+                                <span class="badge bg-light text-dark fw-bold">#{{ item.id }}</span>
+                            </td>
+                            <td>
+                                <div class="points-pill" [class.active-pill]="item.status === 'active'">
+                                    <i class="ri-copper-coin-fill"></i>
+                                    <span>{{ item.points }} Points</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch d-inline-flex align-items-center gap-2 mb-0">
+                                    <input class="form-check-input" type="checkbox" [checked]="item.status === 'active'"
+                                        (change)="toggleStatus(item)" role="switch"
+                                        [title]="item.status === 'active' ? 'Click to deactivate' : 'Click to activate'">
+                                    <span class="fs-12 fw-medium"
+                                        [ngClass]="item.status === 'active' ? 'text-success' : 'text-muted'">
+                                        {{ item.status === 'active' ? 'Active' : 'Inactive' }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                @if (item.status === 'active') {
+                                <span
+                                    class="badge bg-success-transparent text-success border border-success-subtle d-inline-flex align-items-center gap-1 px-2 py-1">
+                                    <i class="ri-checkbox-circle-fill fs-12"></i> Currently Applied
+                                </span>
+                                } @else {
+                                <span
+                                    class="badge bg-light text-muted border d-inline-flex align-items-center gap-1 px-2 py-1">
+                                    <i class="ri-time-line fs-12"></i> Archived Rule
+                                </span>
+                                }
+                            </td>
+                            <td>
+                                <span class="text-muted fs-12 d-block">
+                                    <i class="ri-calendar-line me-1 align-middle"></i>
+                                    {{ item.created_at | date:'mediumDate' }}
+                                </span>
+                                <span class="text-muted fs-11">
+                                    {{ item.created_at | date:'shortTime' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="hstack gap-1 justify-content-center">
+                                    @if (item.status === 'inactive') {
+                                    <button class="btn btn-icon btn-sm btn-outline-success table-action-btn"
+                                        (click)="quickActivate(item)" title="Make this Active">
+                                        <i class="ri-check-double-line"></i>
+                                    </button>
+                                    }
+                                    <button class="btn btn-icon btn-sm btn-outline-info table-action-btn"
+                                        (click)="openEditModal(item, editModal)" title="Edit Configuration">
+                                        <i class="ri-edit-line"></i>
+                                    </button>
+                                    <button class="btn btn-icon btn-sm btn-outline-primary table-action-btn"
+                                        (click)="openViewModal(item, viewModal)" title="View Details">
+                                        <i class="ri-eye-line"></i>
+                                    </button>
+                                    <button class="btn btn-icon btn-sm btn-outline-danger table-action-btn"
+                                        (click)="openDeleteModal(item, deleteModal)"
+                                        [disabled]="item.status === 'active'"
+                                        [title]="item.status === 'active' ? 'Cannot delete active configuration' : 'Delete Configuration'">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-5">
+                                <div class="d-flex flex-column align-items-center justify-content-center">
+                                    <div class="avatar avatar-xl bg-light text-muted rounded-circle mb-3">
+                                        <i class="ri-copper-coin-line fs-36 text-muted"></i>
+                                    </div>
+                                    <h6 class="fw-bold mb-1">No Referral Points Configurations Found</h6>
+                                    <p class="text-muted fs-13 mb-3">Get started by creating your first referral points
+                                        rule.</p>
+                                    <button class="btn btn-primary btn-sm btn-wave" (click)="openAddModal(addModal)">
+                                        <i class="ri-add-line me-1"></i> Add Configuration
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </spk-reusable-tables>
+            </div>
+        </div>
+
+        <!-- Card Footer / Pagination -->
+        @if (filteredConfigs.length > 0) {
+        <div
+            class="card-footer border-top-0 py-3 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+            <div class="fs-12 text-muted">
+                Showing <strong>{{ filteredConfigs.length }}</strong> of <strong>{{ totalItems || configs.length
+                    }}</strong> configurations
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-1 fs-12 text-muted">
+                    <span>Rows per page:</span>
+                    <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="pageSize"
+                        (ngModelChange)="onPageSizeChange($event)">
+                        <option [value]="10">10</option>
+                        <option [value]="25">25</option>
+                        <option [value]="50">50</option>
+                    </select>
+                </div>
+
+                @if (totalPages > 1) {
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item" [class.disabled]="currentPage === 1">
+                            <a class="page-link cursor-pointer" (click)="changePage(currentPage - 1)">Previous</a>
+                        </li>
+                        @for (p of [].constructor(totalPages); track $index; let idx = $index) {
+                        <li class="page-item" [class.active]="currentPage === (idx + 1)">
+                            <a class="page-link cursor-pointer" (click)="changePage(idx + 1)">{{ idx + 1 }}</a>
+                        </li>
+                        }
+                        <li class="page-item" [class.disabled]="currentPage === totalPages">
+                            <a class="page-link cursor-pointer" (click)="changePage(currentPage + 1)">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+                }
+            </div>
+        </div>
+        }
+
+    </div>
+
+</div>
+
+<!-- Add Modal -->
+<ng-template #addModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title d-flex align-items-center gap-2">
+            <i class="ri-add-circle-fill text-primary fs-18"></i>
+            <span class="fw-bold">Add Referral Points Configuration</span>
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+            <div class="col-12">
+                <label class="form-label fw-semibold">
+                    Reward Points <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-primary">
+                        <i class="ri-copper-coin-fill"></i>
+                    </span>
+                    <input type="number" class="form-control" placeholder="Enter points (e.g. 150)"
+                        [(ngModel)]="addPoints" min="1" step="1" required>
+                    <span class="input-group-text bg-light">pts</span>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-semibold">Status</label>
+                <select class="form-select" [(ngModel)]="addStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()" [disabled]="isSubmitting">
+            Cancel
+        </button>
+        <button class="btn btn-primary btn-wave" (click)="createReferralPoints(modal)" [disabled]="isSubmitting">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            Creating...
+            } @else {
+            <i class="ri-check-line me-1"></i> Create Configuration
+            }
+        </button>
+    </div>
+</ng-template>
+
+<!-- Edit Modal -->
+<ng-template #editModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title d-flex align-items-center gap-2">
+            <i class="ri-edit-2-fill text-primary fs-18"></i>
+            <span class="fw-bold">Edit Referral Points #{{ selectedConfig?.id }}</span>
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+            <div class="col-12">
+                <label class="form-label fw-semibold">
+                    Reward Points <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light text-primary">
+                        <i class="ri-copper-coin-fill"></i>
+                    </span>
+                    <input type="number" class="form-control" [(ngModel)]="editPoints" min="1" step="1" required>
+                    <span class="input-group-text bg-light">pts</span>
+                </div>
+
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-semibold">Status</label>
+                <select class="form-select" [(ngModel)]="editStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()" [disabled]="isSubmitting">
+            Cancel
+        </button>
+        <button class="btn btn-primary btn-wave" (click)="updateReferralPoints(modal)" [disabled]="isSubmitting">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+            Updating...
+            } @else {
+            <i class="ri-save-line me-1"></i> Save Changes
+            }
+        </button>
+    </div>
+</ng-template>
+
+<!-- View Details Modal -->
+<ng-template #viewModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center gap-2">
+            <i class="ri-information-line text-primary"></i>
+            <span>Referral Points Details</span>
+        </h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="d-flex align-items-center justify-content-between p-3 rounded bg-light mb-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="reward-icon-badge bg-primary text-white"
+                    style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="ri-copper-coin-fill fs-22"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold mb-0 text-primary">{{ selectedConfig?.points }} Points</h4>
+                    <span class="text-muted fs-12">Per Successful Referral</span>
+                </div>
+            </div>
+            <div>
+                @if (selectedConfig?.status === 'active') {
+                <span class="badge bg-success fs-12 px-3 py-2">
+                    <i class="ri-checkbox-circle-fill me-1"></i> Active
+                </span>
+                } @else {
+                <span class="badge bg-secondary fs-12 px-3 py-2">
+                    <i class="ri-close-circle-fill me-1"></i> Inactive
+                </span>
+                }
+            </div>
+        </div>
+
+        <table class="table table-bordered mb-0">
+            <tbody>
+                <tr>
+                    <td class="fw-semibold text-muted" width="180">Configuration ID</td>
+                    <td><span class="badge bg-light text-dark">#{{ selectedConfig?.id }}</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Points Value</td>
+                    <td class="fw-bold text-dark">{{ selectedConfig?.points }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Status</td>
+                    <td>
+                        <span class="fw-semibold"
+                            [ngClass]="selectedConfig?.status === 'active' ? 'text-success' : 'text-danger'">
+                            {{ selectedConfig?.status | uppercase }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Created At</td>
+                    <td>{{ selectedConfig?.created_at | date:'medium' }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Last Updated</td>
+                    <td>{{ selectedConfig?.updated_at | date:'medium' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<!-- Delete Confirmation Modal -->
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+        <div class="avatar avatar-xl bg-danger-transparent text-danger rounded-circle mb-3 mx-auto">
+            <i class="ri-error-warning-line fs-36"></i>
+        </div>
+        <h5>Delete Referral Points Configuration?</h5>
+        <p class="text-muted fs-13 mb-1">
+            Are you sure you want to delete Configuration <strong>#{{ selectedConfig?.id }}</strong> ({{
+            selectedConfig?.points }} points)?
+        </p>
+        <p class="text-danger fs-12 fw-medium mb-0">
+            This action cannot be undone. Active configurations cannot be deleted.
+        </p>
+
+        <div class="d-flex justify-content-center gap-2 mt-4">
+            <button class="btn btn-danger btn-wave" (click)="deleteReferralPoints(modal)" [disabled]="isSubmitting">
+                @if (isSubmitting) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Deleting...
+                } @else {
+                Yes, Delete
+                }
+            </button>
+            <button class="btn btn-light" (click)="modal.close()" [disabled]="isSubmitting">
+                Cancel
+            </button>
+        </div>
+    </div>
+</ng-template>

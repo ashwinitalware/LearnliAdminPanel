@@ -1,0 +1,102 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0">
+
+        <!-- Header -->
+        <div class="card-header justify-content-between mb-3">
+            <div class="card-title mb-0">
+                States Master List
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <!-- Add State Button commented out as requested -->
+                <!-- 
+                <button class="btn btn-primary btn-wave" (click)="showRestrictedToast()">
+                    <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                    Add State
+                </button> 
+                -->
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search Here">
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card-body py-2 px-3">
+
+            <div class="table-responsive">
+
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+
+                    <thead>
+                        <tr>
+                            <th style="width:10%">Sr No.</th>
+                            <th style="width:70%">State Name</th>
+                            <th style="width:20%">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (state of states; track state.id; let i = $index) {
+                        <tr>
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ state.state_name }}</td>
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="openView(state, viewStateModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">No states found.</td>
+                        </tr>
+                        }
+                    </tbody>
+
+                </spk-reusable-tables>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- View State Modal -->
+<ng-template #viewStateModal let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">State Details</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row g-3">
+
+            <div class="col-xl-6">
+                <label class="fw-bold text-muted">State Name</label>
+                <div>{{ selectedState?.state_name || '-' }}</div>
+            </div>
+
+            <div class="col-xl-6">
+                <label class="fw-bold text-muted">Status</label>
+                <div>
+                    <span class="badge bg-success">Active</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    </div>
+
+</ng-template>

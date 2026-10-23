@@ -1,0 +1,87 @@
+<div class="col-xl-12 mx-auto">
+  <div class="card custom-card border-0">
+    <!-- Header -->
+    <div class="card-header justify-content-between align-items-center mb-3">
+      <div class="card-title mb-0">
+        Active Student Carts
+        <span class="fs-12 text-muted fw-normal d-block">List of all courses currently inside students' active shopping carts</span>
+      </div>
+
+      <div class="d-flex align-items-center flex-wrap gap-3">
+        <!-- Mentor Filter (Visible only for Admin) -->
+        @if (userRole === 'admin') {
+          <div style="min-width: 200px;">
+            <select class="form-select form-select-sm" [(ngModel)]="selectedMentorId" (change)="onFilterChange()">
+              <option value="">All Mentors</option>
+              @for (mentor of mentors; track mentor.id) {
+                <option [value]="mentor.id">{{ mentor.name || mentor.email }}</option>
+              }
+            </select>
+          </div>
+        }
+
+        <!-- Search Bar -->
+        <div style="min-width: 220px;">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-light border-end-0"><i class="ri-search-line text-muted"></i></span>
+            <input class="form-control border-start-0" type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search student or course...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Body -->
+    <div class="card-body py-2 px-3">
+      @if (isLoading) {
+        <div class="text-center my-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-muted">Loading active carts...</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table text-nowrap w-100">
+            <thead>
+              <tr>
+                <th style="width: 5%">Sr No.</th>
+                <th style="width: 30%">Student Name / Email</th>
+                <th style="width: 35%">Course Name</th>
+                <th style="width: 15%">Price</th>
+                <th style="width: 15%">Date Added</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of filteredCarts; track $index; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar avatar-sm bg-primary-transparent text-primary rounded-circle me-2 d-flex align-items-center justify-content-center fw-semibold">
+                        {{ getStudentName(item).charAt(0).toUpperCase() }}
+                      </div>
+                      <div>
+                        <div class="fw-semibold text-dark">{{ getStudentName(item) }}</div>
+                        <div class="fs-12 text-muted">{{ getStudentEmail(item) }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="fw-medium text-primary">{{ getCourseName(item) }}</td>
+                  <td class="fw-semibold">₹{{ getCoursePrice(item) | number:'1.2-2' }}</td>
+                  <td class="text-muted">{{ (item.created_at | date:'mediumDate') || 'N/A' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-5">
+                    <div class="mb-2"><i class="ri-shopping-cart-line fs-3 text-muted"></i></div>
+                    No active student carts found matching the filters.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>

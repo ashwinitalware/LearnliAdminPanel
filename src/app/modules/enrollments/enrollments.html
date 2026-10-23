@@ -1,0 +1,365 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0">
+
+        <div class="card-header justify-content-end mb-3">
+            <button class="btn btn-primary btn-wave" (click)="open(content)">
+                <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                Add Students to Courses
+            </button>
+
+<div class="d-flex align-items-center flex-wrap gap-2">
+
+    <div>
+        <input class="form-control form-control-sm" type="text" placeholder="Search Here"
+            aria-label=".form-control-sm example">
+    </div>
+
+    <spk-dropdowns [Customclass]="'dropdown '" [Toggletext]="'Sort By'" [Icon]="true"
+        [IconClass]="'ri-arrow-down-s-line align-middle ms-1 d-inline-block'"
+        [class]="'btn btn-primary btn-sm btn-wave waves-effect waves-light no-caret'"
+        [Menuclass]="'dropdown-menu dropdown-menu-end'">
+        <li><a class="dropdown-item" href="javascript:void(0);">New</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0);">Popular</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0);">Relevant</a></li>
+    </spk-dropdowns>
+
+</div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <th>Sr No.</th>
+                        <th>Photo</th>
+                        <th>Student</th>
+                        <th>Courses</th>
+                        <th>Invoice no</th>
+                        <th>Payment Method</th>
+                        <th>Date</th>
+                        <th>Payable Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+
+                            <td>
+
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+                                    <br>
+
+                                </div>
+                            </td>
+                            <td>Sahil</td>
+                            <td>
+                                Build Native
+                            </td>
+                            <td>SP1001</td>
+
+                            <td>
+                                Stripe
+                            </td>
+                            <td>Aug 10, 2023</td>
+                            <td>$100</td>
+                            <td><span class="badge bg-success">Approved</span></td>
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewEnrollmentModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>02</td>
+
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+                                    <br>
+
+                                </div>
+                            </td>
+                            <td>pooja</td>
+
+                            <td>
+                                Full Practice Exam
+                            </td>
+                            <td>SP1002</td>
+                            <td>Stripe</td>
+                            <td>Aug 10, 2023</td>
+                            <td>$ 500,00</td>
+
+
+                            <td><span class="badge bg-success">Approved</span></td>
+
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewEnrollmentModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>03</td>
+
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+                                    <br>
+
+                                </div>
+                            </td>
+                            <td>Abdul</td>
+                            <td>
+                                Web Development
+                            </td>
+                            <td>SP1002</td>
+                            <td>Stripe</td>
+                            <td>Aug 10, 2023</td>
+                            <td>$ 500,00</td>
+
+
+                            <td><span class="badge bg-success">Approved</span></td>
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewEnrollmentModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                </spk-reusable-tables>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="d-flex align-items-center">
+                <div> Showing 6 Entries <i class="bi bi-arrow-right ms-2 fw-semibold"></i> </div>
+                <div class="ms-auto">
+                    <nav aria-label="Page navigation" class="pagination-style-2">
+                        <ul class="pagination mb-0 flex-wrap">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="javascript:void(0);">
+                                    Prev
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">1</a></li>
+                            <li class="page-item active"><a class="page-link" href="javascript:void(0);">2</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="javascript:void(0);">
+                                    <i class="bi bi-three-dots"></i>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">17</a></li>
+                            <li class="page-item">
+                                <a class="page-link text-primary" href="javascript:void(0);">
+                                    next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- add modal content-->
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Add Students To Courses</h6>
+        <button type="button" class="btn-close" (click)="modal.close()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+
+            <div class="col-xl-12">
+                <label class="form-label">Student</label>
+                <input type="text" class="form-control" placeholder="Select Students">
+            </div>
+            <div class="col-xl-12">
+                <label class="form-label">Course</label>
+                <input type="number" class="form-control" placeholder="Select Course">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary">
+            Submit
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- delete modal content-->
+
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+
+        <h5 class="mb-2">Are you sure?</h5>
+
+        <p class="text-muted mb-4">
+            Do you want to delete this instructor?
+        </p>
+
+       <button class="btn me-2"
+    style="background:#845ef7;color:#fff;"
+    (click)="modal.close()">
+    Delete
+</button>
+
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+</ng-template>
+
+<!-- eye modal content-->
+<ng-template #viewEnrollmentModal let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">Enrollment Details</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row g-3">
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Student Name</label>
+                <div>Sahil</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Course</label>
+                <div>Build Native</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Invoice No</label>
+                <div>SP1001</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Payment Method</label>
+                <div>Stripe</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Enrollment Date</label>
+                <div>Aug 10, 2023</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Payable Amount</label>
+                <div>$100</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Status</label>
+                <div>
+                    <span class="badge bg-success">
+                        Approved
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Student Photo</label>
+                <div>
+                    <img src="./assets/images/media/media-52.jpg" class="rounded-circle" width="50" height="50">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">
+            Close
+        </button>
+    </div>
+
+</ng-template>
+
+<!-- edit modal content-->
+ <ng-template #editModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Add Students To Courses</h6>
+        <button type="button" class="btn-close" (click)="modal.close()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+
+            <div class="col-xl-12">
+                <label class="form-label">Student</label>
+                <input type="text" class="form-control" placeholder="Select Students">
+            </div>
+            <div class="col-xl-12">
+                <label class="form-label">Course</label>
+                <input type="number" class="form-control" placeholder="Select Course">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary">
+            Submit
+        </button>
+    </div>
+</ng-template>

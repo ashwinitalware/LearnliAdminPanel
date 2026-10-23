@@ -1,0 +1,1243 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0">
+
+        <div class="card-header justify-content-end mb-3">
+            <button class="btn btn-primary btn-wave" (click)="open(content)">
+                <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                Add Student
+            </button>
+
+
+            <div class="d-flex flex-align-items-center flex-wrap gap-2 ms-auto">
+                <div class="card-title mb-0">
+                    Student List
+                </div>
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search Here"
+                        aria-label=".form-control-sm example">
+                </div>
+                <spk-dropdowns [Customclass]="'dropdown '" [Toggletext]="'Sort By'" [Icon]="true"
+                    [IconClass]="'ri-arrow-down-s-line align-middle ms-1 d-inline-block'"
+                    [class]="'btn btn-primary btn-sm btn-wave waves-effect waves-light no-caret'"
+                    [Menuclass]="'dropdown-menu dropdown-menu-end'">
+                    <li><a class="dropdown-item" href="javascript:void(0);">New</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Popular</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Relevant</a></li>
+                </spk-dropdowns>
+
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <th>Sr No.</th>
+                        <th>Photo</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Country</th>
+                        <th>State</th>
+                        <th>Enrolled Course</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+
+
+                                </div>
+                            </td>
+                            <td>Rohit Sharma</td>
+                            <td>rohit@example.com</td>
+                            <td>
+                                876543210
+                            </td>
+                            <td>
+                                Nepal
+                            </td>
+                            <td>
+                                Kathmandu
+                            </td>
+                            <td>50</td>
+
+
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(studentProfileModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(viewDetailsModal)">
+                                                View Details
+                                            </a>
+                                        </li>
+
+                                       <li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openStatusModal(unverifiedStudentModal)">
+        Unverified Students
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openStatusModal(banStudentModal)">
+        Ban this Student
+    </a>
+</li>
+
+                                    </spk-dropdowns>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>02</td>
+
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+
+                                </div>
+                            </td>
+                            <td>Rahul Gupta</td>
+                            <td>rahul@example.com</td>
+                            <td>
+                                532145678
+                            </td>
+                            <td>
+                                India
+                            </td>
+                            <td>
+                                Maharashtra
+                            </td>
+                            <td>5</td>
+
+
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(studentProfileModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(viewDetailsModal)">
+                                                View Details
+                                            </a>
+                                        </li>
+
+                                       <li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openStatusModal(unverifiedStudentModal)">
+        Unverified Students
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openStatusModal(banStudentModal)">
+        Ban this Student
+    </a>
+</li>
+
+                                    </spk-dropdowns>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>03</td>
+
+                            <td>
+                                <div class="text-center">
+                                    <img src="./assets/images/media/media-52.jpg" class="img-thumbnail rounded-pill"
+                                        alt="..." width="50" height="50">
+
+                                </div>
+                            </td>
+                            <td>Divya Patel</td>
+                            <td>divya@example.com</td>
+                            <td>
+                                987654321
+                            </td>
+                            <td>India</td>
+                            <td>Karnataka</td>
+                            <td>10</td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="hstack gap-2 flex-wrap">
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(studentProfileModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(viewDetailsModal)">
+                                                View Details
+                                            </a>
+                                        </li>
+
+                                      <li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openStatusModal(unverifiedStudentModal)">
+        Unverified Students
+    </a>
+</li>
+
+<li>
+    <a class="dropdown-item"
+        href="javascript:void(0);"
+        (click)="openStatusModal(banStudentModal)">
+        Ban this Student
+    </a>
+</li>
+
+                                    </spk-dropdowns>
+                                </div>
+                            </td>
+                        </tr>
+
+                </spk-reusable-tables>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="d-flex align-items-center">
+                <div> Showing 6 Entries <i class="bi bi-arrow-right ms-2 fw-semibold"></i> </div>
+                <div class="ms-auto">
+                    <nav aria-label="Page navigation" class="pagination-style-2">
+                        <ul class="pagination mb-0 flex-wrap">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="javascript:void(0);">
+                                    Prev
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">1</a></li>
+                            <li class="page-item active"><a class="page-link" href="javascript:void(0);">2</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="javascript:void(0);">
+                                    <i class="bi bi-three-dots"></i>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">17</a></li>
+                            <li class="page-item">
+                                <a class="page-link text-primary" href="javascript:void(0);">
+                                    next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--  add Manage student modal content-->
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Create Student</h6>
+        <button type="button" class="btn-close" (click)="modal.close()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+
+            <div class="col-xl-2">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control" placeholder="Enter First Name">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control" placeholder="Enter Last Name">
+            </div>
+
+            <div class="col-xl-2">
+                <label class="form-label">Phone</label>
+                <input type="tel" class="form-control" placeholder="Enter Phone">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Email Address</label>
+                <input type="text" class="form-control" placeholder="Enter Email Address">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Password</label>
+                <input type="text" class="form-control" placeholder="Enter Password">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label   ">Confirm Password</label>
+                <input type="text" class="form-control" placeholder="Enter Confirm Password">
+            </div>
+            
+            <div class="col-xl-2">
+                <label class="form-label">Postal Code</label>
+                <input type="number" class="form-control" placeholder="Enter Postal Code">
+            </div>
+
+            <div class="col-xl-2">
+                <label class="form-label">Country</label>
+                <select class="form-select">
+                    <option value="">Select Country</option>
+
+                    <option>Afghanistan</option>
+                    <option>Albania</option>
+                    <option>Algeria</option>
+                    <option>Andorra</option>
+                    <option>Angola</option>
+                    <option>Argentina</option>
+                    <option>Armenia</option>
+                    <option>Australia</option>
+                    <option>Austria</option>
+                    <option>Azerbaijan</option>
+                    <option>Bahrain</option>
+                    <option>Bangladesh</option>
+                    <option>Belarus</option>
+                    <option>Belgium</option>
+                    <option>Bhutan</option>
+                    <option>Bolivia</option>
+                    <option>Bosnia and Herzegovina</option>
+                    <option>Brazil</option>
+                    <option>Brunei</option>
+                    <option>Bulgaria</option>
+                    <option>Cambodia</option>
+                    <option>Cameroon</option>
+                    <option>Canada</option>
+                    <option>Chile</option>
+                    <option>China</option>
+                    <option>Colombia</option>
+                    <option>Croatia</option>
+                    <option>Cuba</option>
+                    <option>Cyprus</option>
+                    <option>Czech Republic</option>
+                    <option>Denmark</option>
+                    <option>Egypt</option>
+                    <option>Estonia</option>
+                    <option>Finland</option>
+                    <option>France</option>
+                    <option>Georgia</option>
+                    <option>Germany</option>
+                    <option>Greece</option>
+                    <option>Hungary</option>
+                    <option>Iceland</option>
+                    <option>India</option>
+                    <option>Indonesia</option>
+                    <option>Iran</option>
+                    <option>Iraq</option>
+                    <option>Ireland</option>
+                    <option>Israel</option>
+                    <option>Italy</option>
+                    <option>Japan</option>
+                    <option>Jordan</option>
+                    <option>Kazakhstan</option>
+                    <option>Kenya</option>
+                    <option>Kuwait</option>
+                    <option>Kyrgyzstan</option>
+                    <option>Laos</option>
+                    <option>Latvia</option>
+                    <option>Lebanon</option>
+                    <option>Libya</option>
+                    <option>Lithuania</option>
+                    <option>Luxembourg</option>
+                    <option>Malaysia</option>
+                    <option>Maldives</option>
+                    <option>Mexico</option>
+                    <option>Mongolia</option>
+                    <option>Morocco</option>
+                    <option>Myanmar</option>
+                    <option>Nepal</option>
+                    <option>Netherlands</option>
+                    <option>New Zealand</option>
+                    <option>Nigeria</option>
+                    <option>North Korea</option>
+                    <option>Norway</option>
+                    <option>Oman</option>
+                    <option>Pakistan</option>
+                    <option>Philippines</option>
+                    <option>Poland</option>
+                    <option>Portugal</option>
+                    <option>Qatar</option>
+                    <option>Romania</option>
+                    <option>Russia</option>
+                    <option>Saudi Arabia</option>
+                    <option>Singapore</option>
+                    <option>Slovakia</option>
+                    <option>South Africa</option>
+                    <option>South Korea</option>
+                    <option>Spain</option>
+                    <option>Sri Lanka</option>
+                    <option>Sweden</option>
+                    <option>Switzerland</option>
+                    <option>Syria</option>
+                    <option>Taiwan</option>
+                    <option>Tajikistan</option>
+                    <option>Thailand</option>
+                    <option>Turkey</option>
+                    <option>Turkmenistan</option>
+                    <option>Ukraine</option>
+                    <option>United Arab Emirates</option>
+                    <option>United Kingdom</option>
+                    <option>United States</option>
+                    <option>Uzbekistan</option>
+                    <option>Vietnam</option>
+                    <option>Yemen</option>
+                    <option>Zambia</option>
+                    <option>Zimbabwe</option>
+
+                </select>
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">State</label>
+                <select class="form-select">
+                    <option value="">Select State</option>
+                    <option>Maharashtra</option>
+                    <option>Delhi</option>
+                    <option>Karnataka</option>
+                    <option>Tamil Nadu</option>
+                    <option>Telangana</option>
+                    <option>Gujarat</option>
+                    <option>Rajasthan</option>
+                    <option>Uttar Pradesh</option>
+                    <option>Madhya Pradesh</option>
+                    <option>West Bengal</option>
+                    <option>Punjab</option>
+                    <option>Haryana</option>
+                    <option>Odisha</option>
+                    <option>Bihar</option>
+                    <option>Jharkhand</option>
+                    <option>Chhattisgarh</option>
+                    <option>Kerala</option>
+                    <option>Assam</option>
+                    <option>Goa</option>
+                    <option>Andhra Pradesh</option>
+                </select>
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">City</label>
+                <select class="form-select">
+                    <option value="">Select City</option>
+                    <option>Mumbai</option>
+                    <option>Pune</option>
+                    <option>Nagpur</option>
+                    <option>Nashik</option>
+                    <option>Thane</option>
+                    <option>Delhi</option>
+                    <option>Bengaluru</option>
+                    <option>Chennai</option>
+                    <option>Hyderabad</option>
+                    <option>Ahmedabad</option>
+                    <option>Jaipur</option>
+                    <option>Lucknow</option>
+                    <option>Bhubaneswar</option>
+                    <option>Kolkata</option>
+                    <option>Patna</option>
+                    <option>Ranchi</option>
+                    <option>Raipur</option>
+                    <option>Kochi</option>
+                    <option>Panaji</option>
+                    <option>Visakhapatnam</option>
+                </select>
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Gender</label>
+                <select class="form-select">
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+             <div class="col-xl-2">
+                <label class="form-label">Upload Profile Photo</label>
+                <input type="file" class="form-control">
+            </div>
+
+            <div class="col-xl-6">
+                <label class="form-label">Address</label>
+                <input type="text" class="form-control" placeholder="Enter Address">
+            </div>
+            <div class="col-xl-6">
+                <label class="form-label">About</label>
+                <textarea class="form-control" placeholder="Enter About"></textarea>
+            </div>
+           
+
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary">
+            Save
+        </button>
+    </div>
+</ng-template>
+
+<!-- edit  modal content-->
+
+<ng-template #editModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Edit Student</h6>
+        <button type="button" class="btn-close" (click)="modal.close()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+
+            <div class="col-xl-2">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control" placeholder="Enter First Name">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control" placeholder="Enter Last Name">
+            </div>
+
+            <div class="col-xl-2">
+                <label class="form-label">Phone</label>
+                <input type="tel" class="form-control" placeholder="Enter Phone">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Email Address</label>
+                <input type="text" class="form-control" placeholder="Enter Email Address">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Password</label>
+                <input type="text" class="form-control" placeholder="Enter Password">
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label   ">Confirm Password</label>
+                <input type="text" class="form-control" placeholder="Enter Confirm Password">
+            </div>
+            
+            <div class="col-xl-2">
+                <label class="form-label">Postal Code</label>
+                <input type="number" class="form-control" placeholder="Enter Postal Code">
+            </div>
+
+            <div class="col-xl-2">
+                <label class="form-label">Country</label>
+                <select class="form-select">
+                    <option value="">Select Country</option>
+
+                    <option>Afghanistan</option>
+                    <option>Albania</option>
+                    <option>Algeria</option>
+                    <option>Andorra</option>
+                    <option>Angola</option>
+                    <option>Argentina</option>
+                    <option>Armenia</option>
+                    <option>Australia</option>
+                    <option>Austria</option>
+                    <option>Azerbaijan</option>
+                    <option>Bahrain</option>
+                    <option>Bangladesh</option>
+                    <option>Belarus</option>
+                    <option>Belgium</option>
+                    <option>Bhutan</option>
+                    <option>Bolivia</option>
+                    <option>Bosnia and Herzegovina</option>
+                    <option>Brazil</option>
+                    <option>Brunei</option>
+                    <option>Bulgaria</option>
+                    <option>Cambodia</option>
+                    <option>Cameroon</option>
+                    <option>Canada</option>
+                    <option>Chile</option>
+                    <option>China</option>
+                    <option>Colombia</option>
+                    <option>Croatia</option>
+                    <option>Cuba</option>
+                    <option>Cyprus</option>
+                    <option>Czech Republic</option>
+                    <option>Denmark</option>
+                    <option>Egypt</option>
+                    <option>Estonia</option>
+                    <option>Finland</option>
+                    <option>France</option>
+                    <option>Georgia</option>
+                    <option>Germany</option>
+                    <option>Greece</option>
+                    <option>Hungary</option>
+                    <option>Iceland</option>
+                    <option>India</option>
+                    <option>Indonesia</option>
+                    <option>Iran</option>
+                    <option>Iraq</option>
+                    <option>Ireland</option>
+                    <option>Israel</option>
+                    <option>Italy</option>
+                    <option>Japan</option>
+                    <option>Jordan</option>
+                    <option>Kazakhstan</option>
+                    <option>Kenya</option>
+                    <option>Kuwait</option>
+                    <option>Kyrgyzstan</option>
+                    <option>Laos</option>
+                    <option>Latvia</option>
+                    <option>Lebanon</option>
+                    <option>Libya</option>
+                    <option>Lithuania</option>
+                    <option>Luxembourg</option>
+                    <option>Malaysia</option>
+                    <option>Maldives</option>
+                    <option>Mexico</option>
+                    <option>Mongolia</option>
+                    <option>Morocco</option>
+                    <option>Myanmar</option>
+                    <option>Nepal</option>
+                    <option>Netherlands</option>
+                    <option>New Zealand</option>
+                    <option>Nigeria</option>
+                    <option>North Korea</option>
+                    <option>Norway</option>
+                    <option>Oman</option>
+                    <option>Pakistan</option>
+                    <option>Philippines</option>
+                    <option>Poland</option>
+                    <option>Portugal</option>
+                    <option>Qatar</option>
+                    <option>Romania</option>
+                    <option>Russia</option>
+                    <option>Saudi Arabia</option>
+                    <option>Singapore</option>
+                    <option>Slovakia</option>
+                    <option>South Africa</option>
+                    <option>South Korea</option>
+                    <option>Spain</option>
+                    <option>Sri Lanka</option>
+                    <option>Sweden</option>
+                    <option>Switzerland</option>
+                    <option>Syria</option>
+                    <option>Taiwan</option>
+                    <option>Tajikistan</option>
+                    <option>Thailand</option>
+                    <option>Turkey</option>
+                    <option>Turkmenistan</option>
+                    <option>Ukraine</option>
+                    <option>United Arab Emirates</option>
+                    <option>United Kingdom</option>
+                    <option>United States</option>
+                    <option>Uzbekistan</option>
+                    <option>Vietnam</option>
+                    <option>Yemen</option>
+                    <option>Zambia</option>
+                    <option>Zimbabwe</option>
+
+                </select>
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">State</label>
+                <select class="form-select">
+                    <option value="">Select State</option>
+                    <option>Maharashtra</option>
+                    <option>Delhi</option>
+                    <option>Karnataka</option>
+                    <option>Tamil Nadu</option>
+                    <option>Telangana</option>
+                    <option>Gujarat</option>
+                    <option>Rajasthan</option>
+                    <option>Uttar Pradesh</option>
+                    <option>Madhya Pradesh</option>
+                    <option>West Bengal</option>
+                    <option>Punjab</option>
+                    <option>Haryana</option>
+                    <option>Odisha</option>
+                    <option>Bihar</option>
+                    <option>Jharkhand</option>
+                    <option>Chhattisgarh</option>
+                    <option>Kerala</option>
+                    <option>Assam</option>
+                    <option>Goa</option>
+                    <option>Andhra Pradesh</option>
+                </select>
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">City</label>
+                <select class="form-select">
+                    <option value="">Select City</option>
+                    <option>Mumbai</option>
+                    <option>Pune</option>
+                    <option>Nagpur</option>
+                    <option>Nashik</option>
+                    <option>Thane</option>
+                    <option>Delhi</option>
+                    <option>Bengaluru</option>
+                    <option>Chennai</option>
+                    <option>Hyderabad</option>
+                    <option>Ahmedabad</option>
+                    <option>Jaipur</option>
+                    <option>Lucknow</option>
+                    <option>Bhubaneswar</option>
+                    <option>Kolkata</option>
+                    <option>Patna</option>
+                    <option>Ranchi</option>
+                    <option>Raipur</option>
+                    <option>Kochi</option>
+                    <option>Panaji</option>
+                    <option>Visakhapatnam</option>
+                </select>
+            </div>
+            <div class="col-xl-2">
+                <label class="form-label">Gender</label>
+                <select class="form-select">
+                    <option value="">Select Gender</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+             <div class="col-xl-2">
+                <label class="form-label">Upload Profile Photo</label>
+                <input type="file" class="form-control">
+            </div>
+
+            <div class="col-xl-6">
+                <label class="form-label">Address</label>
+                <input type="text" class="form-control" placeholder="Enter Address">
+            </div>
+            <div class="col-xl-6">
+                <label class="form-label">About</label>
+                <textarea class="form-control" placeholder="Enter About"></textarea>
+            </div>
+           
+
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary">
+            Save
+        </button>
+    </div>
+</ng-template>
+
+<!-- delete  modal content-->
+
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+
+        <h5 class="mb-2">Are you sure?</h5>
+
+        <p class="text-muted mb-4">
+            Do you want to delete this?
+        </p>
+
+       <button class="btn me-2"
+    style="background:#845ef7;color:#fff;"
+    (click)="modal.close()">
+    Delete
+</button>
+
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+</ng-template>
+
+
+<!-- View Details Modal -->
+<ng-template #viewDetailsModal let-modal>
+
+    <div class="modal-header">
+        <h5 class="modal-title">Instructor Details</h5>
+
+        <button type="button" class="btn-close" (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row">
+
+            <!-- LEFT PROFILE -->
+
+            <div class="col-xl-3">
+
+                <div class="card custom-card">
+                    <div class="card-body">
+
+                        <div class="text-center">
+
+                            <img src="./assets/images/media/media-52.jpg" class="rounded-circle mb-3" width="80"
+                                height="80">
+
+                            <h5 class="mb-1">
+                                Raj Chaudhari
+                            </h5>
+
+                            <p class="text-muted mb-3">
+                                Senior Angular Instructor
+                            </p>
+
+                        </div>
+
+                        <div>
+
+                            <p class="mb-2">
+                                <strong>Email</strong><br>
+                                raj@gmail.com
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Phone</strong><br>
+                                +91 9876543210
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Country</strong>
+                                India
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Postel code</strong>
+                                444704
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Gender</strong>
+                                Male
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Organization</strong><br>
+                                WebMedia
+                            </p>
+
+                            <p class="mb-0">
+                                <strong>Website</strong><br>
+                                www.webmedia.com
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT SECTION -->
+
+            <div class="col-xl-9">
+
+                <div class="card custom-card">
+
+                    <div class="card-body">
+
+                        <ul ngbNav #nav="ngbNav" [activeId]="1" class="nav nav-tabs">
+
+                            <!-- DETAILS -->
+
+                            <li [ngbNavItem]="1">
+
+                                <button ngbNavLink>
+                                    Enrolled Courses
+                                </button>
+
+                                <ng-template ngbNavContent>
+
+                                    <div class="row g-3 mt-2">
+
+                                        @for(course of enrolledCourses; track $index){
+
+                                        <div class="col-xl-4 col-lg-6 col-md-6">
+
+                                            <div class="card custom-card overflow-hidden">
+
+                                                <div class="position-relative">
+
+                                                    <span class="badge bg-primary position-absolute m-2">
+                                                        {{course.category}}
+                                                    </span>
+
+                                                    <img [src]="course.image" class="card-img-top"
+                                                        style="height:180px;object-fit:cover;">
+
+                                                    <span class="badge bg-dark position-absolute bottom-0 end-0 m-2">
+                                                        ⭐ {{course.rating}}
+                                                    </span>
+
+                                                </div>
+
+                                                <div class="card-body">
+
+                                                    <h6>{{course.title}}</h6>
+
+                                                    <div class="d-flex justify-content-between text-muted">
+                                                        <span>{{course.lessons}} Lessons</span>
+                                                        <span>{{course.enroll}} Enroll</span>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="card-footer d-flex justify-content-between">
+                                                    <h6 class="text-success mb-0">
+                                                        ${{course.price}}
+                                                    </h6>
+
+                                                    <button class="btn btn-success btn-sm">
+                                                        Details
+                                                    </button>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        }
+
+                                    </div>
+
+                                </ng-template>
+
+                            </li>
+
+                            <!-- COURSES -->
+
+                            <li [ngbNavItem]="2">
+
+                                <button ngbNavLink>
+                                    Certificates
+                                </button>
+                                <ng-template ngbNavContent>
+
+                                    <div class="row g-3 mt-2">
+
+                                        @for(image of certificateImages; track $index){
+
+                                        <div class="col-xl-4 col-lg-4 col-md-6">
+
+                                            <div class="card custom-card">
+
+                                                <img [src]="image" class="card-img-top rounded"
+                                                    style="height:220px; object-fit:cover;">
+
+                                                <div class="card-body text-center">
+
+                                                    <h6 class="mb-2">
+                                                        Certificate {{ $index + 1 }}
+                                                    </h6>
+
+                                                    <button class="btn btn-primary btn-sm">
+                                                        View Certificate
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        }
+
+                                    </div>
+
+                                </ng-template>
+
+                            </li>
+
+                            <!-- LIVE CLASSES -->
+
+                            <li [ngbNavItem]="3">
+
+                                <button ngbNavLink>
+                                    Payment Histroy
+                                </button>
+
+                                <ng-template ngbNavContent>
+
+                                    <div class="row mt-3 mb-3">
+                                        <div class="col-md-6 mb-2">
+                                            <label class="fw-semibold">
+                                                Payment Method
+                                            </label>
+                                            <p>UPI</p>
+                                        </div>
+
+                                        <div class="col-md-6 mb-2">
+                                            <label class="fw-semibold">
+                                                Amount
+                                            </label>
+                                            <p>50,000</p>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="fw-semibold">
+                                                Date
+                                            </label>
+                                            <p>15/04/2025</p>
+                                        </div>
+
+
+
+                                    </div>
+
+                                </ng-template>
+
+                            </li>
+
+
+
+                        </ul>
+
+                        <div class="mt-3" [ngbNavOutlet]="nav">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button class="btn btn-secondary" (click)="modal.close()">
+            Close
+        </button>
+
+    </div>
+
+</ng-template>
+
+<!-- eye Modal -->
+<ng-template #studentProfileModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Student Details</h5>
+        <button type="button" class="btn-close"
+            (click)="modal.dismiss()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row g-3">
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">First Name</label>
+                <div>Rohit</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Last Name</label>
+                <div>Sharma</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Phone</label>
+                <div>876543210</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Email</label>
+                <div>rohit@example.com</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Country</label>
+                <div>Nepal</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">State</label>
+                <div>Kathmandu</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">City</label>
+                <div>Kathmandu</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Postal Code</label>
+                <div>44600</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Gender</label>
+                <div>Male</div>
+            </div>
+
+            <div class="col-xl-9">
+                <label class="fw-bold text-muted">Address</label>
+                <div>Main Road, Kathmandu</div>
+            </div>
+
+            <div class="col-xl-12">
+                <label class="fw-bold text-muted">About</label>
+                <div>
+                    Passionate learner interested in Angular,
+                    React and Full Stack Development.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary"
+            (click)="modal.dismiss()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<!-- unverify Modal -->
+<ng-template #unverifiedStudentModal let-modal>
+
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-user-forbid-line mb-3"
+            style="font-size:50px;color:#845ef7;">
+        </i>
+
+        <h5 class="mb-2">
+            Unverify Student?
+        </h5>
+
+        <p class="text-muted mb-4">
+            Do you want to mark this student as unverified?
+        </p>
+
+        <button class="btn me-2"
+            style="background:#845ef7;color:#fff;"
+            (click)="modal.close()">
+            Unverify
+        </button>
+
+        <button class="btn btn-light"
+            (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+
+</ng-template>
+
+
+<!-- ban Modal -->
+ <ng-template #banStudentModal let-modal>
+
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-user-unfollow-line mb-3"
+            style="font-size:50px;color:#dc3545;">
+        </i>
+
+        <h5 class="mb-2">
+            Ban Student?
+        </h5>
+
+        <p class="text-muted mb-4">
+            Do you want to ban this student?
+        </p>
+
+        <button class="btn btn-danger me-2"
+            (click)="modal.close()">
+            Ban
+        </button>
+
+        <button class="btn btn-light"
+            (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+
+</ng-template>

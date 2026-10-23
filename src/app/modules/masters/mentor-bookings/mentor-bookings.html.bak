@@ -1,0 +1,1516 @@
+<div class="col-xl-12 mx-auto">
+
+    <!-- Top Header Bar with View Switcher & Title -->
+    <div class="card custom-card border-0 shadow-sm mb-3">
+        <div class="card-header justify-content-between align-items-center flex-wrap gap-2 py-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="avatar avatar-md bg-primary-transparent text-primary rounded-3">
+                    <i class="ri-calendar-todo-line fs-20"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">Mentor Session Bookings</h5>
+                    <small class="text-muted">Manage mentor slots, student bookings, Zoom meetings, payment status and session lifecycle</small>
+                </div>
+            </div>
+
+            <!-- View Mode Switcher Pills & Refresh -->
+            <div class="d-flex align-items-center gap-2">
+                <div class="btn-group view-switcher-group" role="group">
+                    <button type="button" class="btn btn-sm" 
+                            [class.btn-primary]="activeViewMode === 'slot_wise'"
+                            [class.btn-outline-light]="activeViewMode !== 'slot_wise'"
+                            [class.text-dark]="activeViewMode !== 'slot_wise'"
+                            (click)="switchViewMode('slot_wise')">
+                        <i class="ri-layout-grid-line me-1 align-middle"></i> Slot-Wise Bookings
+                    </button>
+                    <button type="button" class="btn btn-sm" 
+                            [class.btn-primary]="activeViewMode === 'table'"
+                            [class.btn-outline-light]="activeViewMode !== 'table'"
+                            [class.text-dark]="activeViewMode !== 'table'"
+                            (click)="switchViewMode('table')">
+                        <i class="ri-table-line me-1 align-middle"></i> All Bookings (Table)
+                    </button>
+                </div>
+
+                <button class="btn btn-outline-light btn-wave btn-sm text-dark" 
+                        (click)="refreshAll()" 
+                        title="Refresh Data">
+                    <i class="ri-refresh-line align-middle me-1"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW MODE 1: SLOT-WISE STUDENT BOOKINGS EXPLORER
+         ==================================================================== -->
+    @if (activeViewMode === 'slot_wise') {
+        
+        <!-- Mentor Selection & Filters Ribbon -->
+        <div class="card custom-card border-0 shadow-sm mb-3">
+            <div class="card-body p-3">
+                <div class="row g-2 align-items-end">
+                    <!-- Mentor Dropdown -->
+                    <div class="col-lg-4 col-md-6">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-user-star-line text-primary me-1"></i> Select Mentor
+                        </label>
+                        <select class="form-select select-mentor-highlight" [(ngModel)]="selectedSlotMentorId" (change)="onSlotMentorChange()">
+                            <option value="" disabled>-- Select a Mentor --</option>
+                            @for (mentor of mentorsList; track mentor.id) {
+                                <option [value]="mentor.id">
+                                    {{ mentor.full_name }} ({{ mentor.qualification || 'Mentor' }})
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-calendar-event-line text-primary me-1"></i> Booking Date
+                        </label>
+                        <input type="date" class="form-control form-control-sm" [(ngModel)]="slotFilterDate" (change)="onSlotFilterChange()">
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-filter-3-line text-primary me-1"></i> Status
+                        </label>
+                        <select class="form-select form-select-sm" [(ngModel)]="slotFilterStatus" (change)="onSlotFilterChange()">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending ⏳</option>
+                            <option value="confirmed">Confirmed ✅</option>
+                            <option value="completed">Completed 🏁</option>
+                            <option value="rejected">Rejected ❌</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="col-lg-3 col-md-8">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-search-line text-primary me-1"></i> Search Student / Booking #
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" placeholder="Student name, mobile, email..." 
+                                   [(ngModel)]="slotSearchTerm" (input)="onSlotFilterChange()">
+                        </div>
+                    </div>
+
+                    <!-- Reset Button -->
+                    <div class="col-lg-1 col-md-4 text-end">
+                        <button class="btn btn-outline-secondary btn-sm w-100" (click)="resetSlotFilters()" title="Reset Filters">
+                            <i class="ri-filter-off-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State for Slot-Wise -->
+        @if (isLoadingSlotWise) {
+            <div class="card custom-card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <span class="spinner-border spinner-border-lg text-primary mb-3"></span>
+                    <h6 class="text-dark fw-bold mb-1">Loading Mentor Slots & Student Bookings...</h6>
+                    <p class="text-muted fs-12 mb-0">Fetching real-time slots and reservations for this mentor.</p>
+                </div>
+            </div>
+        } @else if (slotWiseData && slotWiseData.mentor) {
+            
+            <!-- Mentor Summary & KPI Banner -->
+            <div class="card custom-card border-0 shadow-sm mb-3 mentor-banner-card overflow-hidden">
+                <div class="card-body p-3">
+                    <div class="row align-items-center g-3">
+                        <!-- Left: Mentor Info Profile -->
+                        <div class="col-xl-5 col-lg-6">
+                            <div class="d-flex align-items-center gap-3">
+                                <img [src]="getPhotoUrl(slotWiseData.mentor.photo)" alt="Mentor Photo" 
+                                     class="avatar avatar-xxl avatar-rounded border border-2 border-white shadow-sm flex-shrink-0">
+                                <div class="overflow-hidden">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <h5 class="fw-bold text-dark mb-0">{{ slotWiseData.mentor.full_name }}</h5>
+                                        <span class="badge bg-primary-transparent fs-11">{{ slotWiseData.mentor.qualification || 'Mentor' }}</span>
+                                    </div>
+                                    <div class="text-muted fs-12 mt-1">
+                                        <i class="ri-phone-line text-primary me-1"></i>{{ slotWiseData.mentor.mobile_number || '-' }} 
+                                        <span class="mx-1">•</span>
+                                        <i class="ri-mail-line text-primary me-1"></i>{{ slotWiseData.mentor.email || '-' }}
+                                    </div>
+                                    <div class="text-muted fs-12 mt-1">
+                                        <strong>Expert in:</strong> {{ slotWiseData.mentor.expert_in || 'All Topics' }}
+                                        @if (slotWiseData.mentor.experience) {
+                                             <span class="badge bg-light text-dark ms-2">{{ slotWiseData.mentor.experience }} Exp</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Mentor Booking Metrics -->
+                        <div class="col-xl-7 col-lg-6">
+                            <div class="row g-2 text-center">
+                                <div class="col-sm-2 col-4">
+                                    <div class="p-2 rounded bg-light border">
+                                        <span class="text-muted fs-11 d-block fw-medium">Slots</span>
+                                        <h5 class="fw-bold mb-0 text-dark">{{ slotWiseData.summary.total_slots }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="p-2 rounded bg-primary-transparent border border-primary-subtle">
+                                        <span class="text-primary fs-11 d-block fw-medium">Total</span>
+                                        <h5 class="fw-bold mb-0 text-primary">{{ slotWiseData.summary.total_bookings }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="p-2 rounded bg-warning-transparent border border-warning-subtle">
+                                        <span class="text-warning fs-11 d-block fw-medium">Pending</span>
+                                        <h5 class="fw-bold mb-0 text-warning">{{ slotWiseData.summary.pending_bookings }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="p-2 rounded bg-success-transparent border border-success-subtle">
+                                        <span class="text-success fs-11 d-block fw-medium">Confirmed</span>
+                                        <h5 class="fw-bold mb-0 text-success">{{ slotWiseData.summary.confirmed_bookings }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="p-2 rounded bg-info-transparent border border-info-subtle">
+                                        <span class="text-info fs-11 d-block fw-medium">Completed</span>
+                                        <h5 class="fw-bold mb-0 text-info">{{ slotWiseData.summary.completed_bookings }}</h5>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="p-2 rounded bg-danger-transparent border border-danger-subtle">
+                                        <span class="text-danger fs-11 d-block fw-medium">Rejected</span>
+                                        <h5 class="fw-bold mb-0 text-danger">{{ slotWiseData.summary.rejected_bookings }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slots Breakdown Header & Toggle Actions -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="ri-time-zone-line text-primary me-1"></i> Mentor Slots & Grouped Student Bookings
+                    </h6>
+                    <span class="badge bg-primary text-white">{{ slotWiseData.slots.length }} Slot(s)</span>
+                </div>
+
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-secondary" (click)="expandAllSlots()">
+                        <i class="ri-expand-vertical-line me-1"></i> Expand All
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" (click)="collapseAllSlots()">
+                        <i class="ri-collapse-vertical-line me-1"></i> Collapse All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Slots List Accordion / Grid -->
+            @if (slotWiseData.slots.length > 0) {
+                <div class="d-flex flex-column gap-3 mb-4">
+                    @for (slot of slotWiseData.slots; track slot.slot_id; let slotIdx = $index) {
+                        <div class="card custom-card border shadow-sm slot-group-card">
+                            <!-- Slot Card Header -->
+                            <div class="card-header slot-header-bar cursor-pointer justify-content-between align-items-center py-2 px-3"
+                                 (click)="toggleSlotCollapse(slot)">
+                                
+                                <div class="d-flex align-items-center flex-wrap gap-2">
+                                    <!-- Day Badge -->
+                                    <span class="badge bg-primary fs-12 px-2 py-1">
+                                        <i class="ri-calendar-line me-1"></i>{{ slot.day_of_week }}
+                                    </span>
+                                    <!-- Time Badge -->
+                                    <span class="badge bg-light text-dark font-monospace fs-12 px-2 py-1 border">
+                                        <i class="ri-time-line text-muted me-1"></i>{{ slot.start_time }} - {{ slot.end_time }}
+                                    </span>
+                                    <!-- Slot Status -->
+                                    <span class="badge" [class.bg-success-transparent]="slot.status === 'active'" [class.bg-secondary-transparent]="slot.status !== 'active'">
+                                        {{ slot.status | uppercase }}
+                                    </span>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <!-- Booking Counts Summary Badges -->
+                                    <span class="badge bg-primary-transparent text-primary fw-semibold fs-11">
+                                        {{ slot.total_bookings_count }} Bookings
+                                    </span>
+                                    @if (slot.pending_count > 0) {
+                                        <span class="badge bg-warning-transparent text-warning fs-11">{{ slot.pending_count }} Pending</span>
+                                    }
+                                    @if (slot.confirmed_count > 0) {
+                                        <span class="badge bg-success-transparent text-success fs-11">{{ slot.confirmed_count }} Confirmed</span>
+                                    }
+                                    @if (slot.completed_count > 0) {
+                                        <span class="badge bg-info-transparent text-info fs-11">{{ slot.completed_count }} Completed</span>
+                                    }
+                                    @if (slot.rejected_count > 0) {
+                                        <span class="badge bg-danger-transparent text-danger fs-11">{{ slot.rejected_count }} Rejected</span>
+                                    }
+
+                                    <!-- Chevron -->
+                                    <i class="ri-arrow-down-s-line fs-18 text-muted transition-transform" 
+                                       [class.rotate-180]="!slot.is_collapsed"></i>
+                                </div>
+                            </div>
+
+                            <!-- Slot Bookings List Body -->
+                            @if (!slot.is_collapsed) {
+                                <div class="card-body p-0">
+                                    @if (slot.bookings && slot.bookings.length > 0) {
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width:14%">Booking #</th>
+                                                        <th style="width:18%">Student Details</th>
+                                                        <th style="width:14%">Booking Date & Time</th>
+                                                        <th style="width:16%">Topic & Notes</th>
+                                                        <th style="width:16%">Meeting / Session</th>
+                                                        <th style="width:10%">Payment</th>
+                                                        <th style="width:12%">Status & Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (booking of slot.bookings; track booking.id) {
+                                                        <tr [class.table-warning-subtle]="booking.status === 'pending'">
+                                                            <!-- Booking # -->
+                                                            <td>
+                                                                <span class="fw-bold text-primary fs-13 d-block">{{ booking.booking_number }}</span>
+                                                                <small class="text-muted fs-11">
+                                                                    <i class="ri-time-line me-1"></i>{{ booking.created_at | date:'shortDate' }}
+                                                                </small>
+                                                            </td>
+
+                                                            <!-- Student Details -->
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-2">
+                                                                    <div class="avatar avatar-sm avatar-rounded bg-primary-transparent text-primary fw-bold">
+                                                                        {{ (booking.student?.full_name?.charAt(0) || 'S') | uppercase }}
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="fw-semibold text-dark d-block">{{ booking.student?.full_name || 'Student #' + (booking.student?.id || '-') }}</span>
+                                                                        <small class="text-muted d-block fs-11">
+                                                                            <i class="ri-phone-line me-1"></i>{{ booking.student?.mobile || '-' }}
+                                                                        </small>
+                                                                        <small class="text-muted d-block fs-11">
+                                                                            <i class="ri-mail-line me-1"></i>{{ booking.student?.email || '-' }}
+                                                                        </small>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Date & Time -->
+                                                            <td>
+                                                                <span class="fw-medium text-dark d-block">
+                                                                    <i class="ri-calendar-line text-primary me-1"></i>{{ booking.booking_date | date:'mediumDate' }}
+                                                                </span>
+                                                                <span class="badge bg-light text-dark font-monospace fs-11 mt-1">
+                                                                    <i class="ri-time-line me-1 text-muted"></i>{{ booking.start_time }} - {{ booking.end_time }}
+                                                                </span>
+                                                            </td>
+
+                                                            <!-- Topic & Notes -->
+                                                            <td>
+                                                                <strong class="fs-12 text-dark d-block">{{ booking.topic || 'General Mentorship' }}</strong>
+                                                                @if (booking.student_notes) {
+                                                                    <small class="text-muted d-block text-truncate" style="max-width: 180px;" [title]="booking.student_notes">
+                                                                        <i class="ri-chat-1-line me-1"></i>{{ booking.student_notes }}
+                                                                    </small>
+                                                                }
+                                                            </td>
+
+                                                            <!-- Meeting / Connection (Zoom / Google Meet / None) -->
+                                                            <td>
+                                                                @if (isZoomBooking(booking)) {
+                                                                    <div>
+                                                                        @if (getZoomStatus(booking) === 'scheduled' || getZoomMeetingId(booking)) {
+                                                                            <div class="d-flex align-items-center gap-1 mb-1">
+                                                                                <span class="badge zoom-badge-scheduled fs-11">
+                                                                                    <i class="ri-video-chat-line me-1"></i>Zoom Scheduled
+                                                                                </span>
+                                                                            </div>
+                                                                            @if (getZoomJoinUrl(booking)) {
+                                                                                <div class="d-flex align-items-center gap-1">
+                                                                                    <a [href]="getZoomJoinUrl(booking)" target="_blank" rel="noopener noreferrer" class="zoom-link-btn" title="Join Zoom Meeting">
+                                                                                        <i class="ri-video-on-line"></i> Join Zoom
+                                                                                    </a>
+                                                                                    <button type="button" class="btn btn-sm btn-icon btn-light text-muted" (click)="copyJoinUrl(getZoomJoinUrl(booking))" title="Copy Join URL">
+                                                                                        <i class="ri-file-copy-line"></i>
+                                                                                    </button>
+                                                                                </div>
+                                                                            }
+                                                                        } @else if (getZoomStatus(booking) === 'failed') {
+                                                                            <div class="d-flex align-items-center gap-1">
+                                                                                <span class="badge zoom-badge-failed fs-11">
+                                                                                    <i class="ri-error-warning-line me-1"></i>Zoom Failed
+                                                                                </span>
+                                                                                <button type="button" class="btn btn-xs btn-outline-danger" [disabled]="isSyncingZoom[booking.id]" (click)="syncZoom(booking, $event)" title="Retry Zoom Sync">
+                                                                                    <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingZoom[booking.id]"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        } @else {
+                                                                            <div class="d-flex align-items-center gap-1">
+                                                                                <span class="badge zoom-badge-pending fs-11">
+                                                                                    <i class="ri-time-line me-1"></i>Zoom Pending
+                                                                                </span>
+                                                                                <button type="button" class="btn btn-xs btn-outline-warning" [disabled]="isSyncingZoom[booking.id]" (click)="syncZoom(booking, $event)" title="Sync Zoom Now">
+                                                                                    <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingZoom[booking.id]"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                } @else if (isGoogleMeetBooking(booking)) {
+                                                                    <div class="d-flex align-items-center gap-1">
+                                                                        <a [href]="booking.google_meet_url" target="_blank" rel="noopener noreferrer" class="meet-link-btn" title="Open Google Meet Session">
+                                                                            <i class="ri-video-line text-primary"></i> Open Meet
+                                                                        </a>
+                                                                        <button type="button" class="btn btn-sm btn-icon btn-light text-muted" (click)="copyMeetLink(booking.google_meet_url)" title="Copy Link">
+                                                                            <i class="ri-file-copy-line"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                } @else {
+                                                                    <div class="d-flex align-items-center gap-1">
+                                                                        <span class="text-muted fs-11 fst-italic">
+                                                                            <i class="ri-video-off-line me-1"></i>No Meeting
+                                                                        </span>
+                                                                        @if (booking.status === 'confirmed') {
+                                                                            <button type="button" class="btn btn-xs btn-outline-primary" [disabled]="isSyncingZoom[booking.id]" (click)="syncZoom(booking, $event)" title="Create Zoom Meeting">
+                                                                                <i class="ri-video-add-line"></i>
+                                                                            </button>
+                                                                        }
+                                                                    </div>
+                                                                }
+                                                            </td>
+
+                                                            <!-- Payment Status -->
+                                                            <td>
+                                                                <span class="badge px-2 py-1 fs-11 fw-semibold d-inline-block" [ngClass]="getPaymentBadgeClass(booking.payment_status)">
+                                                                    {{ getBookingPaymentStatus(booking) }}
+                                                                </span>
+                                                                <span class="text-muted fs-11 d-block mt-1 fw-medium">
+                                                                    {{ booking.amount && booking.amount !== '0.00' ? ('₹' + booking.amount) : 'Free' }}
+                                                                </span>
+                                                            </td>
+
+                                                            <!-- Status & Quick Actions -->
+                                                            <td>
+                                                                <div class="d-flex flex-column gap-1">
+                                                                    <span class="badge px-2 py-1 fs-11 fw-semibold text-center" [ngClass]="getStatusBadgeClass(booking.status)">
+                                                                        @if (booking.status === 'pending') { ⏳ PENDING }
+                                                                        @else if (booking.status === 'confirmed') { ✅ CONFIRMED }
+                                                                        @else if (booking.status === 'completed') { 🏁 COMPLETED }
+                                                                        @else if (booking.status === 'rejected') { ❌ REJECTED }
+                                                                        @else { {{ booking.status | uppercase }} }
+                                                                    </span>
+
+                                                                    <div class="hstack gap-1 justify-content-center mt-1">
+                                                                        <!-- View Eye -->
+                                                                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-light text-primary" 
+                                                                           (click)="openViewModal(booking, viewBookingModal)" title="View Details">
+                                                                            <i class="ri-eye-line"></i>
+                                                                        </a>
+
+                                                                        <!-- Accept -->
+                                                                        @if (booking.status === 'pending') {
+                                                                            <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success-light text-success" 
+                                                                               (click)="openAcceptModal(booking, acceptModal)" title="Accept & Add Google Meet">
+                                                                                <i class="ri-check-line"></i>
+                                                                            </a>
+                                                                        }
+
+                                                                        <!-- Reject -->
+                                                                        @if (booking.status === 'pending') {
+                                                                            <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger-light text-danger" 
+                                                                               (click)="openRejectModal(booking, rejectModal)" title="Reject Booking">
+                                                                                <i class="ri-close-line"></i>
+                                                                            </a>
+                                                                        }
+
+                                                                        <!-- Edit Meet Link (If Google Meet) -->
+                                                                        @if (booking.status === 'confirmed' && isGoogleMeetBooking(booking)) {
+                                                                            <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-info-light text-info" 
+                                                                               (click)="openEditMeetModal(booking, editMeetModal)" title="Edit Google Meet Link">
+                                                                                <i class="ri-edit-line"></i>
+                                                                            </a>
+                                                                        }
+
+                                                                        <!-- Sync Zoom (If Confirmed) -->
+                                                                        @if (booking.status === 'confirmed' && (isZoomBooking(booking) || !booking.google_meet_url)) {
+                                                                            <button type="button" class="btn btn-sm btn-icon btn-light text-primary" 
+                                                                                    [disabled]="isSyncingZoom[booking.id]" 
+                                                                                    (click)="syncZoom(booking, $event)" title="Sync Zoom Meeting">
+                                                                                <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingZoom[booking.id]"></i>
+                                                                            </button>
+                                                                        }
+
+                                                                        <!-- Complete -->
+                                                                        @if (booking.status === 'confirmed') {
+                                                                            <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary-light text-primary" 
+                                                                               (click)="markSessionCompleted(booking)" title="Mark Session Completed">
+                                                                                <i class="ri-checkbox-circle-fill"></i>
+                                                                            </a>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    } @else {
+                                        <div class="text-center py-4 px-3 text-muted">
+                                            <i class="ri-calendar-event-line fs-28 d-block mb-1 text-muted"></i>
+                                            <p class="mb-0 fs-13">No student bookings found for this time slot with the current filters.</p>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            } @else {
+                <div class="card custom-card border-0 shadow-sm text-center py-5">
+                    <div class="card-body">
+                        <i class="ri-calendar-close-line fs-40 text-muted d-block mb-2"></i>
+                        <h6 class="fw-bold text-dark">No Available Slots Found</h6>
+                        <p class="text-muted fs-12 mb-0">This mentor does not have any recurring time slots configured yet.</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Unassigned Bookings Section (If any) -->
+            @if (slotWiseData.unassigned_bookings && slotWiseData.unassigned_bookings.length > 0) {
+                <div class="card custom-card border border-warning shadow-sm mt-3 mb-4">
+                    <div class="card-header bg-warning-transparent justify-content-between align-items-center py-2 px-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="ri-alert-line text-warning fs-18"></i>
+                            <h6 class="fw-bold text-dark mb-0">Unassigned / Custom Bookings ({{ slotWiseData.unassigned_bookings.length }})</h6>
+                        </div>
+                        <span class="badge bg-warning text-dark fs-11">Not mapped to standard slot</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:14%">Booking #</th>
+                                        <th style="width:18%">Student Details</th>
+                                        <th style="width:14%">Booking Date & Time</th>
+                                        <th style="width:16%">Topic</th>
+                                        <th style="width:16%">Meeting / Session</th>
+                                        <th style="width:10%">Payment</th>
+                                        <th style="width:12%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (booking of slotWiseData.unassigned_bookings; track booking.id) {
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold text-primary fs-13">{{ booking.booking_number }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold text-dark d-block">{{ booking.student?.full_name || 'Student' }}</span>
+                                                <small class="text-muted d-block fs-11">{{ booking.student?.mobile || '-' }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="fw-medium text-dark d-block">{{ booking.booking_date | date:'mediumDate' }}</span>
+                                                <small class="text-muted font-monospace">{{ booking.start_time }} - {{ booking.end_time }}</small>
+                                            </td>
+                                            <td>{{ booking.topic || '-' }}</td>
+                                            <td>
+                                                @if (isZoomBooking(booking)) {
+                                                    <span class="badge zoom-badge-scheduled fs-11">
+                                                        <i class="ri-video-chat-line me-1"></i>Zoom
+                                                    </span>
+                                                } @else if (booking.google_meet_url) {
+                                                    <a [href]="booking.google_meet_url" target="_blank" rel="noopener noreferrer" class="meet-link-btn">
+                                                        <i class="ri-video-line"></i> Meet Link
+                                                    </a>
+                                                } @else {
+                                                    <span class="text-muted fs-11">None</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge px-2 py-1 fs-11" [ngClass]="getPaymentBadgeClass(booking.payment_status)">
+                                                    {{ getBookingPaymentStatus(booking) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="hstack gap-1">
+                                                    <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-light text-primary" 
+                                                       (click)="openViewModal(booking, viewBookingModal)">
+                                                        <i class="ri-eye-line"></i>
+                                                    </a>
+                                                    @if (booking.status === 'pending') {
+                                                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success-light text-success" 
+                                                           (click)="openAcceptModal(booking, acceptModal)">
+                                                            <i class="ri-check-line"></i>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        } @else {
+            <!-- Empty State when no mentor selected -->
+            <div class="card custom-card border-0 shadow-sm text-center py-5">
+                <div class="card-body">
+                    <i class="ri-user-search-line fs-48 text-primary d-block mb-3"></i>
+                    <h5 class="fw-bold text-dark mb-1">Select a Mentor to View Slot-Wise Bookings</h5>
+                    <p class="text-muted fs-13 mb-3">Choose a mentor from the dropdown above to inspect their available slots, student session bookings, and Zoom meetings.</p>
+                </div>
+            </div>
+        }
+
+    }
+
+    <!-- ====================================================================
+         VIEW MODE 2: ALL BOOKINGS LIST (GLOBAL FLAT TABLE VIEW)
+         ==================================================================== -->
+    @if (activeViewMode === 'table') {
+        
+        <!-- KPI Metric Cards -->
+        <div class="row g-3 mb-3">
+            <!-- Total -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-primary]="selectedStatus === 'all'" (click)="onStatusTabChange('all')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Total Bookings</span>
+                        <h4 class="fw-bold mb-0 text-dark">{{ kpiCounts.all }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-primary-transparent text-primary">
+                        <i class="ri-calendar-todo-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-warning]="selectedStatus === 'pending'" (click)="onStatusTabChange('pending')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Pending ⏳</span>
+                        <h4 class="fw-bold mb-0 text-warning">{{ kpiCounts.pending }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-warning-transparent text-warning">
+                        <i class="ri-time-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmed -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-success]="selectedStatus === 'confirmed'" (click)="onStatusTabChange('confirmed')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Confirmed ✅</span>
+                        <h4 class="fw-bold mb-0 text-success">{{ kpiCounts.confirmed }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-success-transparent text-success">
+                        <i class="ri-checkbox-circle-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-info]="selectedStatus === 'completed'" (click)="onStatusTabChange('completed')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Completed 🏁</span>
+                        <h4 class="fw-bold mb-0 text-info">{{ kpiCounts.completed }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-info-transparent text-info">
+                        <i class="ri-flag-2-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rejected -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-danger]="selectedStatus === 'rejected'" (click)="onStatusTabChange('rejected')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Rejected ❌</span>
+                        <h4 class="fw-bold mb-0 text-danger">{{ kpiCounts.rejected }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-danger-transparent text-danger">
+                        <i class="ri-close-circle-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancelled -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-secondary]="selectedStatus === 'cancelled'" (click)="onStatusTabChange('cancelled')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Cancelled</span>
+                        <h4 class="fw-bold mb-0 text-muted">{{ kpiCounts.cancelled }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-light text-muted">
+                        <i class="ri-forbid-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Table Card -->
+        <div class="card custom-card border-0 shadow-sm">
+            <div class="card-body pt-3 pb-2 px-3">
+                <!-- Status Tabs Bar -->
+                <ul class="nav nav-status-tabs mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'all'" href="javascript:void(0)" (click)="onStatusTabChange('all')">
+                            All Bookings <span class="badge rounded-pill bg-light text-dark ms-1">{{ kpiCounts.all }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'pending'" href="javascript:void(0)" (click)="onStatusTabChange('pending')">
+                            Pending ⏳ <span class="badge rounded-pill bg-warning-transparent text-warning ms-1">{{ kpiCounts.pending }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'confirmed'" href="javascript:void(0)" (click)="onStatusTabChange('confirmed')">
+                            Confirmed ✅ <span class="badge rounded-pill bg-success-transparent text-success ms-1">{{ kpiCounts.confirmed }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'completed'" href="javascript:void(0)" (click)="onStatusTabChange('completed')">
+                            Completed 🏁 <span class="badge rounded-pill bg-info-transparent text-info ms-1">{{ kpiCounts.completed }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'rejected'" href="javascript:void(0)" (click)="onStatusTabChange('rejected')">
+                            Rejected ❌ <span class="badge rounded-pill bg-danger-transparent text-danger ms-1">{{ kpiCounts.rejected }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'cancelled'" href="javascript:void(0)" (click)="onStatusTabChange('cancelled')">
+                            Cancelled <span class="badge rounded-pill bg-light text-muted ms-1">{{ kpiCounts.cancelled }}</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Filters Bar -->
+                <div class="row g-2 align-items-center mb-3 p-2 bg-light rounded border">
+                    <!-- Search Input -->
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="ri-search-line text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search by Student, Mentor, Booking #..." [(ngModel)]="searchTerm" (input)="onSearchChange()">
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="col-md-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="ri-calendar-event-line text-muted"></i></span>
+                            <input type="date" class="form-control border-start-0" [(ngModel)]="filterDate" (change)="onDateFilterChange()">
+                        </div>
+                    </div>
+
+                    <!-- Mentor Dropdown Filter -->
+                    <div class="col-md-3">
+                        <select class="form-select form-select-sm" [(ngModel)]="filterMentorId" (change)="onMentorFilterChange()">
+                            <option value="">All Mentors</option>
+                            @for (mentor of mentorsList; track mentor.id) {
+                                <option [value]="mentor.id">{{ mentor.full_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Reset Filter Button -->
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-outline-secondary btn-sm w-100" (click)="resetFilters()">
+                            <i class="ri-filter-off-line me-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-responsive">
+                    <spk-reusable-tables tableClass="table text-nowrap align-middle" [showCheckbox]="false">
+                        <thead>
+                            <tr>
+                                <th style="width:13%">Booking #</th>
+                                <th style="width:16%">Student</th>
+                                <th style="width:16%">Mentor</th>
+                                <th style="width:14%">Session Date & Time</th>
+                                <th style="width:12%">Topic</th>
+                                <th style="width:15%">Meeting</th>
+                                <th style="width:8%">Payment</th>
+                                <th style="width:8%">Status</th>
+                                <th style="width:8%">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (isLoading) {
+                                <tr>
+                                    <td colspan="9" class="text-center py-4 text-muted">
+                                        <span class="spinner-border spinner-border-sm me-2 text-primary"></span> Loading bookings...
+                                    </td>
+                                </tr>
+                            } @else {
+                                @for (booking of bookings; track booking.id; let i = $index) {
+                                <tr>
+                                    <!-- Booking # -->
+                                    <td>
+                                        <span class="fw-bold text-primary fs-13 d-block">{{ booking.booking_number }}</span>
+                                        <small class="text-muted fs-11">
+                                            <i class="ri-time-line me-1"></i>{{ booking.created_at | date:'shortDate' }}
+                                        </small>
+                                    </td>
+
+                                    <!-- Student Info -->
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar avatar-sm avatar-rounded bg-primary-transparent text-primary fw-bold">
+                                                {{ (booking.student?.full_name?.charAt(0) || 'S') | uppercase }}
+                                            </div>
+                                            <div>
+                                                <span class="fw-semibold text-dark d-block">{{ booking.student?.full_name || 'Student #' + (booking.student?.id || '-') }}</span>
+                                                <small class="text-muted d-block fs-11"><i class="ri-phone-line me-1"></i>{{ booking.student?.mobile || '-' }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Mentor Info -->
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img [src]="getPhotoUrl(booking.mentor?.photo)" alt="Photo" class="avatar avatar-sm avatar-rounded">
+                                            <div>
+                                                <span class="fw-semibold text-dark d-block">{{ booking.mentor?.full_name || 'Mentor #' + (booking.mentor?.id || '-') }}</span>
+                                                <small class="text-muted d-block fs-11">{{ booking.mentor?.expert_in || '-' }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Session Date & Time -->
+                                    <td>
+                                        <span class="fw-medium text-dark d-block">
+                                            <i class="ri-calendar-line text-primary me-1"></i>{{ booking.booking_date | date:'mediumDate' }}
+                                        </span>
+                                        <span class="badge bg-light text-dark font-monospace fs-11 mt-1">
+                                            <i class="ri-time-line me-1 text-muted"></i>{{ booking.start_time }} - {{ booking.end_time }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Topic / Subject -->
+                                    <td>
+                                        <span class="text-truncate d-inline-block" style="max-width: 140px;" [title]="booking.topic || '-'">
+                                            {{ booking.topic || '-' }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Meeting Connection (Zoom / Google Meet / None) -->
+                                    <td>
+                                        @if (isZoomBooking(booking)) {
+                                            <div>
+                                                @if (getZoomStatus(booking) === 'scheduled' || getZoomMeetingId(booking)) {
+                                                    <div class="d-flex align-items-center gap-1 mb-1">
+                                                        <span class="badge zoom-badge-scheduled fs-11">
+                                                            <i class="ri-video-chat-line me-1"></i>Zoom Scheduled
+                                                        </span>
+                                                    </div>
+                                                    @if (getZoomJoinUrl(booking)) {
+                                                        <div class="d-flex align-items-center gap-1">
+                                                            <a [href]="getZoomJoinUrl(booking)" target="_blank" rel="noopener noreferrer" class="zoom-link-btn" title="Join Zoom Meeting">
+                                                                <i class="ri-video-on-line"></i> Join Zoom
+                                                            </a>
+                                                            <button type="button" class="btn btn-sm btn-icon btn-light text-muted" (click)="copyJoinUrl(getZoomJoinUrl(booking))" title="Copy Join URL">
+                                                                <i class="ri-file-copy-line"></i>
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                } @else if (getZoomStatus(booking) === 'failed') {
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <span class="badge zoom-badge-failed fs-11">
+                                                            <i class="ri-error-warning-line me-1"></i>Zoom Failed
+                                                        </span>
+                                                        <button type="button" class="btn btn-xs btn-outline-danger" [disabled]="isSyncingZoom[booking.id]" (click)="syncZoom(booking, $event)" title="Retry Zoom Sync">
+                                                            <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingZoom[booking.id]"></i>
+                                                        </button>
+                                                    </div>
+                                                } @else {
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <span class="badge zoom-badge-pending fs-11">
+                                                            <i class="ri-time-line me-1"></i>Zoom Pending
+                                                        </span>
+                                                        <button type="button" class="btn btn-xs btn-outline-warning" [disabled]="isSyncingZoom[booking.id]" (click)="syncZoom(booking, $event)" title="Sync Zoom Now">
+                                                            <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingZoom[booking.id]"></i>
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        } @else if (isGoogleMeetBooking(booking)) {
+                                            <div class="d-flex align-items-center gap-1">
+                                                <a [href]="booking.google_meet_url" target="_blank" rel="noopener noreferrer" class="meet-link-btn" title="Open Google Meet">
+                                                    <i class="ri-video-line text-primary"></i> Google Meet
+                                                </a>
+                                                <button type="button" class="btn btn-link btn-sm p-0 ms-1 text-muted" (click)="copyMeetLink(booking.google_meet_url)" title="Copy Meet Link">
+                                                    <i class="ri-file-copy-line"></i>
+                                                </button>
+                                            </div>
+                                        } @else {
+                                            <div class="d-flex align-items-center gap-1">
+                                                <span class="text-muted fs-11 fst-italic">
+                                                    <i class="ri-video-off-line me-1"></i>No Meeting
+                                                </span>
+                                                @if (booking.status === 'confirmed') {
+                                                    <button type="button" class="btn btn-xs btn-outline-primary" [disabled]="isSyncingZoom[booking.id]" (click)="syncZoom(booking, $event)" title="Create Zoom Meeting">
+                                                        <i class="ri-video-add-line"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
+                                    </td>
+
+                                    <!-- Payment Status -->
+                                    <td>
+                                        <span class="badge px-2 py-1 fs-11 fw-semibold d-inline-block" [ngClass]="getPaymentBadgeClass(booking.payment_status)">
+                                            {{ getBookingPaymentStatus(booking) }}
+                                        </span>
+                                        <small class="text-muted d-block mt-1">
+                                            {{ booking.amount && booking.amount !== '0.00' ? ('₹' + booking.amount) : 'Free' }}
+                                        </small>
+                                    </td>
+
+                                    <!-- Booking Status Badge -->
+                                    <td>
+                                        <span class="badge px-2 py-1 fs-11 fw-semibold" [ngClass]="getStatusBadgeClass(booking.status)">
+                                            @if (booking.status === 'pending') { ⏳ PENDING }
+                                            @else if (booking.status === 'confirmed') { ✅ CONFIRMED }
+                                            @else if (booking.status === 'completed') { 🏁 COMPLETED }
+                                            @else if (booking.status === 'rejected') { ❌ REJECTED }
+                                            @else { {{ booking.status | uppercase }} }
+                                        </span>
+                                    </td>
+
+                                    <!-- Action Buttons -->
+                                    <td>
+                                        <div class="hstack gap-1">
+                                            <!-- View Details (Eye) -->
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-light text-primary" 
+                                               (click)="openViewModal(booking, viewBookingModal)" title="View Booking Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+
+                                            <!-- Accept Action (Only if pending) -->
+                                            @if (booking.status === 'pending') {
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success-light text-success" 
+                                                   (click)="openAcceptModal(booking, acceptModal)" title="Accept & Add Google Meet">
+                                                    <i class="ri-check-line"></i>
+                                                </a>
+                                            }
+
+                                            <!-- Reject Action (Only if pending) -->
+                                            @if (booking.status === 'pending') {
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger-light text-danger" 
+                                                   (click)="openRejectModal(booking, rejectModal)" title="Reject Request">
+                                                    <i class="ri-close-line"></i>
+                                                </a>
+                                            }
+
+                                            <!-- Edit Meet Link Action (If confirmed & Google Meet) -->
+                                            @if (booking.status === 'confirmed' && isGoogleMeetBooking(booking)) {
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-info-light text-info" 
+                                                   (click)="openEditMeetModal(booking, editMeetModal)" title="Edit Google Meet Link">
+                                                    <i class="ri-edit-line"></i>
+                                                </a>
+                                            }
+
+                                            <!-- Sync Zoom Action (If confirmed & Zoom or Missing) -->
+                                            @if (booking.status === 'confirmed' && (isZoomBooking(booking) || !booking.google_meet_url)) {
+                                                <button type="button" class="btn btn-sm btn-icon btn-light text-primary" 
+                                                        [disabled]="isSyncingZoom[booking.id]" 
+                                                        (click)="syncZoom(booking, $event)" title="Sync Zoom Meeting">
+                                                    <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingZoom[booking.id]"></i>
+                                                </button>
+                                            }
+
+                                            <!-- Mark Complete Action (If confirmed) -->
+                                            @if (booking.status === 'confirmed') {
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary-light text-primary" 
+                                                   (click)="markSessionCompleted(booking)" title="Mark Session Completed">
+                                                    <i class="ri-checkbox-circle-fill"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                                } @empty {
+                                <tr>
+                                    <td colspan="9" class="text-center py-5 text-muted">
+                                        <i class="ri-calendar-close-line fs-32 d-block mb-2 text-muted"></i>
+                                        No mentor bookings found for this filter.
+                                    </td>
+                                </tr>
+                                }
+                            }
+                        </tbody>
+                    </spk-reusable-tables>
+                </div>
+
+                <!-- Pagination Bar -->
+                @if (total > 0) {
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3 pt-2 border-top">
+                        <span class="fs-12 text-muted">
+                            Showing {{ (page - 1) * limit + 1 }} to {{ page * limit > total ? total : page * limit }} of {{ total }} bookings
+                        </span>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item" [class.disabled]="page === 1">
+                                    <a class="page-link" href="javascript:void(0)" (click)="goToPage(page - 1)">Previous</a>
+                                </li>
+                                @for (p of [].constructor(totalPages); track $index; let idx = $index) {
+                                    <li class="page-item" [class.active]="page === (idx + 1)">
+                                        <a class="page-link" href="javascript:void(0)" (click)="goToPage(idx + 1)">{{ idx + 1 }}</a>
+                                    </li>
+                                }
+                                <li class="page-item" [class.disabled]="page === totalPages">
+                                    <a class="page-link" href="javascript:void(0)" (click)="goToPage(page + 1)">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            </div>
+        </div>
+
+    }
+
+</div>
+
+<!-- ==========================================
+     VIEW BOOKING DETAILS MODAL
+     ========================================== -->
+<ng-template #viewBookingModal let-modal>
+    <div class="modal-header justify-content-between">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h6 class="modal-title fw-bold mb-0">Booking Details #{{ selectedBooking?.booking_number }}</h6>
+            <span class="badge px-2 py-1 fs-12 fw-semibold" [ngClass]="getStatusBadgeClass(selectedBooking?.status || '')">
+                {{ selectedBooking?.status | uppercase }}
+            </span>
+            <span class="badge px-2 py-1 fs-12 fw-semibold" [ngClass]="getPaymentBadgeClass(selectedBooking?.payment_status)">
+                <i class="ri-secure-payment-line me-1"></i>{{ getBookingPaymentStatus(selectedBooking) }}
+            </span>
+        </div>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body" style="max-height: 80vh; overflow-y: auto;">
+        <!-- Session Overview Banner -->
+        <div class="p-3 bg-light rounded border mb-3">
+            <div class="row align-items-center g-2">
+                <div class="col-md-6">
+                    <span class="text-muted fs-12 d-block">Scheduled Session:</span>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="ri-calendar-line text-primary me-1"></i>
+                        {{ selectedBooking?.booking_date | date:'fullDate' }}
+                    </h6>
+                    <span class="badge bg-primary-transparent font-monospace fs-12 mt-1">
+                        <i class="ri-time-line me-1"></i>{{ selectedBooking?.start_time }} - {{ selectedBooking?.end_time }}
+                    </span>
+                    @if (getZoomDuration(selectedBooking)) {
+                        <span class="badge bg-light text-dark ms-2 font-monospace fs-12 border">
+                            {{ getZoomDuration(selectedBooking) }} mins
+                        </span>
+                    }
+                </div>
+                <div class="col-md-6 text-md-end mt-2 mt-md-0">
+                    <span class="text-muted fs-12 d-block">Session Fee & Status:</span>
+                    <span class="fw-bold fs-16 text-success">
+                        {{ selectedBooking?.amount && selectedBooking?.amount !== '0.00' ? ('₹' + selectedBooking?.amount) : 'Free Session' }}
+                    </span>
+                    <span class="badge ms-2" [ngClass]="getPaymentBadgeClass(selectedBooking?.payment_status)">
+                        {{ getBookingPaymentStatus(selectedBooking) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <!-- Student Information Card -->
+            <div class="col-md-6">
+                <div class="detail-section-card h-100">
+                    <h6 class="fs-13 fw-semibold text-primary border-bottom pb-2 mb-2">
+                        <i class="ri-user-line me-1"></i> Student Information
+                    </h6>
+                    <table class="table table-borderless table-sm mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted" width="100">Full Name:</td>
+                                <td class="fw-semibold text-dark">{{ selectedBooking?.student?.full_name || 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Mobile:</td>
+                                <td>{{ selectedBooking?.student?.mobile || 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Email ID:</td>
+                                <td class="word-break-anywhere">{{ selectedBooking?.student?.email || 'N/A' }}</td>
+                            </tr>
+                            @if (selectedBooking?.student?.gender) {
+                                <tr>
+                                    <td class="text-muted">Gender:</td>
+                                    <td>{{ selectedBooking?.student?.gender | uppercase }}</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mentor Information Card -->
+            <div class="col-md-6">
+                <div class="detail-section-card h-100">
+                    <h6 class="fs-13 fw-semibold text-primary border-bottom pb-2 mb-2">
+                        <i class="ri-user-star-line me-1"></i> Mentor Information
+                    </h6>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <img [src]="getPhotoUrl(selectedBooking?.mentor?.photo)" alt="Mentor Photo" class="avatar avatar-md avatar-rounded">
+                        <div>
+                            <span class="fw-bold text-dark d-block">{{ selectedBooking?.mentor?.full_name || 'N/A' }}</span>
+                            <small class="text-muted d-block">{{ selectedBooking?.mentor?.qualification || '' }}</small>
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mb-1">
+                        <strong>Expert In:</strong> {{ selectedBooking?.mentor?.expert_in || 'N/A' }}
+                    </small>
+                    @if (selectedBooking?.mentor?.mobile_number) {
+                        <small class="text-muted d-block">
+                            <i class="ri-phone-line me-1"></i>{{ selectedBooking?.mentor?.mobile_number }}
+                        </small>
+                    }
+                </div>
+            </div>
+
+            <!-- Topic & Student Notes -->
+            <div class="col-12">
+                <div class="detail-section-card">
+                    <h6 class="fs-13 fw-semibold text-primary border-bottom pb-2 mb-2">
+                        <i class="ri-question-answer-line me-1"></i> Session Topic & Notes
+                    </h6>
+                    <div class="mb-2">
+                        <strong class="fs-13 text-dark d-block">Topic:</strong>
+                        <p class="mb-0 text-muted">{{ selectedBooking?.topic || 'No topic specified' }}</p>
+                    </div>
+                    @if (selectedBooking?.student_notes) {
+                        <div>
+                            <strong class="fs-13 text-dark d-block">Student's Questions / Notes:</strong>
+                            <p class="mb-0 text-muted">{{ selectedBooking?.student_notes }}</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Payment Information Card -->
+            <div class="col-12">
+                <div class="detail-section-card">
+                    <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-2">
+                        <h6 class="fs-13 fw-semibold text-primary mb-0">
+                            <i class="ri-bank-card-line me-1"></i> Payment Information
+                        </h6>
+                        <span class="badge px-2 py-1 fs-11" [ngClass]="getPaymentBadgeClass(selectedBooking?.payment_status)">
+                            {{ getBookingPaymentStatus(selectedBooking) }}
+                        </span>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Session Amount</small>
+                            <span class="fw-bold text-dark fs-14">
+                                {{ selectedBooking?.amount && selectedBooking?.amount !== '0.00' ? ('₹' + selectedBooking?.amount) : '₹0.00 (Free)' }}
+                            </span>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Payment Method</small>
+                            <span class="fw-medium text-dark fs-13">
+                                {{ selectedBooking?.payment_method || (selectedBooking?.payment_status === 'paid' ? 'Razorpay' : 'N/A') }}
+                            </span>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Transaction / Payment ID</small>
+                            @if (selectedBooking?.razorpay_payment_id || selectedBooking?.transaction_id) {
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="font-monospace fs-12 text-dark text-truncate" style="max-width: 140px;">
+                                        {{ selectedBooking?.razorpay_payment_id || selectedBooking?.transaction_id }}
+                                    </span>
+                                    <button type="button" class="btn btn-xs btn-icon btn-light" (click)="copyTransactionId(selectedBooking?.razorpay_payment_id || selectedBooking?.transaction_id)" title="Copy Transaction ID">
+                                        <i class="ri-file-copy-line"></i>
+                                    </button>
+                                </div>
+                            } @else {
+                                <span class="text-muted fs-12">-</span>
+                            }
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Paid / Timestamp</small>
+                            <span class="text-muted fs-12">
+                                {{ (selectedBooking?.paid_at || selectedBooking?.created_at) | date:'medium' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==============================================================
+                 MEETING SESSION SECTION: ZOOM / GOOGLE MEET / NO MEETING
+                 ============================================================== -->
+            <div class="col-12">
+                @if (isZoomBooking(selectedBooking)) {
+                    <!-- DEDICATED ZOOM SESSION CARD -->
+                    <div class="zoom-session-card shadow-sm">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom pb-2 mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar avatar-sm bg-primary text-white rounded">
+                                    <i class="ri-video-chat-fill fs-16"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 fw-bold text-dark mb-0">Zoom Meeting Session</h6>
+                                    <small class="text-muted">Cloud Video Conference Details</small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2">
+                                @if (getZoomStatus(selectedBooking) === 'scheduled' || getZoomMeetingId(selectedBooking)) {
+                                    <span class="badge zoom-badge-scheduled px-2 py-1 fs-12 fw-semibold">
+                                        <i class="ri-checkbox-circle-line me-1"></i>Zoom Scheduled
+                                    </span>
+                                } @else if (getZoomStatus(selectedBooking) === 'failed') {
+                                    <span class="badge zoom-badge-failed px-2 py-1 fs-12 fw-semibold">
+                                        <i class="ri-error-warning-line me-1"></i>Zoom Failed
+                                    </span>
+                                } @else {
+                                    <span class="badge zoom-badge-pending px-2 py-1 fs-12 fw-semibold">
+                                        <i class="ri-time-line me-1"></i>Zoom Pending
+                                    </span>
+                                }
+
+                                <button type="button" class="btn btn-sm btn-outline-primary" 
+                                        [disabled]="isSyncingZoom[selectedBooking!.id]"
+                                        (click)="syncZoom(selectedBooking!)">
+                                    <span class="spinner-border spinner-border-sm me-1" *ngIf="isSyncingZoom[selectedBooking!.id]"></span>
+                                    <i class="ri-refresh-line me-1" *ngIf="!isSyncingZoom[selectedBooking!.id]"></i>
+                                    {{ isSyncingZoom[selectedBooking!.id] ? 'Syncing...' : 'Sync Zoom' }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Zoom Scheduled Details -->
+                        @if (getZoomStatus(selectedBooking) === 'scheduled' || getZoomMeetingId(selectedBooking)) {
+                            <div class="row g-2 mb-3">
+                                <!-- Meeting ID Box -->
+                                <div class="col-md-6">
+                                    <div class="zoom-credential-box">
+                                        <div>
+                                            <span class="text-muted fs-11 fw-medium d-block">Zoom Meeting ID</span>
+                                            <code class="fs-15 fw-bold text-dark font-monospace">{{ getZoomMeetingId(selectedBooking) || '-' }}</code>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="copyMeetingId(getZoomMeetingId(selectedBooking))" title="Copy Meeting ID">
+                                            <i class="ri-file-copy-line me-1"></i> Copy
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Passcode Box -->
+                                <div class="col-md-6">
+                                    <div class="zoom-credential-box">
+                                        <div>
+                                            <span class="text-muted fs-11 fw-medium d-block">Meeting Passcode</span>
+                                            <code class="fs-15 fw-bold text-dark font-monospace">{{ getZoomPasscode(selectedBooking) || '-' }}</code>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" (click)="copyPasscode(getZoomPasscode(selectedBooking))" title="Copy Passcode">
+                                            <i class="ri-file-copy-line me-1"></i> Copy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Meta Info Row -->
+                            <div class="row g-2 mb-3 text-muted fs-12 px-1">
+                                <div class="col-sm-4">
+                                    <i class="ri-mail-line me-1 text-primary"></i> <strong>Host:</strong> {{ getZoomHostEmail(selectedBooking) || 'Mentor Host' }}
+                                </div>
+                                <div class="col-sm-4">
+                                    <i class="ri-timer-line me-1 text-primary"></i> <strong>Duration:</strong> {{ getZoomDuration(selectedBooking) || '60' }} Minutes
+                                </div>
+                                <div class="col-sm-4">
+                                    <i class="ri-calendar-check-line me-1 text-primary"></i> <strong>Created:</strong> {{ getZoomCreatedAt(selectedBooking) | date:'medium' }}
+                                </div>
+                            </div>
+
+                            <!-- Zoom Action Links Bar -->
+                            <div class="d-flex flex-wrap align-items-center gap-2 pt-2 border-top">
+                                <!-- Student Join URL -->
+                                @if (getZoomJoinUrl(selectedBooking)) {
+                                    <a [href]="getZoomJoinUrl(selectedBooking)" target="_blank" rel="noopener noreferrer" class="btn btn-zoom-join btn-sm">
+                                        <i class="ri-video-line me-1"></i> Join Meeting (Student Link)
+                                    </a>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="copyJoinUrl(getZoomJoinUrl(selectedBooking))">
+                                        <i class="ri-file-copy-line me-1"></i> Copy Join URL
+                                    </button>
+                                }
+
+                                <!-- Host Start URL (For Admin/Mentor Host Only) -->
+                                @if (getZoomStartUrl(selectedBooking)) {
+                                    <a [href]="getZoomStartUrl(selectedBooking)" target="_blank" rel="noopener noreferrer" class="btn btn-zoom-host btn-sm">
+                                        <i class="ri-play-circle-line me-1"></i> Start Meeting (Host)
+                                    </a>
+                                    <button type="button" class="btn btn-outline-dark btn-sm" (click)="copyStartUrl(getZoomStartUrl(selectedBooking))">
+                                        <i class="ri-file-copy-line me-1"></i> Copy Start URL
+                                    </button>
+                                }
+                            </div>
+                        } @else if (getZoomStatus(selectedBooking) === 'failed') {
+                            <!-- Zoom Creation Failed Banner -->
+                            <div class="alert alert-danger mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="ri-error-warning-line fs-20 text-danger"></i>
+                                    <div>
+                                        <strong class="d-block">Zoom Meeting Creation Failed</strong>
+                                        <small>The automatic Zoom meeting creation could not be completed. Click <strong>Retry Zoom</strong> to synchronize with Zoom servers.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger btn-sm" [disabled]="isSyncingZoom[selectedBooking!.id]" (click)="syncZoom(selectedBooking!)">
+                                <span class="spinner-border spinner-border-sm me-1" *ngIf="isSyncingZoom[selectedBooking!.id]"></span>
+                                <i class="ri-refresh-line me-1" *ngIf="!isSyncingZoom[selectedBooking!.id]"></i> Retry Zoom Meeting Creation
+                            </button>
+                        } @else {
+                            <!-- Zoom Pending Banner -->
+                            <div class="alert alert-warning mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="ri-time-line fs-20 text-warning"></i>
+                                    <div>
+                                        <strong class="d-block">Zoom Meeting Pending</strong>
+                                        <small>Zoom meeting has not been synchronized yet. Click <strong>Sync Zoom</strong> to generate meeting credentials.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-warning btn-sm" [disabled]="isSyncingZoom[selectedBooking!.id]" (click)="syncZoom(selectedBooking!)">
+                                <span class="spinner-border spinner-border-sm me-1" *ngIf="isSyncingZoom[selectedBooking!.id]"></span>
+                                <i class="ri-refresh-line me-1" *ngIf="!isSyncingZoom[selectedBooking!.id]"></i> Create / Sync Zoom Now
+                            </button>
+                        }
+                    </div>
+                } @else if (isGoogleMeetBooking(selectedBooking)) {
+                    <!-- LEGACY GOOGLE MEET CARD -->
+                    <div class="detail-section-card border-primary-subtle bg-primary-transparent">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h6 class="fs-13 fw-semibold text-primary mb-0">
+                                <i class="ri-video-line me-1"></i> Google Meet Connection
+                            </h6>
+                            @if (selectedBooking?.status === 'confirmed') {
+                                <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 fs-11" (click)="openEditMeetModal(selectedBooking!, editMeetModal, modal)">
+                                    <i class="ri-edit-line me-1"></i> Change Link
+                                </button>
+                            }
+                        </div>
+
+                        @if (selectedBooking?.google_meet_url) {
+                            <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+                                <a [href]="selectedBooking?.google_meet_url" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
+                                    <i class="ri-external-link-line me-1"></i> Open Google Meet
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="copyMeetLink(selectedBooking?.google_meet_url)">
+                                    <i class="ri-file-copy-line me-1"></i> Copy Link
+                                </button>
+                                <span class="text-muted font-monospace fs-12 word-break-anywhere">{{ selectedBooking?.google_meet_url }}</span>
+                            </div>
+                        } @else {
+                            <div class="text-warning fs-12 mb-2">
+                                <i class="ri-error-warning-line me-1"></i> No Google Meet URL attached yet.
+                            </div>
+                        }
+
+                        @if (selectedBooking?.meeting_notes) {
+                            <div class="mt-2 pt-2 border-top">
+                                <small class="fw-semibold text-dark d-block">Instructions for Student:</small>
+                                <small class="text-muted">{{ selectedBooking?.meeting_notes }}</small>
+                            </div>
+                        }
+                    </div>
+                } @else {
+                    <!-- NO MEETING ATTACHED STATE -->
+                    <div class="detail-section-card">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div>
+                                <h6 class="fs-13 fw-semibold text-dark mb-1">
+                                    <i class="ri-video-off-line me-1 text-muted"></i> Meeting Connection
+                                </h6>
+                                <p class="text-muted fs-12 mb-0">No video meeting connection configured for this session yet.</p>
+                            </div>
+                            @if (selectedBooking?.status === 'confirmed') {
+                                <div class="d-flex align-items-center gap-2">
+                                    <button type="button" class="btn btn-primary btn-sm" [disabled]="isSyncingZoom[selectedBooking!.id]" (click)="syncZoom(selectedBooking!)">
+                                        <span class="spinner-border spinner-border-sm me-1" *ngIf="isSyncingZoom[selectedBooking!.id]"></span>
+                                        <i class="ri-video-add-line me-1" *ngIf="!isSyncingZoom[selectedBooking!.id]"></i> Create Zoom Meeting
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="openEditMeetModal(selectedBooking!, editMeetModal, modal)">
+                                        <i class="ri-links-line me-1"></i> Attach Meet Link
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Rejection Reason (If Rejected) -->
+            @if (selectedBooking?.status === 'rejected' && selectedBooking?.rejection_reason) {
+                <div class="col-12">
+                    <div class="alert alert-danger mb-0">
+                        <strong class="d-block mb-1"><i class="ri-close-circle-line me-1"></i> Rejection Reason:</strong>
+                        {{ selectedBooking?.rejection_reason }}
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <!-- Quick Actions directly from details modal -->
+        @if (selectedBooking?.status === 'pending') {
+            <button class="btn btn-success me-auto" (click)="openAcceptModal(selectedBooking!, acceptModal, modal)">
+                <i class="ri-check-line me-1"></i> Accept & Attach Meet Link
+            </button>
+            <button class="btn btn-danger" (click)="openRejectModal(selectedBooking!, rejectModal, modal)">
+                <i class="ri-close-line me-1"></i> Reject Request
+            </button>
+        }
+
+        @if (selectedBooking?.status === 'confirmed') {
+            <button class="btn btn-info me-auto text-white" (click)="markSessionCompleted(selectedBooking!, modal)">
+                <i class="ri-checkbox-circle-fill me-1"></i> Mark as Completed
+            </button>
+        }
+
+        <button class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    </div>
+</ng-template>
+
+<!-- ==========================================
+     ACCEPT BOOKING & ATTACH MEET LINK MODAL
+     ========================================== -->
+<ng-template #acceptModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title fw-bold">Accept Booking & Attach Google Meet</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="alert alert-light border mb-3">
+            <small class="text-muted d-block">Booking Number:</small>
+            <strong class="text-primary">{{ selectedBooking?.booking_number }}</strong>
+            <span class="text-muted d-block mt-1">
+                Student: <strong>{{ selectedBooking?.student?.full_name }}</strong> | Mentor: <strong>{{ selectedBooking?.mentor?.full_name }}</strong>
+            </span>
+            <span class="badge bg-light text-dark font-monospace mt-1">
+                {{ selectedBooking?.booking_date | date:'mediumDate' }} ({{ selectedBooking?.start_time }} - {{ selectedBooking?.end_time }})
+            </span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Google Meet URL <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="ri-video-line text-primary"></i></span>
+                <input type="url" class="form-control" placeholder="https://meet.google.com/abc-defg-hij" [(ngModel)]="acceptMeetUrl">
+            </div>
+            <small class="text-muted">Enter the Google Meet or video conference link for the session.</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Session Instructions / Notes for Student</label>
+            <textarea class="form-control" rows="3" placeholder="e.g. Please be ready 5 minutes prior with microphone enabled." [(ngModel)]="acceptMeetNotes"></textarea>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-success" [disabled]="isSubmittingAccept" (click)="submitAcceptBooking(modal)">
+            <span class="spinner-border spinner-border-sm me-1" *ngIf="isSubmittingAccept"></span>
+            Confirm Booking
+        </button>
+    </div>
+</ng-template>
+
+<!-- ==========================================
+     REJECT BOOKING MODAL
+     ========================================== -->
+<ng-template #rejectModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title fw-bold text-danger">Reject Booking Request</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="alert alert-light border mb-3">
+            <small class="text-muted d-block">Booking Number:</small>
+            <strong class="text-danger">{{ selectedBooking?.booking_number }}</strong>
+            <span class="text-muted d-block mt-1">
+                Student: <strong>{{ selectedBooking?.student?.full_name }}</strong> ({{ selectedBooking?.student?.mobile }})
+            </span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Reason for Rejection <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" placeholder="e.g. Mentor unavailable due to prior scheduled workshop." [(ngModel)]="rejectionReason"></textarea>
+            <small class="text-muted">This reason will be visible to the student.</small>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-danger" [disabled]="isSubmittingReject" (click)="submitRejectBooking(modal)">
+            <span class="spinner-border spinner-border-sm me-1" *ngIf="isSubmittingReject"></span>
+            Reject Request
+        </button>
+    </div>
+</ng-template>
+
+<!-- ==========================================
+     EDIT MEET LINK MODAL
+     ========================================== -->
+<ng-template #editMeetModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title fw-bold">Update Google Meet URL</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Google Meet URL <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="ri-video-line text-primary"></i></span>
+                <input type="url" class="form-control" [(ngModel)]="editMeetUrl">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Meeting Notes / Instructions</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="editMeetNotes"></textarea>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-primary" [disabled]="isSubmittingEditMeet" (click)="submitEditMeet(modal)">
+            <span class="spinner-border spinner-border-sm me-1" *ngIf="isSubmittingEditMeet"></span>
+            Save Changes
+        </button>
+    </div>
+</ng-template>

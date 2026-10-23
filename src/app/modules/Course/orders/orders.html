@@ -1,0 +1,186 @@
+<div class="col-xl-12 mx-auto">
+  <div class="card custom-card border-0 shadow-sm">
+    <!-- Header -->
+    <div class="card-header justify-content-between align-items-center mb-3">
+      <div class="card-title mb-0">
+        Order History
+        <span class="fs-12 text-muted fw-normal d-block">Track all student orders, payments, and content access (Courses, PDFs, Audios)</span>
+      </div>
+
+      <div class="d-flex align-items-center flex-wrap gap-2">
+        <!-- Item Type Filter -->
+        <div style="min-width: 130px;">
+          <select class="form-select form-select-sm" [(ngModel)]="selectedItemType" (change)="applyFilters()">
+            <option value="">All Content</option>
+            <option value="course">Courses</option>
+            <option value="pdf">PDFs</option>
+            <option value="audio">Audios</option>
+          </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div style="min-width: 140px;">
+          <select class="form-select form-select-sm" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+            <option value="">All Statuses</option>
+            <option value="completed">Completed / Paid</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed / Cancelled</option>
+          </select>
+        </div>
+
+        <!-- Search Bar -->
+        <div style="min-width: 240px;">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text bg-light border-end-0"><i class="ri-search-line text-muted"></i></span>
+            <input class="form-control border-start-0" type="text" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search ID, Student, Item, Txn...">
+          </div>
+        </div>
+
+        <!-- Refresh Button -->
+        <button class="btn btn-sm btn-light border" (click)="loadOrders()" title="Refresh Orders">
+          <i class="ri-refresh-line" [class.ri-spin]="isLoading"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Table Body -->
+    <div class="card-body py-2 px-3">
+      @if (isLoading) {
+        <div class="text-center my-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2 text-muted">Loading orders history...</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table text-nowrap w-100 align-middle">
+            <thead>
+              <tr>
+                <th style="width: 5%">Items</th>
+                <th style="width: 15%">Order / Txn ID</th>
+                <th style="width: 25%">Student Details</th>
+                <th style="width: 15%">Total Amount</th>
+                <th style="width: 15%">Purchase Date</th>
+                <th style="width: 12%">Status</th>
+                <th style="width: 13%">Payment Method</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of filteredOrders; track order.id; let i = $index) {
+                <!-- Main Order Row -->
+                <tr>
+                  <td>
+                    <button class="btn btn-icon btn-sm btn-light rounded-circle" (click)="toggleExpand(getOrderId(order))" title="View order items">
+                      <i [class]="expandedOrderId === getOrderId(order) ? 'ri-subtract-line text-primary fw-bold' : 'ri-add-line text-primary fw-bold'"></i>
+                    </button>
+                  </td>
+                  <td>
+                    <span class="fw-semibold text-dark">#{{ getOrderId(order) }}</span>
+                    @if (getTransactionId(order)) {
+                      <span class="fs-11 text-muted d-block font-monospace text-truncate" style="max-width: 160px;" title="{{ getTransactionId(order) }}">
+                        Txn: {{ getTransactionId(order) }}
+                      </span>
+                    }
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar avatar-sm bg-info-transparent text-info rounded-circle me-2 d-flex align-items-center justify-content-center fw-semibold">
+                        {{ getStudentName(order).charAt(0).toUpperCase() }}
+                      </div>
+                      <div>
+                        <div class="fw-semibold text-dark">{{ getStudentName(order) }}</div>
+                        <div class="fs-12 text-muted">{{ getStudentEmail(order) }}</div>
+                        @if (getStudentMobile(order)) {
+                          <div class="fs-11 text-muted"><i class="ri-phone-line me-1"></i>{{ getStudentMobile(order) }}</div>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td class="fw-bold text-dark">₹{{ getTotalAmount(order) | number:'1.2-2' }}</td>
+                  <td class="text-muted">{{ (order.created_at | date:'mediumDate') || 'N/A' }}</td>
+                  <td>
+                    <span class="badge rounded-pill px-2 py-1 {{ getStatusBadgeClass(getOrderStatus(order)) }}">
+                      {{ getOrderStatus(order) | uppercase }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="text-uppercase fw-semibold px-2 py-1 {{ getPaymentMethodBadgeClass(order.payment_method) }}">
+                      <i class="ri-bank-card-line me-1" *ngIf="order.payment_method === 'card' || order.payment_method === 'razorpay'"></i>
+                      <i class="ri-wallet-3-line me-1" *ngIf="order.payment_method === 'wallet'"></i>
+                      <i class="ri-qr-code-line me-1" *ngIf="order.payment_method === 'upi'"></i>
+                      {{ order.payment_method || 'Online' }}
+                    </span>
+                  </td>
+                </tr>
+
+                <!-- Expanded Sub-Table Row -->
+                @if (expandedOrderId === getOrderId(order)) {
+                  <tr class="table-active-row">
+                    <td colspan="7" class="p-3 bg-light-subtle border-start border-primary border-3">
+                      <div class="card custom-card m-0 border shadow-sm">
+                        <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                          <h6 class="card-title fs-13 mb-0">
+                            <i class="ri-shopping-cart-2-line me-1 text-primary"></i>Items in Order #{{ getOrderId(order) }}
+                            <span class="badge bg-primary ms-1 rounded-pill">{{ order.items?.length || 0 }}</span>
+                          </h6>
+                        </div>
+                        <div class="card-body p-0">
+                          <table class="table text-nowrap w-100 mb-0">
+                            <thead class="table-light">
+                              <tr>
+                                <th style="width: 5%">Sr No.</th>
+                                <th style="width: 12%">Type</th>
+                                <th style="width: 45%">Item Title</th>
+                                <th style="width: 23%">Mentor / Author</th>
+                                <th style="width: 15%">Price</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (item of order.items; track $index; let idx = $index) {
+                                <tr>
+                                  <td>{{ idx + 1 }}</td>
+                                  <td>
+                                    <span class="px-2 py-1 rounded {{ getItemTypeBadgeClass(item.item_type) }}">
+                                      <i [class]="getItemTypeIcon(item.item_type) + ' me-1'"></i>
+                                      {{ (item.item_type || 'course') | uppercase }}
+                                    </span>
+                                  </td>
+                                  <td class="fw-semibold text-dark">{{ getItemTitle(item) }}</td>
+                                  <td>
+                                    @if (item.mentor_name) {
+                                      <span class="text-muted"><i class="ri-user-star-line me-1 text-warning"></i>{{ item.mentor_name }}</span>
+                                    } @else {
+                                      <span class="text-muted">N/A</span>
+                                    }
+                                  </td>
+                                  <td class="fw-bold text-success">₹{{ (item.price || 0) | number:'1.2-2' }}</td>
+                                </tr>
+                              } @empty {
+                                <tr>
+                                  <td colspan="5" class="text-center text-muted py-3">No item breakdown found for this order.</td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              } @empty {
+                <tr>
+                  <td colspan="7" class="text-center text-muted py-5">
+                    <div class="mb-2"><i class="ri-history-line fs-3 text-muted"></i></div>
+                    No orders matching the current filter criteria found.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+

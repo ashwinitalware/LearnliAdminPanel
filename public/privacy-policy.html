@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy - Learnli</title>
+  <meta name="description"
+    content="Official Privacy Policy for the Learnli learning application and services. Learn how we collect, use, and protect your personal information." />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" type="image/png" href="./assets/images/brand-logos/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-hover: #3730a3;
+      --primary-light: #eef2ff;
+      --secondary: #06b6d4;
+      --accent: #8b5cf6;
+      --dark: #0f172a;
+      --dark-card: #1e293b;
+      --text-main: #334155;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Navigation Header */
+    header.site-header {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--dark);
+    }
+
+    .brand-logo {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text-main);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border-color);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: var(--dark);
+    }
+
+    .btn-print {
+      cursor: pointer;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+      color: #ffffff;
+      padding: 3.5rem 1.5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.125rem;
+      color: #c7d2fe;
+      max-width: 760px;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.875rem;
+      color: #e0e7ff;
+    }
+
+    .meta-pill {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-sm);
+      backdrop-filter: blur(4px);
+    }
+
+    /* Main Content Layout */
+    .main-container {
+      max-width: 1200px;
+      margin: -2rem auto 4rem;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Sidebar / Sticky Table of Contents */
+    .sidebar {
+      position: sticky;
+      top: 5.5rem;
+      height: fit-content;
+      max-height: calc(100vh - 7rem);
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .toc-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .toc-nav a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.45rem 0.65rem;
+      border-radius: var(--radius-sm);
+      display: block;
+      transition: all 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .toc-nav a:hover,
+    .toc-nav a.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+      padding-left: 0.85rem;
+    }
+
+    /* Content Area */
+    .policy-content {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 2.75rem 3rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section {
+      margin-bottom: 2.75rem;
+      scroll-margin-top: 6rem;
+    }
+
+    .section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.01em;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.6rem;
+    }
+
+    .section-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .section h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    .section p {
+      margin-bottom: 1rem;
+      color: var(--text-main);
+      font-size: 0.975rem;
+    }
+
+    .section ul,
+    .section ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.25rem;
+      color: var(--text-main);
+      font-size: 0.975rem;
+    }
+
+    .section li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Highlight Alert Cards */
+    .alert-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 1.5rem 0;
+      font-size: 0.95rem;
+    }
+
+    .alert-box strong {
+      color: #1e3a8a;
+    }
+
+    .alert-box.warning {
+      background: #fffbeb;
+      border-left-color: #f59e0b;
+    }
+
+    .alert-box.warning strong {
+      color: #92400e;
+    }
+
+    .alert-box.success {
+      background: #ecfdf5;
+      border-left-color: #10b981;
+    }
+
+    .alert-box.success strong {
+      color: #065f46;
+    }
+
+    /* Structured Data Table */
+    .data-table-wrapper {
+      overflow-x: auto;
+      margin: 1.25rem 0 1.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    table.data-table th {
+      background: #f8fafc;
+      color: var(--dark);
+      font-weight: 600;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.data-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      vertical-align: top;
+    }
+
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.data-table tr:hover td {
+      background: #fbfcfe;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    .tag-required {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .tag-optional {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    /* Deletion Card for Google Play Compliance */
+    .deletion-card {
+      border: 2px dashed #cbd5e1;
+      background: #f8fafc;
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin: 1.5rem 0;
+    }
+
+    .deletion-card h4 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    .deletion-steps {
+      list-style-type: decimal;
+      margin-left: 1.25rem;
+      margin-top: 0.75rem;
+    }
+
+    .deletion-steps li {
+      margin-bottom: 0.5rem;
+      font-size: 0.925rem;
+    }
+
+    /* Contact Box */
+    .contact-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin-top: 1.5rem;
+    }
+
+    .contact-card h4 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #166534;
+      font-size: 1.15rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .contact-list {
+      list-style: none !important;
+      margin-left: 0 !important;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #15803d;
+      letter-spacing: 0.05em;
+    }
+
+    .contact-val {
+      font-size: 0.95rem;
+      color: #14532d;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .contact-val:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      background: var(--dark);
+      color: var(--text-light);
+      padding: 3rem 1.5rem 2rem;
+      font-size: 0.875rem;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.5rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #ffffff;
+    }
+
+    .copyright {
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .policy-content {
+        padding: 2rem 1.5rem;
+      }
+
+      .hero-title {
+        font-size: 2.15rem;
+      }
+    }
+
+    @media print {
+
+      header.site-header,
+      .sidebar,
+      footer.site-footer,
+      .header-actions,
+      .badge {
+        display: none !important;
+      }
+
+      .hero-banner {
+        background: none !important;
+        color: #000 !important;
+        padding: 1rem 0 !important;
+      }
+
+      .hero-title {
+        color: #000 !important;
+        font-size: 1.8rem;
+      }
+
+      .hero-subtitle,
+      .meta-pills {
+        color: #333 !important;
+      }
+
+      .main-container {
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+      }
+
+      .policy-content {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="https://learnli.online" class="brand">
+        <img src="./assets/images/brand-logos/toggle-logo.png" alt="Learnli Logo" class="brand-logo"
+          onerror="this.style.display='none'" />
+        <span class="brand-title">Learnli</span>
+      </a>
+      <!-- <div class="header-actions">
+        <a href="https://learnli.online" class="btn-secondary">Visit Website</a>
+        <button onclick="window.print()" class="btn-secondary btn-print">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+          Print / Save PDF
+        </button>
+      </div> -->
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        Google Play Store Compliant
+      </div>
+      <h1 class="hero-title">Privacy Policy for Learnli</h1>
+      <p class="hero-subtitle">
+        Your privacy is paramount to us. This policy outlines how Learnli collects, uses, protects, and discloses
+        personal information when you use the Learnli Mobile Application, Web Portal, and related educational services.
+      </p>
+      <div class="meta-pills">
+        <div class="meta-pill"><strong>Application:</strong> Learnli</div>
+        <div class="meta-pill"><strong>Effective Date:</strong> September 21, 2026</div>
+        <div class="meta-pill"><strong>Last Updated:</strong> September 21, 2026</div>
+        <div class="meta-pill"><strong>Domain:</strong> learnli.online</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Table of Contents</div>
+      <ul class="toc-nav">
+        <li><a href="#introduction">1. Introduction</a></li>
+        <li><a href="#information-we-collect">2. Information We Collect</a></li>
+        <li><a href="#app-permissions">3. Device Permissions</a></li>
+        <li><a href="#how-we-use-data">4. How We Use Data</a></li>
+        <li><a href="#third-party-services">5. Third-Party Services</a></li>
+        <li><a href="#data-sharing">6. Data Sharing & Disclosure</a></li>
+        <li><a href="#data-security">7. Data Security</a></li>
+        <li><a href="#data-retention-deletion">8. Data Retention & Deletion</a></li>
+        <li><a href="#children-privacy">9. Children's Privacy (COPPA)</a></li>
+        <li><a href="#user-rights">10. Your Rights & Choices</a></li>
+        <li><a href="#changes-policy">11. Changes to this Policy</a></li>
+        <li><a href="#contact-us">12. Contact & Grievance</a></li>
+      </ul>
+    </aside>
+
+    <!-- Policy Content -->
+    <article class="policy-content">
+
+      <!-- 1. Introduction -->
+      <section id="introduction" class="section">
+        <h2><span class="section-icon">1</span> Introduction</h2>
+        <p>
+          Welcome to <strong>Learnli</strong> ("we", "our", "us", or "the Platform"). Learnli is an online educational
+          application offering courses, live & recorded lectures, audio learning, quizzes, mentor guidance, and learning
+          progress management for students and instructors.
+        </p>
+        <p>
+          This Privacy Policy explains how we collect, store, process, transfer, and protect your information when you
+          access or use the <strong>Learnli Mobile Application</strong> (available on the Google Play Store and other
+          distribution platforms) and our website at <a href="https://learnli.online" target="_blank"
+            rel="noopener">https://learnli.online</a>.
+        </p>
+        <div class="alert-box">
+          <strong>Important:</strong> By downloading, registering with, or using Learnli, you agree to the collection
+          and use of information in accordance with this Privacy Policy. If you do not agree with this policy, please do
+          not access or use our application or services.
+        </div>
+      </section>
+
+      <!-- 2. Information We Collect -->
+      <section id="information-we-collect" class="section">
+        <h2><span class="section-icon">2</span> Information We Collect</h2>
+        <p>
+          We only collect information that is strictly necessary to provide you with high-quality educational
+          experiences, maintain account security, and fulfill regulatory requirements.
+        </p>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Data Category</th>
+                <th>Data Types Collected</th>
+                <th>Purpose</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Personal & Identity Information</strong></td>
+                <td>Full Name, Email Address, Mobile/Phone Number, Profile Photo, Date of Birth, Gender, Academic
+                  Grade/Standard, City, State.</td>
+                <td>User onboarding, authentication, profile creation, and account verification.</td>
+                <td><span class="tag tag-required">Required</span></td>
+              </tr>
+              <tr>
+                <td><strong>Academic & Learning Data</strong></td>
+                <td>Enrolled courses, video/audio lecture playback duration, quiz submissions, test scores,
+                  homework/assignment uploads, mentor interactions, and earned certificates.</td>
+                <td>Delivering educational curriculum, grading quizzes, tracking student progress, and learning
+                  analytics.</td>
+                <td><span class="tag tag-required">Required</span></td>
+              </tr>
+              <tr>
+                <td><strong>Referrals & Points</strong></td>
+                <td>Referral codes shared/redeemed, invited contacts, accumulated referral points, and redemption
+                  records.</td>
+                <td>Rewarding students and managing the Learnli referral and loyalty program.</td>
+                <td><span class="tag tag-optional">Optional</span></td>
+              </tr>
+              <tr>
+                <td><strong>Payment & Financial Data</strong></td>
+                <td>Subscription tier (Student/Instructor plan), payment transaction ID, purchase timestamp, invoice
+                  amount. <em>(Note: Sensitive card/UPI details are processed directly by certified payment gateways
+                    like Razorpay/Stripe/Google Play Billing and are never stored on Learnli servers).</em></td>
+                <td>Processing course enrollments, issuing digital invoices, and managing subscriptions.</td>
+                <td><span class="tag tag-required">Required for Paid Plans</span></td>
+              </tr>
+              <tr>
+                <td><strong>Device & Technical Diagnostics</strong></td>
+                <td>Device model, Operating System version (Android/iOS), unique device identifiers (Android ID, FCM
+                  Token), IP address, app version, network operator, crash logs, and performance metrics.</td>
+                <td>Preventing fraud, troubleshooting bugs, optimizing performance, and sending push notifications.</td>
+                <td><span class="tag tag-required">Automatic</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. Device Permissions -->
+      <section id="app-permissions" class="section">
+        <h2><span class="section-icon">3</span> Device Permissions Requested</h2>
+        <p>
+          To provide enhanced learning features, the Learnli Android application may request the following device
+          permissions. You can grant or revoke these permissions at any time via your device's <em>Settings > Apps >
+            Learnli > Permissions</em>.
+        </p>
+
+        <ul>
+          <li>
+            <strong>Camera Permission (<code>android.permission.CAMERA</code>):</strong>
+            Used exclusively when you choose to take a photo for your profile avatar, scan study QR codes, or capture
+            homework assignments and documents for evaluation.
+          </li>
+          <li>
+            <strong>Storage / Media Images Permission (<code>READ_MEDIA_IMAGES</code> /
+              <code>READ_EXTERNAL_STORAGE</code>):</strong>
+            Allows you to upload study notes, assignment PDFs, and select images from your gallery for your student or
+            instructor profile.
+          </li>
+          <li>
+            <strong>Notifications Permission (<code>POST_NOTIFICATIONS</code>):</strong>
+            Used on Android 13+ to send class schedule reminders, quiz deadlines, mentor announcements, subscription
+            renewal alerts, and referral reward notices.
+          </li>
+          <li>
+            <strong>Microphone / Audio Permission (<code>RECORD_AUDIO</code>):</strong>
+            Used only when participating in interactive audio lessons, voice search, or mentor-led live doubt-clearing
+            sessions.
+          </li>
+          <li>
+            <strong>Internet & Network State (<code>INTERNET</code> & <code>ACCESS_NETWORK_STATE</code>):</strong>
+            Required to connect to our secure servers, stream video/audio lectures, verify logins, and check internet
+            connectivity.
+          </li>
+        </ul>
+      </section>
+
+      <!-- 4. How We Use Data -->
+      <section id="how-we-use-data" class="section">
+        <h2><span class="section-icon">4</span> How We Use Your Information</h2>
+        <p>We process your personal information for the following legitimate educational and business purposes:</p>
+        <ol>
+          <li><strong>Delivering Educational Services:</strong> Creating student/instructor accounts, providing video
+            and audio courses, delivering quizzes, issuing certificates, and tracking academic progress.</li>
+          <li><strong>Account Management & Authentication:</strong> Verifying credentials via secure token/OTP
+            mechanisms (Firebase Auth or backend API) and maintaining account security.</li>
+          <li><strong>Processing Transactions:</strong> Facilitating course enrollments, validating active subscription
+            tiers, and handling referral point balances.</li>
+          <li><strong>Communication & Support:</strong> Sending course reminders, schedule updates, security advisories,
+            and responding to support tickets.</li>
+          <li><strong>Platform Safety & Quality:</strong> Detecting and preventing fraud, unauthorized access, abusive
+            behavior, and enforcing our Terms of Service.</li>
+          <li><strong>App Optimization:</strong> Analyzing aggregate usage trends and crash logs to improve app
+            responsiveness, UI layout, and server performance.</li>
+        </ol>
+      </section>
+
+      <!-- 5. Third-Party Services -->
+      <section id="third-party-services" class="section">
+        <h2><span class="section-icon">5</span> Third-Party Services & SDK Disclosures</h2>
+        <p>
+          We partner with reputable third-party service providers to handle infrastructure, analytics, push
+          notifications, and payment processing. These providers have access to your information only to perform
+          specific tasks on our behalf and are obligated not to disclose or use it for any other purpose.
+        </p>
+
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Service Provider</th>
+                <th>Purpose</th>
+                <th>Privacy Policy Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Google Play Services</strong></td>
+                <td>App distribution, core services & in-app updates</td>
+                <td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Privacy
+                    Policy</a></td>
+              </tr>
+              <tr>
+                <td><strong>Google Firebase (Auth, FCM, Crashlytics)</strong></td>
+                <td>Secure authentication, push notifications & crash diagnostics</td>
+                <td><a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase
+                    Privacy Info</a></td>
+              </tr>
+              <tr>
+                <td><strong>Payment Gateway Partners (Razorpay / Stripe)</strong></td>
+                <td>PCI-DSS compliant subscription & fee transactions</td>
+                <td><a href="https://razorpay.com/privacy/" target="_blank" rel="noopener">Razorpay Privacy</a> / <a
+                    href="https://stripe.com/privacy" target="_blank" rel="noopener">Stripe Privacy</a></td>
+              </tr>
+              <tr>
+                <td><strong>Cloud Hosting & CDN Infrastructure</strong></td>
+                <td>Secure database hosting, video streaming & static assets delivery</td>
+                <td>Subject to enterprise data protection agreements</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 6. Data Sharing -->
+      <section id="data-sharing" class="section">
+        <h2><span class="section-icon">6</span> Data Sharing & Disclosure</h2>
+        <div class="alert-box success">
+          <strong>Zero Sale of Data:</strong> We do NOT sell, rent, lease, or trade your personal information to third
+          parties or advertising brokers for commercial purposes.
+        </div>
+        <p>We only share data under the following limited circumstances:</p>
+        <ul>
+          <li><strong>With Instructors / Mentors:</strong> When you enroll in a course, the assigned instructor receives
+            your student display name, course progress, and quiz scores for academic delivery and grading.</li>
+          <li><strong>With Authorized Service Providers:</strong> As outlined in Section 5, strictly under
+            confidentiality agreements.</li>
+          <li><strong>For Legal & Regulatory Compliance:</strong> If required to do so by applicable law, court order,
+            or governmental authority.</li>
+          <li><strong>Business Transfers:</strong> In the event of a merger, acquisition, or asset transfer, your
+            information may be transferred with prior notice to users.</li>
+        </ul>
+      </section>
+
+      <!-- 7. Data Security -->
+      <section id="data-security" class="section">
+        <h2><span class="section-icon">7</span> Data Security</h2>
+        <p>
+          We employ industry-standard administrative, technical, and physical security measures to safeguard your
+          personal data:
+        </p>
+        <ul>
+          <li><strong>Data in Transit:</strong> All communications between the Learnli application and our servers are
+            encrypted using modern Transport Layer Security (TLS/HTTPS 1.3).</li>
+          <li><strong>Data at Rest:</strong> Sensitive credentials, tokens, and database records are encrypted with
+            advanced encryption standards.</li>
+          <li><strong>Access Control:</strong> Strict role-based access control (RBAC) ensures only authorized personnel
+            can access infrastructure systems.</li>
+          <li><strong>Security Audits:</strong> Periodic vulnerability reviews and patch updates to maintain platform
+            resilience.</li>
+        </ul>
+      </section>
+
+      <!-- 8. Data Retention & Account Deletion (Google Play Mandatory Requirement) -->
+      <section id="data-retention-deletion" class="section">
+        <h2><span class="section-icon">8</span> Data Retention & Account Deletion Policy</h2>
+        <p>
+          We retain your personal information for as long as your account remains active or as needed to provide you
+          educational services. If you no longer wish to use Learnli, you have the right to request deletion of your
+          account and associated data.
+        </p>
+
+        <div class="deletion-card">
+          <h4>How to Delete Your Account & Associated Data</h4>
+          <p>In full compliance with Google Play Developer Policies, you can delete your account using any of the
+            following methods:</p>
+
+          <ul class="deletion-steps">
+            <li>
+              <strong>Directly from the Learnli Mobile App:</strong>
+              Navigate to <em>Profile > Account Settings > Danger Zone > Delete Account</em>. Confirm your password/OTP
+              to instantly initiate account deletion.
+            </li>
+            <li>
+              <strong>Via Web Request / Email:</strong>
+              Send an email from your registered email address to <a
+                href="mailto:privacy@learnli.online">privacy@learnli.online</a> or <a
+                href="mailto:support@learnli.online">support@learnli.online</a> with the subject line <em>"Account
+                Deletion Request - [Your Registered Email/Phone]"</em>.
+            </li>
+          </ul>
+
+          <p style="margin-top: 1rem; font-size: 0.9rem; color: #475569;">
+            <strong>What Happens Upon Deletion:</strong> Your personal profile, login credentials, course progress, quiz
+            submissions, and referral points are permanently removed from our active database within <strong>30
+              days</strong>. Transaction and billing records will only be retained for the minimum statutory period
+            required by taxation and accounting laws.
+          </p>
+        </div>
+      </section>
+
+      <!-- 9. Children's Privacy -->
+      <section id="children-privacy" class="section">
+        <h2><span class="section-icon">9</span> Children's Privacy (COPPA & Minor Protection)</h2>
+        <p>
+          Learnli provides educational content suitable for students, including minors. We are committed to protecting
+          the privacy of young learners:
+        </p>
+        <ul>
+          <li>We do not collect unnecessary personal data from children under the age of 13 (or applicable local age of
+            digital consent) without verified parental/guardian consent.</li>
+          <li>We do not engage in behavioral advertising, third-party user profiling, or commercial exploitation of
+            student data.</li>
+          <li>Parents and legal guardians may review, request modifications to, or demand the deletion of their child's
+            educational data at any time by contacting <a
+              href="mailto:privacy@learnli.online">privacy@learnli.online</a>.</li>
+        </ul>
+      </section>
+
+      <!-- 10. User Rights -->
+      <section id="user-rights" class="section">
+        <h2><span class="section-icon">10</span> Your Rights and Choices</h2>
+        <p>Depending on your jurisdiction (including GDPR, CCPA, and Indian Digital Personal Data Protection Act), you
+          enjoy the following rights:</p>
+        <ul>
+          <li><strong>Right to Access:</strong> Request a copy of the personal information we hold about you.</li>
+          <li><strong>Right to Rectification:</strong> Edit or update inaccurate or incomplete information directly via
+            your in-app profile.</li>
+          <li><strong>Right to Erasure (Right to be Forgotten):</strong> Request the permanent deletion of your account
+            and personal records.</li>
+          <li><strong>Right to Restrict or Object:</strong> Restrict or object to certain non-essential processing
+            activities.</li>
+          <li><strong>Right to Withdraw Consent:</strong> Withdraw previously granted permissions (camera,
+            notifications) anytime via device settings.</li>
+        </ul>
+      </section>
+
+      <!-- 11. Changes to Policy -->
+      <section id="changes-policy" class="section">
+        <h2><span class="section-icon">11</span> Changes to this Privacy Policy</h2>
+        <p>
+          We may update our Privacy Policy periodically to reflect changes in our legal obligations, platform features,
+          or operational practices. When updates occur, we will revise the <em>"Last Updated"</em> date at the top of
+          this page. For material changes, we will provide noticeable in-app notifications or send an email alert before
+          changes take effect.
+        </p>
+      </section>
+
+      <!-- 12. Contact Us -->
+      <section id="contact-us" class="section">
+        <h2><span class="section-icon">12</span> Contact Us & Grievance Officer</h2>
+        <p>
+          If you have any questions, suggestions, data requests, or complaints regarding this Privacy Policy or our data
+          practices, please reach out to our dedicated Privacy & Grievance team:
+        </p>
+
+        <div class="contact-card">
+          <h4>Learnli Support & Grievance Office</h4>
+          <ul class="contact-list">
+            <li class="contact-item">
+              <span class="contact-label">Email Support</span>
+              <a href="mailto:support@learnli.online" class="contact-val">support@learnli.online</a>
+            </li>
+            <li class="contact-item">
+              <span class="contact-label">Privacy & Deletion Desk</span>
+              <a href="mailto:privacy@learnli.online" class="contact-val">privacy@learnli.online</a>
+            </li>
+            <li class="contact-item">
+              <span class="contact-label">Official Website</span>
+              <a href="https://learnli.online" target="_blank" rel="noopener"
+                class="contact-val">https://learnli.online</a>
+            </li>
+            <li class="contact-item">
+              <span class="contact-label">App Platform</span>
+              <span class="contact-val">Learnli Android & Web</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </article>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="brand-title" style="font-size: 1.5rem; color: #fff;">Learnli</div>
+      <p style="max-width: 500px;">Empowering students and instructors with seamless, secure, and modern digital
+        education.</p>
+      <ul class="footer-links">
+        <li><a href="https://learnli.online">Home</a></li>
+        <li><a href="#introduction">Privacy Policy</a></li>
+        <li><a href="./delete-account.html">Delete Account</a></li>
+        <li><a href="mailto:support@learnli.online">Contact Us</a></li>
+      </ul>
+      <div class="copyright">
+        &copy; 2026 Learnli. All rights reserved. Google Play and the Google Play logo are trademarks of Google LLC.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scroll and active state sync for TOC
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('.toc-nav a');
+      const sections = document.querySelectorAll('.section');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 120;
+          if (pageYOffset >= sectionTop) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        links.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

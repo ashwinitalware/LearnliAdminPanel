@@ -1,0 +1,883 @@
+<!-- ========================================================================= -->
+<!-- 1. HEADER & BREADCRUMB -->
+<!-- ========================================================================= -->
+<div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2 mb-4">
+  <div>
+    <div class="d-flex align-items-center gap-2 mb-1">
+      <button type="button" class="btn btn-sm btn-icon btn-light rounded-circle" routerLink="/live-classes/list" title="Back to Catalog">
+        <i class="ri-arrow-left-line"></i>
+      </button>
+      <h1 class="page-title fw-semibold fs-20 mb-0">Live Class Hub</h1>
+      <span *ngIf="liveClass?.status === 'draft'" class="badge bg-warning-transparent fs-11">Draft</span>
+      <span *ngIf="liveClass?.status === 'published'" class="badge bg-info-transparent fs-11">Published</span>
+      <span *ngIf="liveClass?.status === 'ongoing'" class="badge bg-danger animate-pulse fs-11">Live Now</span>
+      <span *ngIf="liveClass?.status === 'completed'" class="badge bg-success-transparent fs-11">Completed</span>
+      <span *ngIf="liveClass?.status === 'cancelled'" class="badge bg-secondary-transparent fs-11">Cancelled</span>
+    </div>
+    <p class="text-muted mb-0 fs-13">ID: #{{ classId }} • {{ liveClass?.title }}</p>
+  </div>
+  <div class="btn-list d-flex gap-2">
+    <button type="button" class="btn btn-outline-light btn-wave" (click)="loadClassDetails()" [disabled]="isLoading">
+      <i class="ri-refresh-line me-1" [class.ri-spin]="isLoading"></i> Refresh
+    </button>
+    <button type="button" class="btn btn-outline-primary btn-wave" [routerLink]="['/live-classes/edit', classId]">
+      <i class="ri-edit-line me-1"></i> Edit Class
+    </button>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="text-muted mt-2 fs-13">Loading live class details...</p>
+</div>
+
+<div *ngIf="!isLoading && liveClass">
+
+  <!-- ========================================================================= -->
+  <!-- 2. QUICK STATS STRIP -->
+  <!-- ========================================================================= -->
+  <div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6 col-sm-6">
+      <div class="card custom-card shadow-sm border-0 h-100">
+        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 text-uppercase fw-semibold d-block mb-1">Schedule</span>
+            <span class="fw-bold fs-14 text-dark d-block">{{ liveClass.class_date | date:'mediumDate' }}</span>
+            <span class="text-muted fs-11">{{ liveClass.start_time }} - {{ liveClass.end_time }} ({{ liveClass.duration }}m)</span>
+          </div>
+          <div class="avatar avatar-md bg-primary-transparent rounded-circle">
+            <i class="ri-calendar-event-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 col-sm-6">
+      <div class="card custom-card shadow-sm border-0 h-100">
+        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 text-uppercase fw-semibold d-block mb-1">Capacity & Bookings</span>
+            <span class="fw-bold fs-14 text-dark d-block">
+              {{ liveClass.capacity.enrolled_count }} / {{ liveClass.capacity.max_students }} Seats
+            </span>
+            <span class="text-success fs-11" *ngIf="!liveClass.capacity.is_full">
+              {{ liveClass.capacity.available_seats }} available
+            </span>
+            <span class="text-danger fs-11" *ngIf="liveClass.capacity.is_full">
+              Full capacity
+            </span>
+          </div>
+          <div class="avatar avatar-md bg-info-transparent rounded-circle">
+            <i class="ri-user-voice-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 col-sm-6">
+      <div class="card custom-card shadow-sm border-0 h-100">
+        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 text-uppercase fw-semibold d-block mb-1">Effective Pricing</span>
+            <span class="fw-bold fs-14 text-dark d-block" *ngIf="!liveClass.pricing.is_free">
+              ₹{{ liveClass.pricing.effective_fee }}
+            </span>
+            <span class="badge bg-success-transparent fs-12 fw-bold" *ngIf="liveClass.pricing.is_free">
+              FREE
+            </span>
+            <span class="text-muted fs-11" *ngIf="liveClass.pricing.use_mentor_default">
+              (Mentor Default)
+            </span>
+          </div>
+          <div class="avatar avatar-md bg-success-transparent rounded-circle">
+            <i class="ri-money-rupee-circle-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 col-sm-6">
+      <div class="card custom-card shadow-sm border-0 h-100">
+        <div class="card-body p-3 d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-11 text-uppercase fw-semibold d-block mb-1">Session Status</span>
+            <span *ngIf="liveClass.session?.status === 'live'" class="badge bg-danger animate-pulse fs-12">
+              <i class="ri-record-circle-line me-1"></i> Live Now
+            </span>
+            <span *ngIf="liveClass.session?.status === 'scheduled'" class="badge bg-info-transparent fs-12">
+              <i class="ri-time-line me-1"></i> Scheduled
+            </span>
+            <span *ngIf="liveClass.session?.status === 'ended'" class="badge bg-success-transparent fs-12">
+              <i class="ri-check-line me-1"></i> Ended
+            </span>
+            <span *ngIf="!liveClass.session?.status || liveClass.session?.status === 'not_provisioned'" class="badge bg-warning-transparent fs-12">
+              <i class="ri-error-warning-line me-1"></i> Not Provisioned
+            </span>
+            <span class="text-muted fs-11 mt-1 d-block">Webinar.gg Room</span>
+          </div>
+          <div class="avatar avatar-md bg-warning-transparent rounded-circle">
+            <i class="ri-video-chat-line fs-20"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. NAVIGATION TABS -->
+  <!-- ========================================================================= -->
+  <div class="card custom-card shadow-sm border-0 mb-4">
+    <div class="card-header border-bottom p-0">
+      <ul class="nav nav-tabs card-header-tabs px-3" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link cursor-pointer d-flex align-items-center gap-1 py-3" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
+            <i class="ri-file-text-line"></i> Overview & Info
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link cursor-pointer d-flex align-items-center gap-1 py-3" [class.active]="activeTab === 'session'" (click)="setActiveTab('session')">
+            <i class="ri-broadcast-line"></i> Webinar.gg Session
+            <span *ngIf="liveClass.session?.status === 'live'" class="badge bg-danger ms-1">LIVE</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link cursor-pointer d-flex align-items-center gap-1 py-3" [class.active]="activeTab === 'bookings'" (click)="setActiveTab('bookings')">
+            <i class="ri-user-follow-line"></i> Student Bookings ({{ liveClass.capacity.enrolled_count }})
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link cursor-pointer d-flex align-items-center gap-1 py-3" [class.active]="activeTab === 'attendance'" (click)="setActiveTab('attendance')">
+            <i class="ri-check-double-line"></i> Attendance & Intervals
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link cursor-pointer d-flex align-items-center gap-1 py-3" [class.active]="activeTab === 'payments'" (click)="setActiveTab('payments')">
+            <i class="ri-money-rupee-circle-line"></i> Payment Ledger
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="card-body p-4">
+      
+      <!-- ===================================================================== -->
+      <!-- TAB 1: OVERVIEW & INFO -->
+      <!-- ===================================================================== -->
+      <div *ngIf="activeTab === 'overview'">
+        <div class="row g-4">
+          <!-- Main Content -->
+          <div class="col-xl-8 col-lg-7">
+            <div class="d-flex align-items-start gap-3 mb-4">
+              <img [src]="getThumbnail(liveClass.thumbnail)" alt="Cover" class="rounded object-fit-cover shadow-sm" width="160" height="110">
+              <div>
+                <span class="badge bg-primary-transparent fs-11 text-uppercase mb-2">{{ liveClass.subject }}</span>
+                <span class="badge bg-light text-dark fs-11 text-uppercase ms-1 mb-2">{{ liveClass.class_type }} Class</span>
+                <h4 class="fw-bold mb-1">{{ liveClass.title }}</h4>
+                <p class="text-muted fs-13 mb-0" *ngIf="liveClass.topic">
+                  <strong>Topic:</strong> {{ liveClass.topic }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+              <h6 class="fw-semibold fs-14 mb-2 text-dark">Description</h6>
+              <div class="p-3 bg-light rounded text-muted fs-13" style="line-height: 1.6;">
+                {{ liveClass.description || 'No detailed description provided for this class.' }}
+              </div>
+            </div>
+
+            <!-- Discussion Points -->
+            <div class="mb-4" *ngIf="liveClass.discussion_points && liveClass.discussion_points.length > 0">
+              <h6 class="fw-semibold fs-14 mb-2 text-dark">Key Discussion Points</h6>
+              <ul class="list-group list-group-flush border rounded">
+                <li *ngFor="let point of liveClass.discussion_points" class="list-group-item d-flex align-items-center gap-2 py-2">
+                  <i class="ri-checkbox-circle-fill text-primary fs-16"></i>
+                  <span class="fs-13">{{ point }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Learning Outcomes -->
+            <div class="mb-4" *ngIf="liveClass.learning_outcomes && liveClass.learning_outcomes.length > 0">
+              <h6 class="fw-semibold fs-14 mb-2 text-dark">Learning Outcomes</h6>
+              <ul class="list-group list-group-flush border rounded">
+                <li *ngFor="let outcome of liveClass.learning_outcomes" class="list-group-item d-flex align-items-center gap-2 py-2">
+                  <i class="ri-award-fill text-success fs-16"></i>
+                  <span class="fs-13">{{ outcome }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Side Cards (Mentor & Capacity) -->
+          <div class="col-xl-4 col-lg-5">
+            <!-- Mentor Information Card -->
+            <div class="card custom-card border mb-4">
+              <div class="card-header bg-light py-2">
+                <h6 class="card-title fs-13 mb-0 fw-semibold">Assigned Mentor</h6>
+              </div>
+              <div class="card-body text-center p-4">
+                <img [src]="getMentorPhoto(liveClass.mentor?.photo)" alt="Mentor Photo" class="avatar avatar-xl rounded-circle mb-3 shadow-xs">
+                <h5 class="fw-bold mb-1">{{ liveClass.mentor?.full_name }}</h5>
+                <span class="badge bg-primary-transparent fs-11 mb-2">{{ liveClass.mentor?.expert_in || liveClass.mentor?.qualification || 'Instructor' }}</span>
+                
+                <div class="text-start border-top pt-3 mt-3 d-flex flex-column gap-2 fs-12">
+                  <div class="d-flex justify-content-between" *ngIf="liveClass.mentor?.email">
+                    <span class="text-muted">Email:</span>
+                    <span class="fw-medium text-dark">{{ liveClass.mentor?.email }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between" *ngIf="liveClass.mentor?.mobile_number">
+                    <span class="text-muted">Mobile:</span>
+                    <span class="fw-medium text-dark">{{ liveClass.mentor?.mobile_number }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between" *ngIf="liveClass.mentor?.experience">
+                    <span class="text-muted">Experience:</span>
+                    <span class="fw-medium text-dark">{{ liveClass.mentor?.experience }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span class="text-muted">Default Charges:</span>
+                    <span class="fw-semibold text-primary">₹{{ liveClass.mentor?.default_charges || 0 }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Capacity Progress Card -->
+            <div class="card custom-card border mb-4">
+              <div class="card-header bg-light py-2">
+                <h6 class="card-title fs-13 mb-0 fw-semibold">Seat Reservation Progress</h6>
+              </div>
+              <div class="card-body p-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="fs-12 text-muted">Seats Reserved:</span>
+                  <span class="fw-bold fs-13">{{ liveClass.capacity.enrolled_count }} / {{ liveClass.capacity.max_students }}</span>
+                </div>
+                <div class="progress mb-2" style="height: 10px;">
+                  <div 
+                    class="progress-bar bg-primary" 
+                    role="progressbar" 
+                    [style.width.%]="capacityPercentage"
+                    [attr.aria-valuenow]="capacityPercentage" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100">
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between fs-11 text-muted">
+                  <span>{{ capacityPercentage }}% Filled</span>
+                  <span>{{ liveClass.capacity.available_seats }} Available</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 2: WEBINAR.GG SESSION MANAGEMENT -->
+      <!-- ===================================================================== -->
+      <div *ngIf="activeTab === 'session'">
+        <div class="row g-4">
+          <div class="col-xl-8">
+            <div class="card custom-card border shadow-none mb-4">
+              <div class="card-header bg-light py-3 d-flex align-items-center justify-content-between">
+                <h6 class="card-title mb-0 fw-semibold fs-14">
+                  <i class="ri-video-line text-primary me-2"></i>Webinar.gg Room Control Panel
+                </h6>
+                <button type="button" class="btn btn-sm btn-outline-light" (click)="loadSessionDetails()" [disabled]="isLoadingSession">
+                  <i class="ri-refresh-line me-1" [class.ri-spin]="isLoadingSession"></i> Refresh Status
+                </button>
+              </div>
+              <div class="card-body p-4">
+                
+                <div *ngIf="isLoadingSession" class="text-center py-4">
+                  <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                  <p class="text-muted mt-2 fs-12">Checking Webinar.gg room status...</p>
+                </div>
+
+                <div *ngIf="!isLoadingSession">
+                  <!-- Session State Banner -->
+                  <div class="alert p-3 mb-4 rounded d-flex align-items-center justify-content-between flex-wrap gap-2"
+                    [ngClass]="{
+                      'alert-warning': !liveClass.session || liveClass.session.status === 'not_provisioned',
+                      'alert-info': liveClass.session?.status === 'scheduled',
+                      'alert-danger': liveClass.session?.status === 'live',
+                      'alert-success': liveClass.session?.status === 'ended'
+                    }">
+                    <div class="d-flex align-items-center gap-2">
+                      <span *ngIf="liveClass.session?.status === 'live'" class="pulse-indicator"></span>
+                      <i *ngIf="liveClass.session?.status !== 'live'" class="ri-information-line fs-20"></i>
+                      <div>
+                        <strong class="d-block fs-14 text-uppercase">
+                          Status: {{ liveClass.session?.status || 'Not Provisioned' }}
+                        </strong>
+                        <span class="fs-12">
+                          <span *ngIf="!liveClass.session || liveClass.session.status === 'not_provisioned'">
+                            Room has not been provisioned on Webinar.gg yet. Click Provision Room below.
+                          </span>
+                          <span *ngIf="liveClass.session?.status === 'scheduled'">
+                            Webinar.gg room is created. You can start the session when the class begins.
+                          </span>
+                          <span *ngIf="liveClass.session?.status === 'live'">
+                            The session is currently LIVE! Students and Mentor can join the interactive room.
+                          </span>
+                          <span *ngIf="liveClass.session?.status === 'ended'">
+                            This session has concluded and attendance has been closed.
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Join window timing check -->
+                  <div *ngIf="sessionMetadata && !sessionMetadata.is_join_open" class="alert alert-light border py-2 px-3 mb-4 fs-12 text-muted">
+                    <i class="ri-time-line text-warning me-1"></i>
+                    <strong>Timing Restriction:</strong> {{ sessionMetadata.join_restriction_reason }}
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="d-flex flex-wrap gap-2 mb-4">
+                    <!-- Provision Room Button -->
+                    <button 
+                      *ngIf="!liveClass.session || liveClass.session.status === 'not_provisioned'"
+                      type="button" 
+                      class="btn btn-primary btn-wave d-flex align-items-center gap-1 shadow-sm"
+                      (click)="openProvisionModal()">
+                      <i class="ri-video-add-line fs-16"></i>
+                      <span>Provision Webinar.gg Room</span>
+                    </button>
+
+                    <!-- Start Session Button -->
+                    <button 
+                      *ngIf="liveClass.session && liveClass.session.status === 'scheduled'"
+                      type="button" 
+                      class="btn btn-danger btn-wave d-flex align-items-center gap-1 shadow-sm"
+                      (click)="openStartSessionModal()">
+                      <i class="ri-play-circle-line fs-16"></i>
+                      <span>Start Live Session</span>
+                    </button>
+
+                    <!-- End Session Button -->
+                    <button 
+                      *ngIf="liveClass.session && liveClass.session.status === 'live'"
+                      type="button" 
+                      class="btn btn-danger btn-wave d-flex align-items-center gap-1 shadow-sm"
+                      (click)="openEndSessionModal()">
+                      <i class="ri-stop-circle-line fs-16"></i>
+                      <span>End Live Session</span>
+                    </button>
+                  </div>
+
+                  <!-- Session Details Table -->
+                  <div class="table-responsive border rounded" *ngIf="liveClass.session">
+                    <table class="table table-bordered mb-0 fs-13">
+                      <tbody>
+                        <tr>
+                          <td class="bg-light fw-medium w-25">Webinar Provider</td>
+                          <td>
+                            <span class="badge bg-primary text-uppercase">{{ liveClass.provider || 'Webinar.gg' }}</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="bg-light fw-medium">Provider Session ID</td>
+                          <td>
+                            <code>{{ liveClass.provider_session_id || 'N/A' }}</code>
+                          </td>
+                        </tr>
+                        <tr *ngIf="liveClass.session.actual_start_time">
+                          <td class="bg-light fw-medium">Actual Start Time</td>
+                          <td>{{ liveClass.session.actual_start_time | date:'medium' }}</td>
+                        </tr>
+                        <tr *ngIf="liveClass.session.actual_end_time">
+                          <td class="bg-light fw-medium">Actual End Time</td>
+                          <td>{{ liveClass.session.actual_end_time | date:'medium' }}</td>
+                        </tr>
+                        <tr *ngIf="sessionMetadata?.room_url">
+                          <td class="bg-light fw-medium">Direct Room URL</td>
+                          <td>
+                            <div class="d-flex align-items-center gap-2">
+                              <span class="text-truncate" style="max-width: 320px;">{{ sessionMetadata?.room_url }}</span>
+                              <button type="button" class="btn btn-sm btn-icon btn-outline-primary" (click)="copyRoomUrl(sessionMetadata?.room_url)">
+                                <i class="ri-file-copy-line"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Room Tips Card -->
+          <div class="col-xl-4">
+            <div class="card custom-card border bg-light">
+              <div class="card-body p-3 fs-12">
+                <h6 class="fw-semibold fs-13 mb-2 text-dark">
+                  <i class="ri-shield-check-line text-success me-1"></i>Webinar.gg Integration Protocol
+                </h6>
+                <ul class="ps-3 mb-0 text-muted" style="line-height: 1.7;">
+                  <li>Room is provisioned automatically or manually through Webinar.gg API.</li>
+                  <li>Mentors can join up to 30 minutes before the scheduled start time.</li>
+                  <li>Students can join up to 15 minutes before the scheduled start time.</li>
+                  <li>Ending the session automatically completes the live class and finalizes all open student attendance intervals.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 3: STUDENT BOOKINGS -->
+      <!-- ===================================================================== -->
+      <div *ngIf="activeTab === 'bookings'">
+        <!-- Filter toolbar -->
+        <div class="row g-2 align-items-center mb-3">
+          <div class="col-md-5">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light border-end-0">
+                <i class="ri-search-line text-muted"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control border-start-0" 
+                placeholder="Search by student name, email, booking ref..." 
+                [(ngModel)]="bookingSearch" 
+                (keyup.enter)="onBookingFilterChange()">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <select class="form-select form-select-sm" [(ngModel)]="bookingStatusFilter" (change)="onBookingFilterChange()">
+              <option value="all">All Booking Statuses</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="pending">Pending Hold</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+          <div class="col-md-4 text-end">
+            <button type="button" class="btn btn-sm btn-outline-light btn-wave" (click)="loadBookings()" [disabled]="isLoadingBookings">
+              <i class="ri-refresh-line me-1" [class.ri-spin]="isLoadingBookings"></i> Refresh
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="isLoadingBookings" class="text-center py-5">
+          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          <p class="text-muted mt-2 fs-12">Loading student bookings roster...</p>
+        </div>
+
+        <div *ngIf="!isLoadingBookings && bookings.length === 0" class="text-center py-5 border rounded bg-light">
+          <i class="ri-user-unfollow-line fs-28 text-muted mb-2 d-block"></i>
+          <h6 class="fw-semibold mb-1">No Student Bookings Found</h6>
+          <p class="text-muted fs-12 mb-0">No bookings have been confirmed for this class yet.</p>
+        </div>
+
+        <div class="table-responsive border rounded" *ngIf="!isLoadingBookings && bookings.length > 0">
+          <table class="table text-nowrap table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Student Info</th>
+                <th>Booking Reference</th>
+                <th>Booking Status</th>
+                <th>Payment Status</th>
+                <th>Amount Paid</th>
+                <th>Payment ID (Razorpay)</th>
+                <th>Booking Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let b of bookings">
+                <td>
+                  <span class="fw-medium fs-13 d-block text-dark">{{ b.student_name }}</span>
+                  <span class="text-muted fs-11">{{ b.student_email }} • {{ b.student_mobile }}</span>
+                </td>
+                <td>
+                  <code class="fw-bold">{{ b.booking_reference }}</code>
+                </td>
+                <td>
+                  <span *ngIf="b.booking_status === 'confirmed'" class="badge bg-success-transparent fs-11">Confirmed</span>
+                  <span *ngIf="b.booking_status === 'pending'" class="badge bg-warning-transparent fs-11">Pending Hold</span>
+                  <span *ngIf="b.booking_status === 'cancelled'" class="badge bg-secondary-transparent fs-11">Cancelled</span>
+                  <span *ngIf="b.booking_status === 'expired'" class="badge bg-danger-transparent fs-11">Expired</span>
+                </td>
+                <td>
+                  <span *ngIf="b.payment_status === 'paid'" class="badge bg-success-transparent fs-11">Paid</span>
+                  <span *ngIf="b.payment_status === 'free'" class="badge bg-info-transparent fs-11">Free</span>
+                  <span *ngIf="b.payment_status === 'pending'" class="badge bg-warning-transparent fs-11">Pending</span>
+                  <span *ngIf="b.payment_status === 'failed'" class="badge bg-danger-transparent fs-11">Failed</span>
+                  <span *ngIf="b.payment_status === 'refunded'" class="badge bg-secondary-transparent fs-11">Refunded</span>
+                </td>
+                <td>
+                  <span class="fw-semibold text-dark fs-13">₹{{ b.amount }}</span>
+                </td>
+                <td>
+                  <span *ngIf="b.payment_id" class="text-monospace fs-12">{{ b.payment_id }}</span>
+                  <span *ngIf="!b.payment_id" class="text-muted fs-11">—</span>
+                </td>
+                <td>
+                  <span class="fs-12 text-muted">{{ b.booked_at | date:'short' }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="!isLoadingBookings && totalBookingsCount > bookingPageSize">
+          <span class="text-muted fs-12">Total: {{ totalBookingsCount }} bookings</span>
+          <ngb-pagination
+            [collectionSize]="totalBookingsCount"
+            [(page)]="bookingPage"
+            [pageSize]="bookingPageSize"
+            [maxSize]="5"
+            (pageChange)="onBookingPageChange($event)"
+            size="sm">
+          </ngb-pagination>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 4: ATTENDANCE & INTERVALS -->
+      <!-- ===================================================================== -->
+      <div *ngIf="activeTab === 'attendance'">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h6 class="fw-semibold fs-14 mb-0">Student Attendance Records</h6>
+            <span class="text-muted fs-12">Tracks total intervals, durations, join & leave timestamps</span>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-light btn-wave" (click)="loadAttendance()" [disabled]="isLoadingAttendance">
+            <i class="ri-refresh-line me-1" [class.ri-spin]="isLoadingAttendance"></i> Refresh Attendance
+          </button>
+        </div>
+
+        <div *ngIf="isLoadingAttendance" class="text-center py-5">
+          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          <p class="text-muted mt-2 fs-12">Aggregating attendance telemetry...</p>
+        </div>
+
+        <div *ngIf="!isLoadingAttendance && attendanceList.length === 0" class="text-center py-5 border rounded bg-light">
+          <i class="ri-user-voice-line fs-28 text-muted mb-2 d-block"></i>
+          <h6 class="fw-semibold mb-1">No Attendance Telemetry Recorded</h6>
+          <p class="text-muted fs-12 mb-0">Attendance intervals will appear here once students join the live session.</p>
+        </div>
+
+        <div class="table-responsive border rounded" *ngIf="!isLoadingAttendance && attendanceList.length > 0">
+          <table class="table text-nowrap table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Student</th>
+                <th>Booking Ref</th>
+                <th>Attendance Status</th>
+                <th>Total Intervals</th>
+                <th>Attended Duration</th>
+                <th>First Joined</th>
+                <th>Last Left</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of attendanceList">
+                <td>
+                  <span class="fw-medium fs-13 d-block text-dark">{{ a.student_name }}</span>
+                  <span class="text-muted fs-11">{{ a.student_mobile || a.student_email }}</span>
+                </td>
+                <td>
+                  <code>{{ a.booking_reference }}</code>
+                </td>
+                <td>
+                  <span *ngIf="a.attendance_status === 'present'" class="badge bg-success-transparent fs-11">
+                    <i class="ri-checkbox-circle-line me-1"></i> Present
+                  </span>
+                  <span *ngIf="a.attendance_status === 'partially_attended'" class="badge bg-warning-transparent fs-11">
+                    <i class="ri-time-line me-1"></i> Partially Attended
+                  </span>
+                  <span *ngIf="a.attendance_status === 'absent'" class="badge bg-danger-transparent fs-11">
+                    <i class="ri-close-circle-line me-1"></i> Absent
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark fs-12 fw-semibold">{{ a.total_intervals }} Interval(s)</span>
+                </td>
+                <td>
+                  <span class="fw-bold fs-13 text-dark">{{ a.total_duration_minutes }} mins</span>
+                  <span class="text-muted fs-11 d-block">({{ a.total_duration_seconds }} secs)</span>
+                </td>
+                <td>
+                  <span *ngIf="a.first_joined_at" class="fs-12 text-muted">{{ a.first_joined_at | date:'shortTime' }}</span>
+                  <span *ngIf="!a.first_joined_at" class="text-muted fs-11">—</span>
+                </td>
+                <td>
+                  <span *ngIf="a.last_left_at" class="fs-12 text-muted">{{ a.last_left_at | date:'shortTime' }}</span>
+                  <span *ngIf="!a.last_left_at" class="text-muted fs-11">—</span>
+                </td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-outline-primary btn-wave" (click)="openStudentAttendanceDetails(a)">
+                    <i class="ri-history-line me-1"></i> View Intervals
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- TAB 5: PAYMENT LEDGER -->
+      <!-- ===================================================================== -->
+      <div *ngIf="activeTab === 'payments'">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h6 class="fw-semibold fs-14 mb-0">Payment Transactions</h6>
+            <span class="text-muted fs-12">Detailed Razorpay transactions for this class</span>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-light btn-wave" (click)="loadPayments()" [disabled]="isLoadingPayments">
+            <i class="ri-refresh-line me-1" [class.ri-spin]="isLoadingPayments"></i> Refresh Payments
+          </button>
+        </div>
+
+        <div *ngIf="isLoadingPayments" class="text-center py-5">
+          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          <p class="text-muted mt-2 fs-12">Loading payment records...</p>
+        </div>
+
+        <div *ngIf="!isLoadingPayments && payments.length === 0" class="text-center py-5 border rounded bg-light">
+          <i class="ri-money-rupee-circle-line fs-28 text-muted mb-2 d-block"></i>
+          <h6 class="fw-semibold mb-1">No Payment Transactions Recorded</h6>
+          <p class="text-muted fs-12 mb-0">Free classes or classes with no online transactions will show empty.</p>
+        </div>
+
+        <div class="table-responsive border rounded" *ngIf="!isLoadingPayments && payments.length > 0">
+          <table class="table text-nowrap table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Student</th>
+                <th>Booking Ref</th>
+                <th>Payment Gateway</th>
+                <th>Gateway Order ID</th>
+                <th>Gateway Payment ID</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of payments">
+                <td>
+                  <span class="fw-medium fs-13 d-block text-dark">{{ p.student_name }}</span>
+                  <span class="text-muted fs-11">{{ p.student_email }}</span>
+                </td>
+                <td>
+                  <code>{{ p.booking_reference }}</code>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark fs-11 text-uppercase">{{ p.payment_gateway }}</span>
+                </td>
+                <td>
+                  <span class="text-monospace fs-11">{{ p.gateway_order_id || '—' }}</span>
+                </td>
+                <td>
+                  <span class="text-monospace fs-11 fw-semibold text-primary">{{ p.gateway_payment_id || '—' }}</span>
+                </td>
+                <td>
+                  <span class="fw-bold fs-13 text-dark">₹{{ p.amount }}</span>
+                </td>
+                <td>
+                  <span *ngIf="p.payment_status === 'captured' || p.payment_status === 'paid'" class="badge bg-success-transparent fs-11">Captured</span>
+                  <span *ngIf="p.payment_status === 'pending'" class="badge bg-warning-transparent fs-11">Pending</span>
+                  <span *ngIf="p.payment_status === 'failed'" class="badge bg-danger-transparent fs-11">Failed</span>
+                </td>
+                <td>
+                  <span class="fs-12 text-muted">{{ p.created_at | date:'short' }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL: PROVISION WEBINAR.GG ROOM -->
+<!-- ========================================================================= -->
+<ng-template #provisionModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title fw-semibold fs-16">Provision Webinar.gg Room</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-14 mb-2">
+      You are about to provision an interactive video room on <strong>Webinar.gg</strong> for class:
+    </p>
+    <div class="p-3 bg-light rounded mb-3">
+      <h6 class="fw-bold mb-1 text-primary">{{ liveClass?.title }}</h6>
+      <span class="text-muted fs-12">{{ liveClass?.class_date | date:'mediumDate' }} • {{ liveClass?.start_time }} - {{ liveClass?.end_time }}</span>
+    </div>
+    <p class="text-muted fs-12 mb-0">
+      <i class="ri-information-line me-1 text-info"></i>
+      This will generate a room ID, passcode, and host credentials using the assigned mentor's profile.
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()" [disabled]="isSessionActionSubmitting">Cancel</button>
+    <button type="button" class="btn btn-primary btn-wave" (click)="confirmProvision()" [disabled]="isSessionActionSubmitting">
+      <span *ngIf="isSessionActionSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+      Provision Room Now
+    </button>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- MODAL: START SESSION -->
+<!-- ========================================================================= -->
+<ng-template #startSessionModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title fw-semibold fs-16 text-danger d-flex align-items-center gap-2">
+      <span class="pulse-indicator"></span> Start Live Broadcast Session
+    </h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-14 mb-2">
+      Are you sure you want to transition class status to <strong>LIVE / ONGOING</strong>?
+    </p>
+    <div class="alert alert-info py-2 fs-12 mb-0">
+      <i class="ri-broadcast-line me-1"></i> Students who have confirmed bookings will immediately be permitted to join via their mobile app.
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()" [disabled]="isSessionActionSubmitting">Cancel</button>
+    <button type="button" class="btn btn-danger btn-wave" (click)="confirmStartSession()" [disabled]="isSessionActionSubmitting">
+      <span *ngIf="isSessionActionSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+      Start Live Session
+    </button>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- MODAL: END SESSION -->
+<!-- ========================================================================= -->
+<ng-template #endSessionModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title fw-semibold fs-16 text-danger">End Live Broadcast Session</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="fs-14 mb-2">
+      Are you sure you want to end this live session now?
+    </p>
+    <div class="alert alert-warning py-2 fs-12 mb-0">
+      <i class="ri-alert-line me-1"></i> This will mark the class as <strong>COMPLETED</strong>, disconnect all participants, and finalize all student attendance intervals.
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()" [disabled]="isSessionActionSubmitting">Cancel</button>
+    <button type="button" class="btn btn-danger btn-wave" (click)="confirmEndSession()" [disabled]="isSessionActionSubmitting">
+      <span *ngIf="isSessionActionSubmitting" class="spinner-border spinner-border-sm me-1" role="status"></span>
+      End Session & Close
+    </button>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- MODAL: STUDENT ATTENDANCE HISTORY -->
+<!-- ========================================================================= -->
+<ng-template #attendanceModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title fw-semibold fs-16">Attendance Intervals Roster</h5>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body" *ngIf="selectedStudentAttendance">
+    <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-3">
+      <div>
+        <h6 class="fw-bold mb-1">{{ selectedStudentAttendance.student_name }}</h6>
+        <span class="text-muted fs-12">{{ selectedStudentAttendance.student_email }} • {{ selectedStudentAttendance.student_mobile }}</span>
+      </div>
+      <div class="text-end">
+        <span class="badge bg-primary fs-12 mb-1 d-block">{{ selectedStudentAttendance.total_duration_minutes }} mins Total</span>
+        <span class="badge bg-light text-dark fs-11">{{ selectedStudentAttendance.total_intervals }} Interval(s)</span>
+      </div>
+    </div>
+
+    <div class="table-responsive border rounded mb-3">
+      <table class="table table-bordered mb-0 fs-13">
+        <tbody>
+          <tr>
+            <td class="bg-light fw-medium">Booking Reference</td>
+            <td><code>{{ selectedStudentAttendance.booking_reference }}</code></td>
+          </tr>
+          <tr>
+            <td class="bg-light fw-medium">First Joined Timestamp</td>
+            <td>{{ selectedStudentAttendance.first_joined_at ? (selectedStudentAttendance.first_joined_at | date:'medium') : 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td class="bg-light fw-medium">Last Left Timestamp</td>
+            <td>{{ selectedStudentAttendance.last_left_at ? (selectedStudentAttendance.last_left_at | date:'medium') : 'N/A' }}</td>
+          </tr>
+          <tr>
+            <td class="bg-light fw-medium">Total Telemetry Seconds</td>
+            <td>{{ selectedStudentAttendance.total_duration_seconds }} seconds ({{ selectedStudentAttendance.total_duration_minutes }} mins)</td>
+          </tr>
+          <tr>
+            <td class="bg-light fw-medium">Attendance Evaluation</td>
+            <td>
+              <span *ngIf="selectedStudentAttendance.attendance_status === 'present'" class="badge bg-success-transparent fs-11">Full Attendance (Present)</span>
+              <span *ngIf="selectedStudentAttendance.attendance_status === 'partially_attended'" class="badge bg-warning-transparent fs-11">Partial Attendance (&lt; 5 mins)</span>
+              <span *ngIf="selectedStudentAttendance.attendance_status === 'absent'" class="badge bg-danger-transparent fs-11">Absent (0 mins)</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Telemetry Interval Breakdown Table -->
+    <h6 class="fw-semibold fs-13 mb-2 text-dark">
+      <i class="ri-pulse-line text-primary me-1"></i>Detailed Session Intervals Telemetry
+    </h6>
+
+    <div *ngIf="isLoadingIntervals" class="text-center py-3">
+      <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <span class="ms-2 fs-12 text-muted">Retrieving interval timestamps...</span>
+    </div>
+
+    <div *ngIf="!isLoadingIntervals && studentIntervals.length === 0" class="p-3 bg-light rounded text-center text-muted fs-12">
+      No join/leave telemetry intervals recorded for this student.
+    </div>
+
+    <div class="table-responsive border rounded" *ngIf="!isLoadingIntervals && studentIntervals.length > 0">
+      <table class="table table-sm table-striped mb-0 fs-12">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Joined At</th>
+            <th>Left At</th>
+            <th>Interval Duration</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let int of studentIntervals; let idx = index">
+            <td class="fw-bold">{{ idx + 1 }}</td>
+            <td>{{ int.joined_at | date:'mediumTime' }}</td>
+            <td>{{ int.left_at ? (int.left_at | date:'mediumTime') : 'Active' }}</td>
+            <td>{{ int.attendance_duration }} seconds</td>
+            <td>
+              <span class="badge bg-info-transparent fs-10 text-uppercase">{{ int.attendance_status || 'recorded' }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.dismiss()">Close</button>
+  </div>
+</ng-template>

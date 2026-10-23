@@ -1,0 +1,505 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0">
+
+        <!-- Header -->
+        <div class="card-header justify-content-between mb-3">
+            <div class="card-title mb-0">
+                PDF Content Master List
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <button class="btn btn-primary btn-wave" (click)="open(addPdfModal)">
+                    <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                    Add PDF Content
+                </button>
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search Here" [(ngModel)]="searchTerm">
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card-body py-2 px-3">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap w-100" [showCheckbox]="false">
+                    <thead>
+                        <tr>
+                            <th style="width:5%">Sr No.</th>
+                            <th style="width:22%">PDF Title</th>
+                            <th style="width:14%">Mentor</th>
+                            <th style="width:14%">Level Bound</th>
+                            <th style="width:10%">Price</th>
+                            <th style="width:10%">Points</th>
+                            <th style="width:15%">PDF Files</th>
+                            <th style="width:5%">Status</th>
+                            <th style="width:5%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+                        @for (pdf of filteredPdfs; track pdf.id; let i = $index) {
+                        <tr cdkDrag [cdkDragData]="pdf">
+                            <td>
+                                <span class="drag-handle cursor-grab me-2" cdkDragHandle title="Drag to reorder">
+                                    <i class="ri-drag-move-2-fill fs-14 align-middle text-muted"></i>
+                                </span>
+                                {{ i + 1 }}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="avatar avatar-sm bg-danger-transparent rounded-circle text-danger flex-shrink-0">
+                                        <i class="ri-file-pdf-2-line fs-14"></i>
+                                    </div>
+                                    <div>
+                                        <span class="fw-semibold text-dark d-block">{{ pdf.title }}</span>
+                                        <small class="text-muted fs-11" *ngIf="pdf.course_name">Course: {{ pdf.course_name }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-dark fw-medium">{{ pdf.mentor_name || '-' }}</span>
+                            </td>
+                            <td>
+                                @if (pdf.topic_title) {
+                                <span class="badge bg-info-light text-info">Topic: {{ pdf.topic_title }}</span>
+                                } @else if (pdf.chapter_title) {
+                                <span class="badge bg-secondary-light text-secondary">Chapter: {{ pdf.chapter_title }}</span>
+                                } @else if (pdf.lesson_title) {
+                                <span class="badge bg-primary-light text-primary">Lesson: {{ pdf.lesson_title }}</span>
+                                } @else {
+                                <span class="badge bg-light text-dark">Course Level</span>
+                                }
+                            </td>
+                            <td class="fw-semibold text-primary">
+                                {{ (pdf.price == 0 || !pdf.price) ? 'Free' : '₹' + pdf.price }}
+                            </td>
+                            <td>
+                                <span class="badge bg-warning-transparent text-warning">
+                                    <i class="ri-coin-line me-1"></i>{{ pdf.wallet_points || 0 }} pts
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    <!-- Main PDF -->
+                                    <div class="hstack gap-1 align-items-center">
+                                        <span class="badge bg-danger-transparent text-danger px-1 py-0 fs-10">Main</span>
+                                        <a href="javascript:void(0)" class="text-danger fw-medium fs-12"
+                                            (click)="previewPdf(pdf)" title="View Full PDF">
+                                            <i class="ri-file-pdf-line me-1"></i>View
+                                        </a>
+                                        <span class="text-muted">|</span>
+                                        <a href="javascript:void(0)" class="text-primary fw-medium fs-12"
+                                            (click)="downloadPdf(pdf)" title="Download Full PDF">
+                                            <i class="ri-download-2-line me-1"></i>Download
+                                        </a>
+                                    </div>
+                                    <!-- Sample Preview PDF -->
+                                    <div class="hstack gap-1 align-items-center" *ngIf="pdf.sample_pdf_file">
+                                        <span class="badge bg-success-transparent text-success px-1 py-0 fs-10">Sample</span>
+                                        <a href="javascript:void(0)" class="text-success fw-medium fs-12"
+                                            (click)="previewSamplePdf(pdf)" title="View Sample PDF">
+                                            <i class="ri-eye-line me-1"></i>Preview
+                                        </a>
+                                        <span class="text-muted">|</span>
+                                        <a href="javascript:void(0)" class="text-secondary fw-medium fs-12"
+                                            (click)="downloadSamplePdf(pdf)" title="Download Sample PDF">
+                                            <i class="ri-download-2-line me-1"></i>Download
+                                        </a>
+                                    </div>
+                                    <div *ngIf="!pdf.sample_pdf_file">
+                                        <span class="text-muted fs-11 fst-italic">No sample PDF</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" [checked]="pdf.status === 'active'"
+                                        (change)="toggleStatus(pdf)">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2">
+                                    <a href="javascript:void(0)" class="text-info fs-14" title="Edit PDF"
+                                        (click)="openEdit(pdf, editPdfModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="text-danger fs-14" title="Delete PDF"
+                                        (click)="openDelete(pdf, deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">No PDF records found.</td>
+                        </tr>
+                        }
+                    </tbody>
+                </spk-reusable-tables>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add PDF Modal -->
+<ng-template #addPdfModal let-modal>
+    <div class="modal-header border-bottom bg-light py-2 px-3">
+        <h6 class="modal-title fw-semibold mb-0 fs-15">
+            <i class="ri-file-pdf-2-line text-danger me-1"></i> Add PDF Content
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-3" style="max-height: 80vh; overflow-y: auto;">
+        <!-- SECTION 1: Category & Curriculum Hierarchy -->
+        <div class="border rounded-2 p-3 mb-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-folder-settings-line text-primary"></i> Category & Curriculum Binding
+            </h6>
+
+            <!-- Row 1: Category | Subcategory | Subject | Course -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Category <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="categoryId" (change)="onCategoryChange()">
+                        <option [ngValue]="null" disabled selected>Select Category</option>
+                        @for (cat of categories; track cat.id) {
+                            <option [ngValue]="cat.id">{{ cat.category_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subcategory <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="subcategoryId" (change)="onSubcategoryChange()" [disabled]="!categoryId">
+                        <option [ngValue]="null" disabled selected>Select Subcategory</option>
+                        @for (sub of filteredSubcategories; track sub.id) {
+                            <option [ngValue]="sub.id">{{ sub.subcategory_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subject <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="subjectId" (change)="onSubjectChange()" [disabled]="!subcategoryId">
+                        <option [ngValue]="null" disabled selected>Select Subject</option>
+                        @for (subj of filteredSubjects; track subj.id) {
+                            <option [ngValue]="subj.id">{{ subj.subject_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Course <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="courseId" (change)="onCourseChange(courseId, false)" [disabled]="!subjectId">
+                        <option [ngValue]="null" disabled selected>Select Course</option>
+                        @for (course of filteredCourses; track course.id) {
+                            <option [ngValue]="course.id">{{ course.course_name }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 2: Mentor | Lesson | Chapter | Topic -->
+            <div class="row g-2">
+                <div [ngClass]="(lessonsList && lessonsList.length > 0) ? 'col-md-3' : 'col-md-12'">
+                    <label class="form-label fs-12 fw-medium mb-1">Mentor <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="mentorId">
+                        <option [ngValue]="null" selected>Select Mentor (None)</option>
+                        @for (mentor of mentors; track mentor.id) {
+                            <option [ngValue]="mentor.id">{{ mentor.full_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="lessonsList && lessonsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Lesson <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="lessonId" (change)="onLessonChange(false)">
+                        <option [ngValue]="null">Course Level (None)</option>
+                        @for (lesson of lessonsList; track lesson.id) {
+                            <option [ngValue]="lesson.id">{{ lesson.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="chaptersList && chaptersList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Chapter <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="chapterId" (change)="onChapterChange(false)">
+                        <option [ngValue]="null">Lesson Level (None)</option>
+                        @for (chapter of chaptersList; track chapter.id) {
+                            <option [ngValue]="chapter.id">{{ chapter.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="topicsList && topicsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Topic <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="topicId">
+                        <option [ngValue]="null">Chapter Level (None)</option>
+                        @for (topic of topicsList; track topic.id) {
+                            <option [ngValue]="topic.id">{{ topic.title }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: PDF Content Details -->
+        <div class="border rounded-2 p-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-file-text-line text-primary"></i> PDF Details & Files
+            </h6>
+
+            <!-- Row 1: PDF Title | Price | Wallet Points -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">PDF Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-sm" placeholder="Enter PDF Title" [(ngModel)]="pdfTitle">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Price (₹)</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" placeholder="0.00" [(ngModel)]="pdfPrice">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Wallet Points</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="ri-coin-line text-warning"></i></span>
+                        <input type="number" min="0" class="form-control" placeholder="0" [(ngModel)]="pdfWalletPoints">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Description -->
+            <div class="row g-2 mb-2">
+                <div class="col-12">
+                    <label class="form-label fs-12 fw-medium mb-1">Description <span class="text-muted">(Optional)</span></label>
+                    <textarea class="form-control form-control-sm" rows="2" placeholder="Enter PDF Description..." [(ngModel)]="pdfDescription"></textarea>
+                </div>
+            </div>
+
+            <!-- Row 3: Main PDF & Preview PDF File Uploads -->
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">Main PDF File <span class="text-danger">*</span></label>
+                    <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onFileSelected($event, false)">
+                    <small class="text-primary d-block mt-1 fs-11 text-truncate" *ngIf="pdfFileName" title="{{ pdfFileName }}">
+                        <i class="ri-file-pdf-fill me-1"></i>{{ pdfFileName }}
+                    </small>
+                    <small class="text-muted fs-11 d-block mt-1">Full access document for enrolled users.</small>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">
+                        Preview / Sample PDF
+                        <span class="badge bg-info-transparent text-info ms-1 fs-10">Optional</span>
+                    </label>
+                    <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onSampleFileSelected($event, false)">
+                    <small class="text-success d-block mt-1 fs-11 text-truncate" *ngIf="samplePdfFileName" title="{{ samplePdfFileName }}">
+                        <i class="ri-file-pdf-fill me-1"></i>{{ samplePdfFileName }}
+                    </small>
+                    <small class="text-muted fs-11 d-block mt-1">Free preview sample for public preview.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-top bg-light py-2 px-3">
+        <button class="btn btn-sm btn-light" (click)="modal.close()" [disabled]="isUploading">Cancel</button>
+        <button class="btn btn-sm btn-primary" (click)="addPdf(modal)" [disabled]="isUploading">
+            <span *ngIf="isUploading"><i class="ri-loader-4-line align-middle me-1 animate-spin"></i> Uploading...</span>
+            <span *ngIf="!isUploading"><i class="ri-check-line me-1"></i> Create PDF</span>
+        </button>
+    </div>
+</ng-template>
+
+<!-- Edit PDF Modal -->
+<ng-template #editPdfModal let-modal>
+    <div class="modal-header border-bottom bg-light py-2 px-3">
+        <h6 class="modal-title fw-semibold mb-0 fs-15">
+            <i class="ri-edit-line text-info me-1"></i> Edit PDF Content
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body p-3" style="max-height: 80vh; overflow-y: auto;">
+        <!-- SECTION 1: Category & Curriculum Hierarchy -->
+        <div class="border rounded-2 p-3 mb-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-folder-settings-line text-primary"></i> Category & Curriculum Binding
+            </h6>
+
+            <!-- Row 1: Category | Subcategory | Subject | Course -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Category <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editCategoryId" (change)="onEditCategoryChange()">
+                        <option [ngValue]="null" disabled selected>Select Category</option>
+                        @for (cat of categories; track cat.id) {
+                            <option [ngValue]="cat.id">{{ cat.category_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subcategory <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editSubcategoryId" (change)="onEditSubcategoryChange()" [disabled]="!editCategoryId">
+                        <option [ngValue]="null" disabled selected>Select Subcategory</option>
+                        @for (sub of editFilteredSubcategories; track sub.id) {
+                            <option [ngValue]="sub.id">{{ sub.subcategory_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Subject <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editSubjectId" (change)="onEditSubjectChange()" [disabled]="!editSubcategoryId">
+                        <option [ngValue]="null" disabled selected>Select Subject</option>
+                        @for (subj of editFilteredSubjects; track subj.id) {
+                            <option [ngValue]="subj.id">{{ subj.subject_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Course <span class="text-danger">*</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editCourseId" (change)="onCourseChange(editCourseId, true)" [disabled]="!editSubjectId">
+                        <option [ngValue]="null" disabled selected>Select Course</option>
+                        @for (course of editFilteredCourses; track course.id) {
+                            <option [ngValue]="course.id">{{ course.course_name }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 2: Mentor | Lesson | Chapter | Topic -->
+            <div class="row g-2">
+                <div [ngClass]="(editLessonsList && editLessonsList.length > 0) ? 'col-md-3' : 'col-md-12'">
+                    <label class="form-label fs-12 fw-medium mb-1">Mentor <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editMentorId">
+                        <option [ngValue]="null">Select Mentor (None)</option>
+                        @for (mentor of mentors; track mentor.id) {
+                            <option [ngValue]="mentor.id">{{ mentor.full_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="editLessonsList && editLessonsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Lesson <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editLessonId" (change)="onLessonChange(true)">
+                        <option [ngValue]="null">Course Level (None)</option>
+                        @for (lesson of editLessonsList; track lesson.id) {
+                            <option [ngValue]="lesson.id">{{ lesson.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="editChaptersList && editChaptersList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Chapter <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editChapterId" (change)="onChapterChange(true)">
+                        <option [ngValue]="null">Lesson Level (None)</option>
+                        @for (chapter of editChaptersList; track chapter.id) {
+                            <option [ngValue]="chapter.id">{{ chapter.title }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3" *ngIf="editTopicsList && editTopicsList.length > 0">
+                    <label class="form-label fs-12 fw-medium mb-1">Topic <span class="text-muted">(Optional)</span></label>
+                    <select class="form-select form-select-sm" [(ngModel)]="editTopicId">
+                        <option [ngValue]="null">Chapter Level (None)</option>
+                        @for (topic of editTopicsList; track topic.id) {
+                            <option [ngValue]="topic.id">{{ topic.title }}</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: PDF Content Details -->
+        <div class="border rounded-2 p-3 bg-white">
+            <h6 class="fw-semibold text-dark fs-13 mb-2 pb-1 border-bottom d-flex align-items-center gap-1">
+                <i class="ri-file-text-line text-primary"></i> PDF Details & Files
+            </h6>
+
+            <!-- Row 1: PDF Title | Price | Wallet Points -->
+            <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">PDF Title <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control form-control-sm" [(ngModel)]="editPdfTitle">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Price (₹)</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">₹</span>
+                        <input type="number" class="form-control" placeholder="0.00" [(ngModel)]="editPdfPrice">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fs-12 fw-medium mb-1">Wallet Points</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="ri-coin-line text-warning"></i></span>
+                        <input type="number" min="0" class="form-control" placeholder="0" [(ngModel)]="editPdfWalletPoints">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Description -->
+            <div class="row g-2 mb-2">
+                <div class="col-12">
+                    <label class="form-label fs-12 fw-medium mb-1">Description <span class="text-muted">(Optional)</span></label>
+                    <textarea class="form-control form-control-sm" rows="2" placeholder="Enter PDF Description..." [(ngModel)]="editPdfDescription"></textarea>
+                </div>
+            </div>
+
+            <!-- Row 3: Main PDF & Preview PDF File Uploads -->
+            <div class="row g-2">
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">Main PDF File <span class="text-muted fs-11">(Leave empty to keep existing)</span></label>
+                    <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onFileSelected($event, true)">
+                    <small class="text-primary d-block mt-1 fs-11 text-truncate" *ngIf="editPdfFileName" title="{{ editPdfFileName }}">
+                        <i class="ri-file-pdf-fill me-1"></i>{{ editPdfFileName }}
+                    </small>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fs-12 fw-medium mb-1">Preview / Sample PDF <span class="text-muted fs-11">(Leave empty to keep existing)</span></label>
+                    <input type="file" class="form-control form-control-sm" accept=".pdf" (change)="onSampleFileSelected($event, true)">
+                    <small class="text-success d-block mt-1 fs-11 text-truncate" *ngIf="editSamplePdfFileName" title="{{ editSamplePdfFileName }}">
+                        <i class="ri-file-pdf-fill me-1"></i>{{ editSamplePdfFileName }}
+                    </small>
+                    <small class="text-muted fs-11 d-block mt-1" *ngIf="!editSamplePdfFileName">No sample PDF currently uploaded.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer border-top bg-light py-2 px-3">
+        <button class="btn btn-sm btn-light" (click)="modal.close()" [disabled]="isUploading">Cancel</button>
+        <button class="btn btn-sm btn-primary" (click)="updatePdf(modal)" [disabled]="isUploading">
+            <span *ngIf="isUploading"><i class="ri-loader-4-line align-middle me-1 animate-spin"></i> Uploading...</span>
+            <span *ngIf="!isUploading"><i class="ri-check-line me-1"></i> Save Changes</span>
+        </button>
+    </div>
+</ng-template>
+
+<!-- Delete Modal -->
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+        <h5>Are you sure?</h5>
+        <p class="text-muted">Do you want to delete this PDF content record from the master list?</p>
+        <button class="btn me-2" style="background:#845ef7;color:#fff;" (click)="deletePdf(selectedPdf!.id, modal)">
+            Delete
+        </button>
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+    </div>
+</ng-template>

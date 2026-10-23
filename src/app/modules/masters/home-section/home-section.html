@@ -1,0 +1,736 @@
+<div class="col-xl-12 mx-auto">
+
+    <!-- Main Card -->
+    <div class="card custom-card border-0 shadow-sm">
+
+        <!-- Header -->
+        <div class="card-header justify-content-between align-items-center py-3 flex-wrap gap-2">
+            <div class="card-title mb-0 d-flex align-items-center gap-2">
+                <i class="ri-layout-masonry-line fs-18 text-primary"></i>
+                <span>Home Page Sections Master</span>
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <!-- Status Filter Pills -->
+                <div class="btn-group btn-group-sm me-1" role="group">
+                    <button type="button" class="btn btn-outline-primary"
+                            [class.active]="statusFilter === 'all'"
+                            (click)="onFilterStatusChange('all')">
+                        All
+                    </button>
+                    <button type="button" class="btn btn-outline-success"
+                            [class.active]="statusFilter === 'active'"
+                            (click)="onFilterStatusChange('active')">
+                        Active
+                    </button>
+                    <button type="button" class="btn btn-outline-danger"
+                            [class.active]="statusFilter === 'inactive'"
+                            (click)="onFilterStatusChange('inactive')">
+                        Inactive
+                    </button>
+                </div>
+
+                <!-- Search Input -->
+                <div class="input-group input-group-sm" style="max-width: 220px;">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="ri-search-line text-muted"></i>
+                    </span>
+                    <input class="form-control form-control-sm border-start-0" type="text"
+                           placeholder="Search Section..."
+                           [(ngModel)]="searchText"
+                           (input)="applyFilter()">
+                </div>
+
+                <!-- Add Button -->
+                <button class="btn btn-primary btn-sm btn-wave" (click)="openAdd(addSectionModal)">
+                    <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                    Add Section
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Body -->
+        <div class="card-body py-2 px-3">
+            @if (isLoading) {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="text-muted mt-2 mb-0">Loading home sections...</p>
+            </div>
+            } @else {
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap table-hover" [showCheckbox]="false">
+                    <thead>
+                        <tr>
+                            <th style="width: 6%;">Sr No.</th>
+                            <th style="width: 28%;">Section Title</th>
+                            <th style="width: 20%;">Assigned Courses</th>
+                            <th style="width: 10%; text-align: center;">Sort Order</th>
+                            <th style="width: 10%; text-align: center;">Status</th>
+                            <th style="width: 14%;">Created At</th>
+                            <th style="width: 12%; text-align: center;">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+                        @for (sec of filteredSections; track sec.id; let i = $index) {
+                        <tr cdkDrag [cdkDragData]="sec">
+                            <td>
+                                <span class="drag-handle cursor-grab me-2" cdkDragHandle title="Drag to reorder">
+                                    <i class="ri-drag-move-2-fill fs-14 align-middle text-muted"></i>
+                                </span>
+                                {{ i + 1 }}
+                            </td>
+                            <td>
+                                <span class="fw-semibold text-dark d-block">{{ sec.title || sec.section_name || sec.name }}</span>
+                            </td>
+                            <td>
+                                @if (getSectionCoursesCount(sec) > 0) {
+                                    <span class="badge bg-primary-transparent text-primary fs-12 px-2 py-1 d-inline-flex align-items-center gap-1">
+                                        <i class="ri-book-open-line"></i>
+                                        <span>{{ getSectionCoursesCount(sec) }} Course{{ getSectionCoursesCount(sec) > 1 ? 's' : '' }}</span>
+                                    </span>
+                                } @else {
+                                    <span class="text-muted fs-12">No courses assigned</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <span class="sort-order-badge">
+                                    {{ sec.sort_order }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-inline-block mb-0">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                           [checked]="sec.status === 'active'"
+                                           (change)="toggleStatus(sec)"
+                                           title="Toggle Status (Active / Inactive)">
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-muted fs-13">
+                                    {{ sec.created_at ? (sec.created_at | date:'mediumDate') : '—' }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 justify-content-center">
+                                    <a href="javascript:void(0)" class="text-info fs-14"
+                                       (click)="openEdit(sec, editSectionModal)"
+                                       title="Edit Section">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="text-primary fs-14"
+                                       (click)="openView(sec, eyeSectionModal)"
+                                       title="View Details">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="text-danger fs-14"
+                                       (click)="openDelete(sec, deleteModal)"
+                                       title="Delete Section">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="ri-inbox-line fs-24 d-block mb-1 text-muted opacity-50"></i>
+                                No home sections found.
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </spk-reusable-tables>
+            </div>
+            }
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ➕ Add Section Modal -->
+<ng-template #addSectionModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title d-flex align-items-center gap-2">
+            <i class="ri-add-circle-line text-primary fs-18"></i>
+            Add Home Section
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+            <!-- Section Title -->
+            <div class="col-xl-12">
+                <label class="form-label fw-semibold">
+                    Section Title <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control"
+                       placeholder="e.g. Top Educators, School Courses, etc."
+                       [(ngModel)]="sectionTitle"
+                       autofocus>
+            </div>
+
+            <!-- Sort Order & Status -->
+            <div class="col-xl-6">
+                <label class="form-label fw-semibold">Sort Order</label>
+                <input type="number" class="form-control" min="1"
+                       placeholder="1, 2, 3..."
+                       [(ngModel)]="sectionSortOrder">
+                <span class="text-muted fs-11">Display sequence position for this section.</span>
+            </div>
+
+            <div class="col-xl-6">
+                <label class="form-label fw-semibold">Status</label>
+                <select class="form-select" [(ngModel)]="sectionStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Multi-Select Courses Section -->
+            <div class="col-xl-12">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                    <div>
+                        <label class="form-label fw-semibold mb-0 d-flex align-items-center gap-1">
+                            <i class="ri-book-open-line text-primary"></i>
+                            Assign Courses (Multi-Select)
+                        </label>
+                        <span class="text-muted fs-11 d-block">Select courses to feature in this home section</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2 fs-11"
+                                (click)="selectAllCourses(false)"
+                                [disabled]="availableCourses.length === 0">
+                            <i class="ri-checkbox-multiple-line me-1"></i>Select All ({{ availableCourses.length }})
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm py-1 px-2 fs-11"
+                                (click)="clearSelectedCourses(false)"
+                                [disabled]="selectedCourseIds.length === 0">
+                            <i class="ri-close-circle-line me-1"></i>Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selected Courses Chips -->
+                @if (selectedCourseIds.length > 0) {
+                <div class="selected-chips-container mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="fs-11 fw-semibold text-primary">
+                            Selected ({{ selectedCourseIds.length }}):
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center flex-wrap gap-1">
+                        @for (course of getSelectedCourseObjects(false); track course.id) {
+                        <span class="course-chip">
+                            <i class="ri-book-2-line text-primary fs-12"></i>
+                            <span class="chip-title" [title]="course.course_name">{{ course.course_name }}</span>
+                            <span class="chip-mentor" *ngIf="getCourseMentorName(course)">
+                                • {{ getCourseMentorName(course) }}
+                            </span>
+                            <button type="button" class="chip-remove-btn" (click)="removeSelectedCourse(course.id, false)" title="Remove course">
+                                <i class="ri-close-line"></i>
+                            </button>
+                        </span>
+                        }
+                    </div>
+                </div>
+                }
+
+                <!-- Search Input for filtering courses -->
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="ri-search-line text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control form-control-sm border-start-0"
+                           placeholder="Search by course name, mentor name, category, or subject..."
+                           [(ngModel)]="courseSearchText">
+                    @if (courseSearchText) {
+                    <button class="btn btn-outline-light border text-muted" type="button" (click)="courseSearchText = ''">
+                        <i class="ri-close-line"></i>
+                    </button>
+                    }
+                </div>
+
+                <!-- Scrollable Course Selection Box -->
+                <div class="course-selection-box">
+                    @if (isLoadingCourses) {
+                        <div class="text-center py-4 text-muted">
+                            <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
+                            <p class="fs-12 mb-0">Loading available courses from server...</p>
+                        </div>
+                    } @else {
+                        @for (course of getFilteredCourses(courseSearchText); track course.id) {
+                        <div class="course-checkbox-item"
+                             [class.selected]="isCourseSelected(course.id, false)"
+                             (click)="toggleCourseSelection(course.id, false)">
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox"
+                                       class="form-check-input mt-0"
+                                       [checked]="isCourseSelected(course.id, false)"
+                                       (click)="$event.stopPropagation()"
+                                       (change)="toggleCourseSelection(course.id, false)">
+                                
+                                <!-- Course Image / Fallback Avatar -->
+                                <div class="course-thumb-box">
+                                    @if (course.image) {
+                                        <img [src]="getMediaUrl(course.image)" alt="Course" class="course-thumb-img"
+                                             (error)="$any($event.target).style.display='none'">
+                                    } @else {
+                                        <div class="course-thumb-fallback">
+                                            <i class="ri-book-open-line"></i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="course-info flex-grow-1 ms-1">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                    <span class="course-title">{{ course.course_name }}</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        @if (course.discounted_price && course.discounted_price !== course.price) {
+                                            <span class="badge bg-success-transparent text-success fs-11 fw-semibold">
+                                                ₹{{ course.discounted_price }}
+                                            </span>
+                                            <del class="text-muted fs-11" *ngIf="course.price">₹{{ course.price }}</del>
+                                        } @else if (course.price) {
+                                            <span class="badge bg-light text-dark fs-11 fw-semibold border">
+                                                ₹{{ course.price }}
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Badges & Mentor Details Row -->
+                                <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
+                                    <!-- Mentor Info with Avatar / Icon -->
+                                    <div class="mentor-badge" *ngIf="getCourseMentorName(course)">
+                                        <div class="mentor-avatar-mini" *ngIf="course.mentor?.photo">
+                                            <img [src]="getMediaUrl(course.mentor?.photo)" alt="Mentor">
+                                        </div>
+                                        <i class="ri-user-star-line me-1 text-primary" *ngIf="!course.mentor?.photo"></i>
+                                        <span>Mentor: <strong>{{ getCourseMentorName(course) }}</strong></span>
+                                        <span class="mentor-qual" *ngIf="course.mentor?.qualification">
+                                            ({{ course.mentor?.qualification }})
+                                        </span>
+                                    </div>
+
+                                    <!-- Category & Subject Pills -->
+                                    <span class="badge bg-primary-transparent fs-10" *ngIf="course.category_name">
+                                        <i class="ri-folder-2-line me-1"></i>{{ course.category_name }}
+                                    </span>
+                                    <span class="badge bg-info-transparent fs-10" *ngIf="course.subject_name">
+                                        <i class="ri-bookmark-3-line me-1"></i>{{ course.subject_name }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        } @empty {
+                        <div class="no-data py-4 text-center text-muted">
+                            <i class="ri-search-2-line fs-24 d-block mb-1 opacity-50"></i>
+                            @if (courseSearchText) {
+                                No courses matching "{{ courseSearchText }}"
+                            } @else {
+                                No courses available from API.
+                            }
+                        </div>
+                        }
+                    }
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-1 px-1">
+                    <small class="text-muted fs-11">
+                        Selected: <strong class="text-primary">{{ selectedCourseIds.length }}</strong> course{{ selectedCourseIds.length !== 1 ? 's' : '' }}
+                    </small>
+                    <small class="text-muted fs-11">
+                        Total courses: {{ availableCourses.length }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()" [disabled]="isSubmitting">
+            Cancel
+        </button>
+        <button class="btn btn-primary" (click)="createSection(modal)" [disabled]="isSubmitting">
+            @if (isSubmitting) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Submitting...
+            } @else {
+                <i class="ri-check-line me-1"></i>Submit
+            }
+        </button>
+    </div>
+</ng-template>
+
+<!-- ✏️ Edit Section Modal -->
+<ng-template #editSectionModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title d-flex align-items-center gap-2">
+            <i class="ri-edit-2-line text-primary fs-18"></i>
+            Edit Home Section
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        @if (isLoadingEdit) {
+        <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <p class="text-muted fs-12 mt-2 mb-0">Fetching latest details...</p>
+        </div>
+        }
+        <div class="row gy-3">
+            <!-- Section Title -->
+            <div class="col-xl-12">
+                <label class="form-label fw-semibold">
+                    Section Title <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control"
+                       placeholder="Enter Section Title"
+                       [(ngModel)]="editSectionTitle">
+            </div>
+
+            <!-- Sort Order & Status -->
+            <div class="col-xl-6">
+                <label class="form-label fw-semibold">Sort Order</label>
+                <input type="number" class="form-control" min="1"
+                       placeholder="1, 2, 3..."
+                       [(ngModel)]="editSectionSortOrder">
+                <span class="text-muted fs-11">Display sequence position for this section.</span>
+            </div>
+
+            <div class="col-xl-6">
+                <label class="form-label fw-semibold">Status</label>
+                <select class="form-select" [(ngModel)]="editSectionStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
+            <!-- Multi-Select Courses Section for Edit -->
+            <div class="col-xl-12">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                    <div>
+                        <label class="form-label fw-semibold mb-0 d-flex align-items-center gap-1">
+                            <i class="ri-book-open-line text-primary"></i>
+                            Assign Courses (Multi-Select)
+                        </label>
+                        <span class="text-muted fs-11 d-block">Select courses to feature in this home section</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm py-1 px-2 fs-11"
+                                (click)="selectAllCourses(true)"
+                                [disabled]="availableCourses.length === 0">
+                            <i class="ri-checkbox-multiple-line me-1"></i>Select All ({{ availableCourses.length }})
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm py-1 px-2 fs-11"
+                                (click)="clearSelectedCourses(true)"
+                                [disabled]="editSelectedCourseIds.length === 0">
+                            <i class="ri-close-circle-line me-1"></i>Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Selected Courses Chips -->
+                @if (editSelectedCourseIds.length > 0) {
+                <div class="selected-chips-container mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <span class="fs-11 fw-semibold text-primary">
+                            Selected ({{ editSelectedCourseIds.length }}):
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center flex-wrap gap-1">
+                        @for (course of getSelectedCourseObjects(true); track course.id) {
+                        <span class="course-chip">
+                            <i class="ri-book-2-line text-primary fs-12"></i>
+                            <span class="chip-title" [title]="course.course_name">{{ course.course_name }}</span>
+                            <span class="chip-mentor" *ngIf="getCourseMentorName(course)">
+                                • {{ getCourseMentorName(course) }}
+                            </span>
+                            <button type="button" class="chip-remove-btn" (click)="removeSelectedCourse(course.id, true)" title="Remove course">
+                                <i class="ri-close-line"></i>
+                            </button>
+                        </span>
+                        }
+                    </div>
+                </div>
+                }
+
+                <!-- Search Input for filtering courses -->
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text bg-light border-end-0">
+                        <i class="ri-search-line text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control form-control-sm border-start-0"
+                           placeholder="Search by course name, mentor name, category, or subject..."
+                           [(ngModel)]="editCourseSearchText">
+                    @if (editCourseSearchText) {
+                    <button class="btn btn-outline-light border text-muted" type="button" (click)="editCourseSearchText = ''">
+                        <i class="ri-close-line"></i>
+                    </button>
+                    }
+                </div>
+
+                <!-- Scrollable Course Selection Box -->
+                <div class="course-selection-box">
+                    @if (isLoadingCourses) {
+                        <div class="text-center py-4 text-muted">
+                            <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
+                            <p class="fs-12 mb-0">Loading available courses from server...</p>
+                        </div>
+                    } @else {
+                        @for (course of getFilteredCourses(editCourseSearchText); track course.id) {
+                        <div class="course-checkbox-item"
+                             [class.selected]="isCourseSelected(course.id, true)"
+                             (click)="toggleCourseSelection(course.id, true)">
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="checkbox"
+                                       class="form-check-input mt-0"
+                                       [checked]="isCourseSelected(course.id, true)"
+                                       (click)="$event.stopPropagation()"
+                                       (change)="toggleCourseSelection(course.id, true)">
+                                
+                                <!-- Course Image / Fallback Avatar -->
+                                <div class="course-thumb-box">
+                                    @if (course.image) {
+                                        <img [src]="getMediaUrl(course.image)" alt="Course" class="course-thumb-img"
+                                             (error)="$any($event.target).style.display='none'">
+                                    } @else {
+                                        <div class="course-thumb-fallback">
+                                            <i class="ri-book-open-line"></i>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="course-info flex-grow-1 ms-1">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                    <span class="course-title">{{ course.course_name }}</span>
+                                    <div class="d-flex align-items-center gap-1">
+                                        @if (course.discounted_price && course.discounted_price !== course.price) {
+                                            <span class="badge bg-success-transparent text-success fs-11 fw-semibold">
+                                                ₹{{ course.discounted_price }}
+                                            </span>
+                                            <del class="text-muted fs-11" *ngIf="course.price">₹{{ course.price }}</del>
+                                        } @else if (course.price) {
+                                            <span class="badge bg-light text-dark fs-11 fw-semibold border">
+                                                ₹{{ course.price }}
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Badges & Mentor Details Row -->
+                                <div class="d-flex align-items-center flex-wrap gap-2 mt-1">
+                                    <!-- Mentor Info with Avatar / Icon -->
+                                    <div class="mentor-badge" *ngIf="getCourseMentorName(course)">
+                                        <div class="mentor-avatar-mini" *ngIf="course.mentor?.photo">
+                                            <img [src]="getMediaUrl(course.mentor?.photo)" alt="Mentor">
+                                        </div>
+                                        <i class="ri-user-star-line me-1 text-primary" *ngIf="!course.mentor?.photo"></i>
+                                        <span>Mentor: <strong>{{ getCourseMentorName(course) }}</strong></span>
+                                        <span class="mentor-qual" *ngIf="course.mentor?.qualification">
+                                            ({{ course.mentor?.qualification }})
+                                        </span>
+                                    </div>
+
+                                    <!-- Category & Subject Pills -->
+                                    <span class="badge bg-primary-transparent fs-10" *ngIf="course.category_name">
+                                        <i class="ri-folder-2-line me-1"></i>{{ course.category_name }}
+                                    </span>
+                                    <span class="badge bg-info-transparent fs-10" *ngIf="course.subject_name">
+                                        <i class="ri-bookmark-3-line me-1"></i>{{ course.subject_name }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        } @empty {
+                        <div class="no-data py-4 text-center text-muted">
+                            <i class="ri-search-2-line fs-24 d-block mb-1 opacity-50"></i>
+                            @if (editCourseSearchText) {
+                                No courses matching "{{ editCourseSearchText }}"
+                            } @else {
+                                No courses available from API.
+                            }
+                        </div>
+                        }
+                    }
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-1 px-1">
+                    <small class="text-muted fs-11">
+                        Selected: <strong class="text-primary">{{ editSelectedCourseIds.length }}</strong> course{{ editSelectedCourseIds.length !== 1 ? 's' : '' }}
+                    </small>
+                    <small class="text-muted fs-11">
+                        Total courses: {{ availableCourses.length }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()" [disabled]="isSubmitting">
+            Cancel
+        </button>
+        <button class="btn btn-primary" (click)="updateSection(modal)" [disabled]="isSubmitting">
+            @if (isSubmitting) {
+                <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                Saving...
+            } @else {
+                <i class="ri-save-line me-1"></i>Save Changes
+            }
+        </button>
+    </div>
+</ng-template>
+
+<!-- 👁️ View Section Modal -->
+<ng-template #eyeSectionModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title d-flex align-items-center gap-2">
+            <i class="ri-eye-line text-primary fs-18"></i>
+            Home Section Details
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <table class="table table-borderless mb-3">
+            <tbody>
+                <tr>
+                    <td class="fw-semibold text-muted" style="width: 140px;">Section ID</td>
+                    <td class="fw-bold">#{{ selectedSection?.id }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Section Title</td>
+                    <td class="fw-semibold text-dark">{{ selectedSection?.title || selectedSection?.section_name || selectedSection?.name }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Sort Order</td>
+                    <td>
+                        <span class="sort-order-badge">
+                            {{ selectedSection?.sort_order }}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Status</td>
+                    <td>
+                        @if (selectedSection?.status === 'active') {
+                            <span class="badge bg-success">Active</span>
+                        } @else {
+                            <span class="badge bg-danger">Inactive</span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Assigned Courses</td>
+                    <td>
+                        <span class="badge bg-primary-transparent text-primary fs-12 px-2 py-1">
+                            <i class="ri-book-open-line me-1"></i>
+                            {{ selectedSection ? getSectionCoursesCount(selectedSection) : 0 }} Assigned Course(s)
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Created At</td>
+                    <td>{{ selectedSection?.created_at ? (selectedSection?.created_at | date:'medium') : '—' }}</td>
+                </tr>
+                <tr>
+                    <td class="fw-semibold text-muted">Last Updated</td>
+                    <td>{{ selectedSection?.updated_at ? (selectedSection?.updated_at | date:'medium') : '—' }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Assigned Courses Detailed List -->
+        <div class="border-top pt-3">
+            <h6 class="fw-semibold fs-14 mb-3 d-flex align-items-center justify-content-between">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="ri-list-check fs-16 text-primary"></i>
+                    Courses in this Section
+                </span>
+                <span class="badge bg-primary-transparent text-primary fs-12">
+                    {{ selectedSection ? getSectionAssignedCourses(selectedSection).length : 0 }} Total
+                </span>
+            </h6>
+
+            @if (selectedSection && getSectionAssignedCourses(selectedSection).length > 0) {
+            <div class="assigned-courses-list" style="max-height: 280px; overflow-y: auto;">
+                <div class="row g-2">
+                    @for (course of getSectionAssignedCourses(selectedSection); track course.id; let idx = $index) {
+                    <div class="col-md-6">
+                        <div class="p-2 border rounded bg-light d-flex align-items-start gap-2 h-100">
+                            <!-- Course Thumbnail -->
+                            <div class="course-thumb-box flex-shrink-0">
+                                @if (course.image) {
+                                    <img [src]="getMediaUrl(course.image)" alt="Course" class="course-thumb-img"
+                                         (error)="$any($event.target).style.display='none'">
+                                } @else {
+                                    <div class="course-thumb-fallback">
+                                        <i class="ri-book-open-line"></i>
+                                    </div>
+                                }
+                            </div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <span class="fw-semibold text-dark fs-13 d-block text-truncate" [title]="course.course_name">
+                                    {{ course.course_name }}
+                                </span>
+                                <div class="text-primary fs-11 d-flex align-items-center gap-1 mt-1" *ngIf="getCourseMentorName(course)">
+                                    <i class="ri-user-star-line"></i>
+                                    <span class="text-truncate">Mentor: {{ getCourseMentorName(course) }}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-1 mt-1" *ngIf="course.price">
+                                    <span class="badge bg-light text-muted fs-10 border">
+                                        ₹{{ course.discounted_price || course.price }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            } @else {
+            <div class="p-3 text-center text-muted bg-light rounded">
+                <i class="ri-inbox-line fs-24 d-block mb-1 opacity-50"></i>
+                No courses assigned to this section.
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" (click)="modal.dismiss()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<!-- 🗑️ Delete Confirmation Modal -->
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+        <i class="ri-error-warning-line mb-3 d-inline-block text-danger" style="font-size: 52px;"></i>
+        <h5>Are you sure?</h5>
+        <p class="text-muted mb-4">
+            Do you really want to delete <strong>{{ selectedSection?.title || selectedSection?.section_name || selectedSection?.name }}</strong>?
+            This action cannot be undone.
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+            <button class="btn btn-danger" (click)="deleteSection(modal)">
+                Yes, Delete
+            </button>
+            <button class="btn btn-light" (click)="modal.close()">
+                Cancel
+            </button>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,258 @@
+.privacy-page-wrapper {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  color: #334155;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.7;
+
+  .site-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.875rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .brand-logo {
+      height: 34px;
+      width: auto;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #4361ee;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .hero-banner {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
+    color: #ffffff;
+    padding: 3.5rem 1.5rem 4.5rem;
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+    }
+
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: #c7d2fe;
+      max-width: 750px;
+      margin-bottom: 1.5rem;
+    }
+
+    .meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+
+      .meta-pill {
+        background: rgba(255, 255, 255, 0.12);
+        padding: 0.35rem 0.85rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  .main-body {
+    margin-top: -2rem;
+    margin-bottom: 3rem;
+  }
+
+  .toc-sidebar {
+    top: 5rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    .toc-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .toc-nav {
+      gap: 2px;
+
+      .nav-link {
+        font-size: 0.875rem;
+        color: #475569;
+        padding: 0.4rem 0.6rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s;
+
+        &:hover {
+          background: #eef2ff;
+          color: #4361ee;
+        }
+      }
+    }
+  }
+
+  .policy-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    @media (max-width: 768px) {
+      padding: 1.5rem;
+    }
+  }
+
+  .policy-section {
+    margin-bottom: 2.5rem;
+    scroll-margin-top: 5rem;
+
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 0.5rem;
+    }
+
+    .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: #eef2ff;
+      color: #4361ee;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    p {
+      font-size: 0.975rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .styled-list {
+    margin-left: 1.25rem;
+    margin-bottom: 1rem;
+
+    li {
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+  }
+
+  .notice-box {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin: 1.25rem 0;
+    font-size: 0.925rem;
+
+    &.info {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      color: #1e3a8a;
+    }
+
+    &.success {
+      background: #ecfdf5;
+      border-left: 4px solid #10b981;
+      color: #065f46;
+    }
+  }
+
+  .custom-table {
+    font-size: 0.9rem;
+    th {
+      font-weight: 600;
+      color: #1e293b;
+    }
+  }
+
+  .contact-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+  }
+
+  .site-footer {
+    background: #0f172a;
+    color: #94a3b8;
+    padding: 2.5rem 1rem;
+  }
+}
+
+@media print {
+  .site-header, .toc-sidebar, .site-footer, .header-actions, .badge-pill {
+    display: none !important;
+  }
+  .hero-banner {
+    background: none !important;
+    color: #000 !important;
+    padding: 0 !important;
+  }
+  .hero-title, .hero-subtitle, .meta-pill {
+    color: #000 !important;
+  }
+  .policy-card {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  .main-body {
+    margin-top: 0 !important;
+  }
+}

@@ -1,0 +1,271 @@
+<div class="privacy-page-wrapper">
+  <!-- Top Navigation Header -->
+  <header class="site-header">
+    <div class="container-fluid max-w-7xl header-container">
+      <div class="brand">
+        <img src="./assets/images/brand-logos/toggle-logo.png" alt="Learnli Logo" class="brand-logo" onerror="this.style.display='none'" />
+        <span class="brand-title">Learnli</span>
+      </div>
+      <div class="header-actions">
+        <a [routerLink]="['/auth/login']" class="btn btn-outline-primary btn-sm">Admin Login</a>
+        <button (click)="printPage()" class="btn btn-light btn-sm btn-print">
+          <i class="ri-printer-line me-1"></i> Print / PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero-banner">
+    <div class="container-fluid max-w-7xl">
+      <div class="badge-pill mb-3">
+        <span class="badge-dot"></span>
+        Google Play Store Compliant
+      </div>
+      <h1 class="hero-title">Privacy Policy for Learnli</h1>
+      <p class="hero-subtitle">
+        Your privacy and trust are our top priorities. This document outlines how Learnli collects, stores, uses, and protects personal information across our Mobile Application and Web platform.
+      </p>
+      <div class="meta-pills">
+        <span class="meta-pill"><strong>Application:</strong> {{ appName }}</span>
+        <span class="meta-pill"><strong>Last Updated:</strong> {{ lastUpdated }}</span>
+        <span class="meta-pill"><strong>Domain:</strong> learnli.online</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Container -->
+  <div class="container-fluid max-w-7xl main-body">
+    <div class="row g-4">
+      
+      <!-- Table of Contents Sidebar -->
+      <div class="col-lg-3 d-none d-lg-block">
+        <div class="toc-sidebar sticky-top">
+          <h6 class="toc-title">Table of Contents</h6>
+          <nav class="nav flex-column toc-nav">
+            <a class="nav-link" href="#intro" (click)="scrollToSection('intro', $event)">1. Introduction</a>
+            <a class="nav-link" href="#data-collected" (click)="scrollToSection('data-collected', $event)">2. Information We Collect</a>
+            <a class="nav-link" href="#permissions" (click)="scrollToSection('permissions', $event)">3. Device Permissions</a>
+            <a class="nav-link" href="#usage" (click)="scrollToSection('usage', $event)">4. How We Use Data</a>
+            <a class="nav-link" href="#third-party" (click)="scrollToSection('third-party', $event)">5. Third-Party SDKs</a>
+            <a class="nav-link" href="#sharing" (click)="scrollToSection('sharing', $event)">6. Data Sharing & Disclosure</a>
+            <a class="nav-link" href="#security" (click)="scrollToSection('security', $event)">7. Data Security</a>
+            <a class="nav-link" href="#retention" (click)="scrollToSection('retention', $event)">8. Retention & Deletion</a>
+            <a class="nav-link" href="#children" (click)="scrollToSection('children', $event)">9. Children's Privacy (COPPA)</a>
+            <a class="nav-link" href="#rights" (click)="scrollToSection('rights', $event)">10. Your Rights & Choices</a>
+            <a class="nav-link" href="#contact" (click)="scrollToSection('contact', $event)">11. Contact & Grievance</a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Policy Content -->
+      <div class="col-lg-9 col-12">
+        <div class="policy-card">
+
+          <!-- 1. Introduction -->
+          <section id="intro" class="policy-section">
+            <h2 class="section-title"><span class="section-num">1</span> Introduction</h2>
+            <p>
+              Welcome to <strong>Learnli</strong> ("we", "our", "us", or "the Platform"). Learnli is an interactive digital learning platform designed to provide comprehensive courses, quizzes, assignments, audio lectures, mentor guidance, and learning tracking for students and educators.
+            </p>
+            <p>
+              This Privacy Policy explains our practices regarding the collection, storage, processing, and protection of personal data when you use the <strong>Learnli Mobile Application</strong> (available on Google Play) or our website (<a href="https://learnli.online" target="_blank" rel="noopener">https://learnli.online</a>).
+            </p>
+            <div class="notice-box info">
+              <strong>Notice:</strong> By downloading, installing, or registering with the Learnli application, you acknowledge and agree to the practices described in this Privacy Policy.
+            </div>
+          </section>
+
+          <!-- 2. Information We Collect -->
+          <section id="data-collected" class="policy-section">
+            <h2 class="section-title"><span class="section-num">2</span> Information We Collect</h2>
+            <p>We collect only the information necessary to fulfill our educational services and app security:</p>
+
+            <div class="table-responsive my-3">
+              <table class="table table-bordered table-striped custom-table align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Category</th>
+                    <th>Data Types Collected</th>
+                    <th>Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Personal Identification</strong></td>
+                    <td>Full Name, Email Address, Mobile Number, Profile Picture, Date of Birth, Gender, Academic Grade/Class, State & City.</td>
+                    <td>Account creation, identity verification, student/instructor profile management.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Academic & Learning Data</strong></td>
+                    <td>Enrolled courses, video/audio progress, quiz submissions, scores, assignment files, mentor communications, and completion certificates.</td>
+                    <td>Curriculum delivery, automated grading, learning analytics, and performance reports.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Referral & Loyalty Points</strong></td>
+                    <td>Referral codes, invited user logs, earned reward points, and points redemption ledger.</td>
+                    <td>Operating and rewarding the Learnli referral system.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Financial & Billing Data</strong></td>
+                    <td>Subscription tier, transaction reference IDs, invoice amounts. <em>(Card & bank details are handled securely by PCI-compliant payment gateways like Razorpay/Stripe/Google Play and never saved on Learnli servers).</em></td>
+                    <td>Processing course fees, managing student/instructor subscriptions.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Device & Technical Diagnostics</strong></td>
+                    <td>Device model, Android OS version, IP address, unique device IDs (Android ID, FCM Token), crash reports via Firebase Crashlytics.</td>
+                    <td>Troubleshooting issues, fraud prevention, push notifications, and performance optimization.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 3. Device Permissions -->
+          <section id="permissions" class="policy-section">
+            <h2 class="section-title"><span class="section-num">3</span> Device Permissions Requested</h2>
+            <p>The Learnli Android application may request specific permissions to enable dynamic learning features:</p>
+            <ul class="styled-list">
+              <li><strong>Camera (<code>CAMERA</code>):</strong> Required when taking photos for profile avatars or capturing homework/assignment worksheets to submit for mentor review.</li>
+              <li><strong>Storage & Media (<code>READ_MEDIA_IMAGES</code> / <code>READ_EXTERNAL_STORAGE</code>):</strong> Used to upload notes, assignment documents, and pick profile pictures from device storage.</li>
+              <li><strong>Notifications (<code>POST_NOTIFICATIONS</code>):</strong> Used to send timely class reminders, quiz notifications, subscription renewal notices, and referral reward credits.</li>
+              <li><strong>Microphone (<code>RECORD_AUDIO</code>):</strong> Used only if you participate in interactive audio lessons, voice search, or mentor voice sessions.</li>
+              <li><strong>Internet & Network State (<code>INTERNET</code> & <code>ACCESS_NETWORK_STATE</code>):</strong> Required to fetch courses, stream audio/video content, and verify network connectivity.</li>
+            </ul>
+          </section>
+
+          <!-- 4. How We Use Data -->
+          <section id="usage" class="policy-section">
+            <h2 class="section-title"><span class="section-num">4</span> How We Use Your Data</h2>
+            <p>Your data is processed strictly for the following purposes:</p>
+            <ul class="styled-list">
+              <li>Providing, maintaining, and improving the Learnli educational ecosystem.</li>
+              <li>Facilitating secure login authentication via Firebase and backend APIs.</li>
+              <li>Tracking academic progress, calculating quiz scores, and issuing course certificates.</li>
+              <li>Managing referral points, discounts, and subscription tiers.</li>
+              <li>Delivering push notifications regarding scheduled lessons and platform updates.</li>
+              <li>Ensuring platform integrity, security, and fraud protection.</li>
+            </ul>
+          </section>
+
+          <!-- 5. Third-Party Services -->
+          <section id="third-party" class="policy-section">
+            <h2 class="section-title"><span class="section-num">5</span> Third-Party Services & SDK Disclosures</h2>
+            <p>We work with trusted third-party SDKs to provide backend infrastructure, crash analytics, and notifications:</p>
+            <ul class="styled-list">
+              <li><strong>Google Play Services:</strong> Core Android framework services and in-app updates.</li>
+              <li><strong>Google Firebase:</strong> Firebase Authentication, Cloud Messaging (FCM), Crashlytics, and Analytics.</li>
+              <li><strong>Payment Gateways (Razorpay / Stripe / Google Play Billing):</strong> Secure handling of in-app subscriptions and course fee payments.</li>
+            </ul>
+          </section>
+
+          <!-- 6. Data Sharing -->
+          <section id="sharing" class="policy-section">
+            <h2 class="section-title"><span class="section-num">6</span> Data Sharing & Disclosure</h2>
+            <div class="notice-box success">
+              <strong>Strict Commitment:</strong> We DO NOT sell, rent, or trade your personal or academic information to third-party advertisers or data brokers.
+            </div>
+            <p>Data is shared only with:</p>
+            <ul class="styled-list">
+              <li><strong>Course Instructors & Mentors:</strong> Student name and enrollment status to evaluate coursework and answer academic questions.</li>
+              <li><strong>Cloud & Infrastructure Vendors:</strong> Secure hosting and media delivery strictly bound by strict confidentiality terms.</li>
+              <li><strong>Legal Authorities:</strong> When required by applicable law, court summons, or regulatory authorities.</li>
+            </ul>
+          </section>
+
+          <!-- 7. Data Security -->
+          <section id="security" class="policy-section">
+            <h2 class="section-title"><span class="section-num">7</span> Data Security</h2>
+            <p>
+              We prioritize data safety by implementing industry-standard security protocols:
+            </p>
+            <ul class="styled-list">
+              <li>All API communication is protected using <strong>TLS/HTTPS (1.3)</strong> encryption in transit.</li>
+              <li>Passwords, tokens, and sensitive fields are hashed and securely stored using modern cryptographic standards.</li>
+              <li>Role-based access controls and least-privilege principles are enforced for all internal databases.</li>
+            </ul>
+          </section>
+
+          <!-- 8. Retention & Deletion -->
+          <section id="retention" class="policy-section">
+            <h2 class="section-title"><span class="section-num">8</span> Data Retention & Account Deletion (Google Play Compliance)</h2>
+            <p>
+              You maintain full control over your data. In full adherence to Google Play policies, users can request account and data deletion at any time:
+            </p>
+
+            <div class="card border-primary-subtle bg-light p-3 mb-3 rounded-3">
+              <h5 class="fw-bold text-dark mb-2">How to Request Account Deletion</h5>
+              <ol class="mb-2 ps-3">
+                <li><strong>In-App:</strong> Go to <em>Profile > Settings > Account Security > Delete Account</em> and confirm with your credentials.</li>
+                <li><strong>Web / Email:</strong> Send an email to <a href="mailto:privacy@learnli.online">privacy@learnli.online</a> with the subject <em>"Account Deletion Request"</em> from your registered email address.</li>
+              </ol>
+              <p class="small text-muted mb-0">
+                <strong>Timeline:</strong> Profile information, learning history, quiz scores, and credentials are permanently purged from active databases within 30 days. Financial records are retained only as required by statutory accounting laws.
+              </p>
+            </div>
+          </section>
+
+          <!-- 9. Children's Privacy -->
+          <section id="children" class="policy-section">
+            <h2 class="section-title"><span class="section-num">9</span> Children's Privacy (COPPA Compliance)</h2>
+            <p>
+              Learnli serves students of various age groups. We do not knowingly collect personal data from children under 13 without appropriate parental or guardian consent. We do not use student data for behavioral profiling or third-party advertising. Parents can contact us at <a href="mailto:privacy@learnli.online">privacy@learnli.online</a> to review, update, or delete their child's information.
+            </p>
+          </section>
+
+          <!-- 10. Your Rights -->
+          <section id="rights" class="policy-section">
+            <h2 class="section-title"><span class="section-num">10</span> Your Rights & Choices</h2>
+            <p>Under applicable privacy laws, you have the right to:</p>
+            <ul class="styled-list">
+              <li>Access and receive a copy of your personal data.</li>
+              <li>Rectify inaccurate personal details in your profile settings.</li>
+              <li>Request the complete deletion of your account and data.</li>
+              <li>Withdraw consent for optional permissions (camera, notifications) at any time.</li>
+            </ul>
+          </section>
+
+          <!-- 11. Contact Us -->
+          <section id="contact" class="policy-section mb-0">
+            <h2 class="section-title"><span class="section-num">11</span> Contact Us & Grievance Officer</h2>
+            <p>If you have any questions or concerns regarding this Privacy Policy, please contact our team:</p>
+            
+            <div class="contact-box p-4 rounded-3">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="text-uppercase small fw-bold text-primary mb-1">Customer Support</div>
+                  <a href="mailto:support@learnli.online" class="fw-semibold text-dark">{{ supportEmail }}</a>
+                </div>
+                <div class="col-md-6">
+                  <div class="text-uppercase small fw-bold text-primary mb-1">Privacy & Data Requests</div>
+                  <a href="mailto:privacy@learnli.online" class="fw-semibold text-dark">{{ privacyEmail }}</a>
+                </div>
+                <div class="col-md-6">
+                  <div class="text-uppercase small fw-bold text-primary mb-1">Website</div>
+                  <a href="https://learnli.online" target="_blank" class="fw-semibold text-dark">{{ websiteUrl }}</a>
+                </div>
+                <div class="col-md-6">
+                  <div class="text-uppercase small fw-bold text-primary mb-1">Platform</div>
+                  <span class="fw-semibold text-dark">Learnli App (Google Play)</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer mt-5">
+    <div class="container text-center">
+      <h5 class="text-white fw-bold mb-2">Learnli</h5>
+      <p class="text-muted small mb-3">Empowering learners with smart, accessible, and secure digital education.</p>
+      <div class="small text-muted">
+        &copy; 2026 Learnli. All rights reserved.
+      </div>
+    </div>
+  </footer>
+</div>

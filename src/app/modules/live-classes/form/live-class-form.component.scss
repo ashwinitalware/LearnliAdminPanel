@@ -1,0 +1,23 @@
+.min-h-80 {
+  min-height: 80px;
+}
+
+.border-dashed {
+  border: 2px dashed #cbd5e1 !important;
+}
+
+.upload-dropzone {
+  transition: all 0.2s ease;
+  &:hover {
+    border-color: var(--primary-color, #845adf) !important;
+    background-color: #faf9fd !important;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.mentor-badge {
+  border-left: 3px solid var(--primary-color, #845adf);
+}

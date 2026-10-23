@@ -1,0 +1,81 @@
+.stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.code-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--primary-005, rgba(132, 90, 223, 0.08));
+  border: 1px dashed var(--primary-color, #845adf);
+  color: var(--primary-color, #845adf);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.35rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--primary-01, rgba(132, 90, 223, 0.15));
+    border-style: solid;
+    .copy-icon {
+      color: var(--primary-color, #845adf) !important;
+      transform: scale(1.1);
+    }
+  }
+
+  .copy-icon {
+    transition: transform 0.2s ease;
+  }
+}
+
+.text-monospace {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  letter-spacing: 0.5px;
+}
+
+.type-select-card {
+  background-color: #ffffff;
+  border: 2px solid #e9edf4 !important;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #845adf !important;
+    background-color: #faf9fd;
+  }
+
+  &.active-type {
+    border-color: #845adf !important;
+    background-color: rgba(132, 90, 223, 0.06);
+    box-shadow: 0 0 0 3px rgba(132, 90, 223, 0.15);
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.bg-purple-transparent {
+  background-color: rgba(111, 66, 193, 0.12) !important;
+}
+
+.text-purple {
+  color: #6f42c1 !important;
+}
+
+.progress-xs {
+  height: 4px;
+}
+
+.table-action-btn {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}

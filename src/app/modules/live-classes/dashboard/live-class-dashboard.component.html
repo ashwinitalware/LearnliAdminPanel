@@ -1,0 +1,353 @@
+<!-- ========================================================================= -->
+<!-- 1. PAGE HEADER & QUICK ACTIONS -->
+<!-- ========================================================================= -->
+<div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2 mb-4">
+  <div>
+    <h1 class="page-title fw-semibold fs-20 mb-1 d-flex align-items-center gap-2">
+      <span class="live-dot" *ngIf="stats.liveClasses > 0"></span>
+      Live Class Management Dashboard
+    </h1>
+    <p class="text-muted mb-0 fs-13">Monitor live sessions, upcoming schedules, attendance, bookings, and Webinar.gg video conference rooms.</p>
+  </div>
+  <div class="btn-list d-flex gap-2">
+    <button type="button" class="btn btn-outline-light btn-wave" (click)="loadDashboardData()" [disabled]="isLoading">
+      <i class="ri-refresh-line me-1" [class.ri-spin]="isLoading"></i> Refresh
+    </button>
+    <button type="button" class="btn btn-outline-primary btn-wave" (click)="viewAllClasses()">
+      <i class="ri-list-check me-1"></i> All Classes
+    </button>
+    <button type="button" class="btn btn-primary btn-wave d-flex align-items-center gap-1 shadow-sm" (click)="createClass()">
+      <i class="ri-add-circle-line fs-16"></i>
+      <span>Create Live Class</span>
+    </button>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 2. SUMMARY KPI STATISTIC CARDS -->
+<!-- ========================================================================= -->
+<div class="row g-3 mb-4">
+  <!-- Total Classes -->
+  <div class="col-xxl-3 col-xl-3 col-lg-6 col-md-6 col-sm-6">
+    <div class="card custom-card kpi-card shadow-sm border-0 h-100 cursor-pointer" (click)="viewAllClasses()">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-12 fw-medium text-uppercase d-block mb-1">Total Classes</span>
+            <div *ngIf="isLoading" class="spinner-border spinner-border-sm text-primary my-1" role="status"></div>
+            <h3 *ngIf="!isLoading" class="fw-bold mb-0 text-primary">
+              {{ stats.totalClasses | number }}
+            </h3>
+            <span class="text-muted fs-11 mt-1 d-block">Overall scheduled classes</span>
+          </div>
+          <div class="avatar avatar-lg bg-primary-transparent rounded-circle">
+            <i class="ri-broadcast-line fs-24"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Now (Highlighted Card) -->
+  <div class="col-xxl-3 col-xl-3 col-lg-6 col-md-6 col-sm-6">
+    <div class="card custom-card kpi-card live-kpi-card shadow-sm border-0 h-100 cursor-pointer" (click)="viewAllClasses('ongoing')">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-danger fs-12 fw-semibold text-uppercase d-flex align-items-center gap-1 mb-1">
+              <span class="pulse-indicator"></span> Live Now
+            </span>
+            <div *ngIf="isLoading" class="spinner-border spinner-border-sm text-danger my-1" role="status"></div>
+            <h3 *ngIf="!isLoading" class="fw-bold mb-0 text-danger">
+              {{ stats.liveClasses | number }}
+            </h3>
+            <span class="text-muted fs-11 mt-1 d-block">Ongoing active sessions</span>
+          </div>
+          <div class="avatar avatar-lg bg-danger-transparent rounded-circle">
+            <i class="ri-live-line fs-24"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Total Student Bookings -->
+  <div class="col-xxl-3 col-xl-3 col-lg-6 col-md-6 col-sm-6">
+    <div class="card custom-card kpi-card shadow-sm border-0 h-100">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-12 fw-medium text-uppercase d-block mb-1">Student Bookings</span>
+            <div *ngIf="isLoading" class="spinner-border spinner-border-sm text-success my-1" role="status"></div>
+            <h3 *ngIf="!isLoading" class="fw-bold mb-0 text-success">
+              {{ stats.totalBookings | number }}
+            </h3>
+            <span class="text-muted fs-11 mt-1 d-block">Confirmed & reserved seats</span>
+          </div>
+          <div class="avatar avatar-lg bg-success-transparent rounded-circle">
+            <i class="ri-user-follow-line fs-24"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Collection -->
+  <div class="col-xxl-3 col-xl-3 col-lg-6 col-md-6 col-sm-6">
+    <div class="card custom-card kpi-card shadow-sm border-0 h-100">
+      <div class="card-body p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <span class="text-muted fs-12 fw-medium text-uppercase d-block mb-1">Payment Collection</span>
+            <div *ngIf="isLoading" class="spinner-border spinner-border-sm text-info my-1" role="status"></div>
+            <h3 *ngIf="!isLoading" class="fw-bold mb-0 text-info">
+              {{ stats.totalRevenue | currency:'INR':'symbol':'1.0-0' }}
+            </h3>
+            <span class="text-muted fs-11 mt-1 d-block">Total booking revenue</span>
+          </div>
+          <div class="avatar avatar-lg bg-info-transparent rounded-circle">
+            <i class="ri-money-rupee-circle-line fs-24"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 3. STATUS BREAKDOWN MINI-CARDS -->
+<!-- ========================================================================= -->
+<div class="row g-2 mb-4">
+  <div class="col-xl-3 col-md-6 col-sm-6">
+    <div class="card custom-card status-mini-card shadow-sm border-0 cursor-pointer" (click)="viewAllClasses('draft')">
+      <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="status-indicator bg-warning"></span>
+          <span class="fs-13 fw-medium">Draft Classes</span>
+        </div>
+        <span class="badge bg-warning-transparent fs-13 fw-bold">{{ stats.draftClasses }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6 col-sm-6">
+    <div class="card custom-card status-mini-card shadow-sm border-0 cursor-pointer" (click)="viewAllClasses('published')">
+      <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="status-indicator bg-info"></span>
+          <span class="fs-13 fw-medium">Upcoming / Published</span>
+        </div>
+        <span class="badge bg-info-transparent fs-13 fw-bold">{{ stats.upcomingClasses }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6 col-sm-6">
+    <div class="card custom-card status-mini-card shadow-sm border-0 cursor-pointer" (click)="viewAllClasses('completed')">
+      <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="status-indicator bg-success"></span>
+          <span class="fs-13 fw-medium">Completed Classes</span>
+        </div>
+        <span class="badge bg-success-transparent fs-13 fw-bold">{{ stats.completedClasses }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 col-md-6 col-sm-6">
+    <div class="card custom-card status-mini-card shadow-sm border-0 cursor-pointer" (click)="viewAllClasses('cancelled')">
+      <div class="card-body py-2 px-3 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="status-indicator bg-secondary"></span>
+          <span class="fs-13 fw-medium">Cancelled Classes</span>
+        </div>
+        <span class="badge bg-secondary-transparent fs-13 fw-bold">{{ stats.cancelledClasses }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 4. CURRENTLY LIVE SESSIONS (IF ANY) -->
+<!-- ========================================================================= -->
+<div class="card custom-card border-danger shadow-sm mb-4" *ngIf="stats.liveClasses > 0">
+  <div class="card-header bg-danger-transparent py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <span class="pulse-indicator"></span>
+      <h5 class="card-title text-danger mb-0 fw-bold fs-15">Currently Live Sessions (Webinar.gg)</h5>
+      <span class="badge bg-danger text-white rounded-pill">{{ stats.liveClasses }} Active</span>
+    </div>
+    <span class="text-muted fs-12">Monitored in real-time</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table text-nowrap table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Class & Subject</th>
+            <th>Mentor</th>
+            <th>Schedule</th>
+            <th>Enrolled Students</th>
+            <th>Room Status</th>
+            <th class="text-end">Session Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of stats.liveList" class="align-middle">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img [src]="getThumbnail(item.thumbnail)" alt="Thumbnail" class="rounded object-fit-cover" width="48" height="36">
+                <div>
+                  <h6 class="mb-0 fw-semibold fs-13 text-truncate" style="max-width: 240px;">{{ item.title }}</h6>
+                  <span class="badge bg-light text-dark fs-11 mt-1">{{ item.subject }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img [src]="getMentorPhoto(item.mentor?.photo || item.mentor_photo)" class="avatar avatar-sm rounded-circle" alt="Mentor">
+                <div>
+                  <span class="fw-medium fs-13 d-block">{{ item.mentor?.full_name || item.mentor_name }}</span>
+                  <span class="text-muted fs-11">{{ item.mentor?.qualification || item.mentor_qualification || 'Instructor' }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="fw-medium fs-12 d-block">{{ item.class_date | date:'mediumDate' }}</span>
+              <span class="text-muted fs-11">{{ item.start_time }} - {{ item.end_time }} ({{ item.duration }}m)</span>
+            </td>
+            <td>
+              <span class="badge bg-primary-transparent fs-12 fw-semibold">
+                {{ getEnrolledCount(item) }} / {{ getMaxStudents(item) }} Students
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-danger animate-pulse fs-11">
+                <i class="ri-record-circle-line me-1"></i> LIVE NOW
+              </span>
+            </td>
+            <td class="text-end">
+              <div class="btn-list">
+                <button type="button" class="btn btn-sm btn-danger btn-wave" (click)="manageSession(item.id)">
+                  <i class="ri-video-line me-1"></i> Manage Session
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-primary btn-wave" (click)="viewClass(item.id)">
+                  <i class="ri-eye-line me-1"></i> Details
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 5. UPCOMING LIVE CLASSES ROSTER -->
+<!-- ========================================================================= -->
+<div class="card custom-card shadow-sm border-0 mb-4">
+  <div class="card-header py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h5 class="card-title mb-0 fw-semibold fs-15">Upcoming Scheduled Live Classes</h5>
+      <span class="text-muted fs-12">Classes published and open for student booking</span>
+    </div>
+    <div class="btn-list">
+      <button type="button" class="btn btn-sm btn-light btn-wave" (click)="viewAllClasses('published')">
+        View All Upcoming ({{ stats.upcomingClasses }})
+      </button>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="text-muted mt-2 fs-13">Loading upcoming live classes...</p>
+    </div>
+
+    <div *ngIf="!isLoading && stats.upcomingList.length === 0" class="text-center py-5">
+      <div class="avatar avatar-xl bg-light rounded-circle mx-auto mb-3">
+        <i class="ri-calendar-event-line fs-28 text-muted"></i>
+      </div>
+      <h6 class="fw-semibold mb-1">No Upcoming Live Classes</h6>
+      <p class="text-muted fs-13 mb-3">There are currently no published classes waiting to be broadcast.</p>
+      <button type="button" class="btn btn-primary btn-sm btn-wave" (click)="createClass()">
+        <i class="ri-add-line me-1"></i> Create First Class
+      </button>
+    </div>
+
+    <div class="table-responsive" *ngIf="!isLoading && stats.upcomingList.length > 0">
+      <table class="table text-nowrap table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Class Info</th>
+            <th>Mentor</th>
+            <th>Subject</th>
+            <th>Schedule</th>
+            <th>Type & Capacity</th>
+            <th>Fee</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of stats.upcomingList" class="align-middle">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img [src]="getThumbnail(item.thumbnail)" alt="Thumbnail" class="rounded object-fit-cover" width="48" height="36">
+                <div>
+                  <h6 class="mb-0 fw-semibold fs-13 text-truncate" style="max-width: 220px;">
+                    <a [routerLink]="['/live-classes/details', item.id]" class="text-dark hover-primary">{{ item.title }}</a>
+                  </h6>
+                  <span class="text-muted fs-11 text-truncate d-block" style="max-width: 220px;">{{ item.topic || 'No topic specified' }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img [src]="getMentorPhoto(item.mentor?.photo || item.mentor_photo)" class="avatar avatar-sm rounded-circle" alt="Mentor">
+                <div>
+                  <span class="fw-medium fs-13 d-block">{{ item.mentor?.full_name || item.mentor_name }}</span>
+                  <span class="text-muted fs-11">{{ item.mentor?.qualification || item.mentor_qualification || 'Instructor' }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge bg-primary-transparent fs-11">{{ item.subject }}</span>
+            </td>
+            <td>
+              <span class="fw-medium fs-12 d-block text-dark">{{ item.class_date | date:'mediumDate' }}</span>
+              <span class="text-muted fs-11">{{ item.start_time }} - {{ item.end_time }} ({{ item.duration }} mins)</span>
+            </td>
+            <td>
+              <span class="badge bg-light text-dark fs-11 text-uppercase me-1">{{ item.class_type }}</span>
+              <span class="badge bg-info-transparent fs-11">
+                {{ getEnrolledCount(item) }} / {{ getMaxStudents(item) }} Enrolled
+              </span>
+            </td>
+            <td>
+              <div *ngIf="isFree(item)">
+                <span class="badge bg-success-transparent fs-11 fw-bold">FREE</span>
+              </div>
+              <div *ngIf="!isFree(item)">
+                <span class="fw-semibold text-dark fs-13">
+                  ₹{{ getEffectiveFee(item) }}
+                </span>
+                <span *ngIf="isDiscounted(item)" class="text-muted text-decoration-line-through fs-11 ms-1">
+                  ₹{{ item.pricing.fees }}
+                </span>
+              </div>
+            </td>
+            <td class="text-end">
+              <div class="btn-list">
+                <button type="button" class="btn btn-sm btn-icon btn-outline-primary rounded-circle" title="View Details" (click)="viewClass(item.id)">
+                  <i class="ri-eye-line"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-icon btn-outline-info rounded-circle" title="Session Management" (click)="manageSession(item.id)">
+                  <i class="ri-broadcast-line"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

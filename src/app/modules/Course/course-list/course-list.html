@@ -1,0 +1,1609 @@
+<div class="col-xl-12">
+    <div class="card custom-card border-0">
+
+        <div class="card-header justify-content-end mb-3">
+            <button class="btn btn-primary btn-wave" (click)="open(content)">
+                <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                Create New Course
+            </button>
+
+
+            <div class="d-flex flex-align-items-center flex-wrap gap-2 ms-auto">
+                <div class="card-title mb-0">
+                    Course List
+                </div>
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search Here"
+                        aria-label=".form-control-sm example">
+                </div>
+                <spk-dropdowns [Customclass]="'dropdown '" [Toggletext]="'Sort By'" [Icon]="true"
+                    [IconClass]="'ri-arrow-down-s-line align-middle ms-1 d-inline-block'"
+                    [class]="'btn btn-primary btn-sm btn-wave waves-effect waves-light no-caret'"
+                    [Menuclass]="'dropdown-menu dropdown-menu-end'">
+                    <li><a class="dropdown-item" href="javascript:void(0);">New</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Popular</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Relevant</a></li>
+                </spk-dropdowns>
+
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <th>Sr No.</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Enrolled Student</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Published</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+                            <td>Angular - The Complete Guide (2024 Edition)</td>
+                            <td>Development</td>
+                            <td>1,200</td>
+                            <td>$199.99</td>
+                            <td><span
+                                    class="badge bg-success-transparent rounded-pill text-success p-2 px-3">Active</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 align-items-center">
+
+                                    <!-- Edit -->
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <!-- View -->
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewCourseModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+
+                                    <!-- Delete -->
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+
+
+                                    <!-- More Options -->
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(visitCourseModal)">
+                                                Visit Course
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(manageStudentModal)">
+                                                Manage Student
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(curriculumModal)">
+                                                Curriculum
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="openAssignmentModal(assignmentModal)">
+                                                Assignment
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(faqModal)">
+                                                FAQ
+                                            </a>
+                                        </li>
+
+                                    </spk-dropdowns>
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>02</td>
+                            <td>React - The Complete Guide (2024 Edition)</td>
+                            <td>Development</td>
+                            <td>900</td>
+                            <td>$149.99</td>
+                            <td><span class="badge bg-danger-transparent rounded-pill text-danger p-2 px
+-3">Inactive</span></td>
+
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 align-items-center">
+
+                                    <!-- Edit -->
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <!-- View -->
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewCourseModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+
+                                    <!-- Delete -->
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+
+                                    <!-- More Options -->
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(visitCourseModal)">
+                                                Visit Course
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(manageStudentModal)">
+                                                Manage Student
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(curriculumModal)">
+                                                Curriculum
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="openAssignmentModal(assignmentModal)">
+                                                Assignment
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(faqModal)">
+                                                FAQ
+                                            </a>
+                                        </li>
+
+                                    </spk-dropdowns>
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>03</td>
+                            <td>Vue.js - The Complete Guide (2024 Edition)</td>
+                            <td>Development</td>
+                            <td>700</td>
+                            <td>$129.99</td>
+                            <td><span
+                                    class="badge bg-success-transparent rounded-pill text-success p-2 px-3">Active</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckDefault">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2 align-items-center">
+
+                                    <!-- Edit -->
+                                    <a href="javascript:void(0);" class="text-info fs-14 lh-1"
+                                        (click)="open(editModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+
+                                    <!-- View -->
+                                    <a href="javascript:void(0);" class="text-primary fs-14 lh-1"
+                                        (click)="open(viewCourseModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+
+                                    <!-- Delete -->
+                                    <a href="javascript:void(0);" class="text-danger fs-14 lh-1"
+                                        (click)="openDeleteModal(deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+
+
+
+                                    <!-- More Options -->
+                                    <spk-dropdowns [Customclass]="'dropdown'" [Icon]="true"
+                                        [IconClass]="'ri-more-2-fill text-muted'"
+                                        [class]="'btn btn-light btn-icon btn-sm btn-wave no-caret border-0'"
+                                        [Menuclass]="'dropdown-menu dropdown-menu-end shadow'">
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(visitCourseModal)">
+                                                Visit Course
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(manageStudentModal)">
+                                                Manage Student
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(curriculumModal)">
+                                                Curriculum
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="openAssignmentModal(assignmentModal)">
+                                                Assignment
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" href="javascript:void(0);"
+                                                (click)="open(faqModal)">
+                                                FAQ
+                                            </a>
+                                        </li>
+
+                                    </spk-dropdowns>
+
+                                </div>
+                            </td>
+                        </tr>
+
+                </spk-reusable-tables>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="d-flex align-items-center">
+                <div> Showing 6 Entries <i class="bi bi-arrow-right ms-2 fw-semibold"></i> </div>
+                <div class="ms-auto">
+                    <nav aria-label="Page navigation" class="pagination-style-2">
+                        <ul class="pagination mb-0 flex-wrap">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="javascript:void(0);">
+                                    Prev
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">1</a></li>
+                            <li class="page-item active"><a class="page-link" href="javascript:void(0);">2</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="javascript:void(0);">
+                                    <i class="bi bi-three-dots"></i>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">17</a></li>
+                            <li class="page-item">
+                                <a class="page-link text-primary" href="javascript:void(0);">
+                                    next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- add modal content-->
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Create New Course</h6>
+        <button type="button" class="btn-close" (click)="modal.close()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+            <div class="row gy-3">
+
+                <!-- Row 1 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Course Title</label>
+                    <input type="text" class="form-control" formControlName="courseTitle"
+                        placeholder="Enter Course Title">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" formControlName="category">
+                        <option value="">Select Category</option>
+                        <option value="Development">Development</option>
+                        <option value="Business">Business</option>
+                        <option value="Finance">Finance</option>
+                        <!-- Add category options here -->
+                    </select>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Course Type</label>
+                    <select class="form-select" formControlName="courseType">
+                        <option value="Course">Course</option>
+                        <option value="Bundle">Bundle</option>
+                        <option value="Subscription">Subscription</option>
+                        <!-- Add other course type options here -->
+                    </select>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Language</label>
+                    <select class="form-select" formControlName="language">
+                        <option value="">Select Language</option>
+                        @for (lang of languages; track lang.id) {
+                        <option [value]="lang.language_name">{{ lang.language_name }} {{ lang.code ? '(' + lang.code +
+                            ')' : '' }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Subject</label>
+                    <select class="form-select" formControlName="subject">
+                        <option value="">Select Subject</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Data Science">Data Science</option>
+                        <!-- Add subject options here -->
+                    </select>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Course Level</label>
+                    <select class="form-select" formControlName="courseLevel">
+                        <option value="">Select Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <!-- Add level options here -->
+                    </select>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Organization</label>
+                    <select class="form-select" formControlName="organization">
+                        <option value="">Select Organization</option>
+                        <option value="Organization A">Organization A</option>
+                        <option value="Organization B">Organization B</option>
+                        <!-- Add organization options here -->
+                    </select>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Instructor</label>
+                    <input type="text" class="form-control" formControlName="instructor" placeholder="Instructor Name">
+                </div>
+
+                <!-- Row 5 -->
+                <div class="col-xl-1">
+                    <label class="form-label">Course Duration</label>
+                    <input type="text" class="form-control" formControlName="courseDuration" placeholder="72 Hours">
+                </div>
+
+                <div class="col-xl-1">
+                    <label class="form-label">Course Price</label>
+                    <input type="number" class="form-control" formControlName="coursePrice"
+                        placeholder="Enter Course Price">
+                </div>
+
+
+                <!-- Row 6 - Media -->
+                <div class="col-xl-3">
+                    <label class="form-label">Video Source</label>
+                    <select class="form-select" formControlName="videoSource">
+                        <option value="">Select Video Source</option>
+                        <option value="YouTube">YouTube</option>
+                        <option value="Vimeo">Vimeo</option>
+                        <option value="MP4">MP4</option>
+                        <option value="Local">Local Upload</option>
+                        <!-- Add video source options here -->
+                    </select>
+                </div>
+                <!-- Youtube / Vimeo -->
+                <div class="col-xl-2" *ngIf="courseForm.get('videoSource')?.value === 'YouTube' ||
+           courseForm.get('videoSource')?.value === 'Vimeo'">
+
+                    <label class="form-label">Video Link</label>
+
+                    <input type="text" class="form-control" placeholder="Enter Video Link">
+                </div>
+
+                <!-- MP4 -->
+                <div class="col-xl-2" *ngIf="courseForm.get('videoSource')?.value === 'MP4'">
+
+                    <label class="form-label">Upload MP4</label>
+
+                    <input type="file" class="form-control" accept="video/mp4">
+                </div>
+
+                <!-- Local Upload -->
+                <div class="col-xl-3" *ngIf="courseForm.get('videoSource')?.value === 'Local'">
+
+                    <label class="form-label">Upload Video</label>
+
+                    <input type="file" class="form-control" accept="video/*">
+                </div>
+                <div class="col-xl-3">
+                    <label class="form-label">Thumbnail (402x248)</label>
+                    <input type="file" class="form-control" (change)="courseForm.get('thumbnail')?.setValue($event)">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Is Downloadable</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="isDownloadable">
+                    </div>
+                </div>
+
+                <!-- Row 7 - Status & Pricing -->
+                <div class="col-xl-2">
+                    <label class="form-label">Is Featured</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="isFeatured">
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Is Free</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="isFree">
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Discount This Course</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="discountThisCourse">
+                    </div>
+                </div>
+
+
+
+                <!-- Extra Course Details -->
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Curriculum Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Module</label>
+                    <input type="text" class="form-control" placeholder="Module">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Lesson</label>
+                    <input type="text" class="form-control" placeholder="Lesson">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Type</label>
+                    <select class="form-select">
+                        <option>Video</option>
+                        <option>Audio</option>
+                        <option>Document</option>
+                    </select>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Duration</label>
+                    <input type="text" class="form-control" placeholder="15:20">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Lesson File</label>
+                    <input type="file" class="form-control">
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Assignment Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Assignment</label>
+                    <input type="text" class="form-control" placeholder="Title">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Deadline</label>
+                    <input type="date" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Instructor</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Total Marks</label>
+                    <input type="number" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Pass Marks</label>
+                    <input type="number" class="form-control">
+                </div>
+
+                <div class="col-xl-12">
+                    <label class="form-label">Assignment Description</label>
+                    <textarea class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">FAQ Details</h6>
+                </div>
+
+                <div class="col-xl-6">
+                    <label class="form-label">Question</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-6">
+                    <label class="form-label">Answer</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Student Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Max Students</label>
+                    <input type="number" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">State</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Postal Code</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Course Visit Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Course Banner</label>
+                    <input type="file" class="form-control">
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">What You Will Learn</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-6">
+                    <label class="form-label">Requirements</label>
+                    <textarea class="form-control" rows="2"></textarea>
+                </div>
+
+                <!-- Row 8 - Editor Descriptions -->
+                <div class="col-xl-12">
+                    <label class="form-label">Short Description</label>
+                    <textarea class="form-control" formControlName="shortDescription" rows="3"
+                        placeholder="Enter Short Description"></textarea>
+                </div>
+
+                <div class="col-xl-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="isPrivateCourse"
+                            id="isPrivateCourse">
+                        <label class="form-check-label" for="isPrivateCourse">
+                            Keep it as a private course
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-xl-12 mb-5">
+                    <label class="form-label">Description</label>
+
+                    <quill-editor formControlName="description" [style]="{height: '100px'}">
+                    </quill-editor>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary" (click)="onSubmit()">
+            Submit
+        </button>
+    </div>
+</ng-template>
+
+<!-- edit modal content-->
+<ng-template #editModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Edit New Course</h6>
+        <button type="button" class="btn-close" (click)="modal.close()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
+            <div class="row gy-3">
+
+                <!-- Row 1 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Course Title</label>
+                    <input type="text" class="form-control" formControlName="courseTitle"
+                        placeholder="Enter Course Title">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" formControlName="category">
+                        <option value="">Select Category</option>
+                        <option value="Development">Development</option>
+                        <option value="Business">Business</option>
+                        <option value="Finance">Finance</option>
+                        <!-- Add category options here -->
+                    </select>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Course Type</label>
+                    <select class="form-select" formControlName="courseType">
+                        <option value="Course">Course</option>
+                        <option value="Bundle">Bundle</option>
+                        <option value="Subscription">Subscription</option>
+                        <!-- Add other course type options here -->
+                    </select>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Language</label>
+                    <select class="form-select" formControlName="language">
+                        <option value="">Select Language</option>
+                        @for (lang of languages; track lang.id) {
+                        <option [value]="lang.language_name">{{ lang.language_name }} {{ lang.code ? '(' + lang.code +
+                            ')' : '' }}</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Subject</label>
+                    <select class="form-select" formControlName="subject">
+                        <option value="">Select Subject</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Data Science">Data Science</option>
+                        <!-- Add subject options here -->
+                    </select>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Course Level</label>
+                    <select class="form-select" formControlName="courseLevel">
+                        <option value="">Select Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                        <!-- Add level options here -->
+                    </select>
+                </div>
+
+                <!-- Row 4 -->
+                <div class="col-xl-2">
+                    <label class="form-label">Organization</label>
+                    <select class="form-select" formControlName="organization">
+                        <option value="">Select Organization</option>
+                        <option value="Organization A">Organization A</option>
+                        <option value="Organization B">Organization B</option>
+                        <!-- Add organization options here -->
+                    </select>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Instructor</label>
+                    <input type="text" class="form-control" formControlName="instructor" placeholder="Instructor Name">
+                </div>
+
+                <!-- Row 5 -->
+                <div class="col-xl-1">
+                    <label class="form-label">Course Duration</label>
+                    <input type="text" class="form-control" formControlName="courseDuration" placeholder="72 Hours">
+                </div>
+
+                <div class="col-xl-1">
+                    <label class="form-label">Course Price</label>
+                    <input type="number" class="form-control" formControlName="coursePrice"
+                        placeholder="Enter Course Price">
+                </div>
+
+
+                <!-- Row 6 - Media -->
+                <div class="col-xl-3">
+                    <label class="form-label">Video Source</label>
+                    <select class="form-select" formControlName="videoSource">
+                        <option value="">Select Video Source</option>
+                        <option value="YouTube">YouTube</option>
+                        <option value="Vimeo">Vimeo</option>
+                        <option value="MP4">MP4</option>
+                        <option value="Local">Local Upload</option>
+                        <!-- Add video source options here -->
+                    </select>
+                </div>
+                <!-- Youtube / Vimeo -->
+                <div class="col-xl-2" *ngIf="courseForm.get('videoSource')?.value === 'YouTube' ||
+           courseForm.get('videoSource')?.value === 'Vimeo'">
+
+                    <label class="form-label">Video Link</label>
+
+                    <input type="text" class="form-control" placeholder="Enter Video Link">
+                </div>
+
+                <!-- MP4 -->
+                <div class="col-xl-2" *ngIf="courseForm.get('videoSource')?.value === 'MP4'">
+
+                    <label class="form-label">Upload MP4</label>
+
+                    <input type="file" class="form-control" accept="video/mp4">
+                </div>
+
+                <!-- Local Upload -->
+                <div class="col-xl-3" *ngIf="courseForm.get('videoSource')?.value === 'Local'">
+
+                    <label class="form-label">Upload Video</label>
+
+                    <input type="file" class="form-control" accept="video/*">
+                </div>
+                <div class="col-xl-3">
+                    <label class="form-label">Thumbnail (402x248)</label>
+                    <input type="file" class="form-control" (change)="courseForm.get('thumbnail')?.setValue($event)">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Is Downloadable</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="isDownloadable">
+                    </div>
+                </div>
+
+                <!-- Row 7 - Status & Pricing -->
+                <div class="col-xl-2">
+                    <label class="form-label">Is Featured</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="isFeatured">
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Is Free</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="isFree">
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Discount This Course</label>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" formControlName="discountThisCourse">
+                    </div>
+                </div>
+
+
+
+                <!-- Extra Course Details -->
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Curriculum Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Module</label>
+                    <input type="text" class="form-control" placeholder="Module">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Lesson</label>
+                    <input type="text" class="form-control" placeholder="Lesson">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Type</label>
+                    <select class="form-select">
+                        <option>Video</option>
+                        <option>Audio</option>
+                        <option>Document</option>
+                    </select>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Duration</label>
+                    <input type="text" class="form-control" placeholder="15:20">
+                </div>
+
+                <div class="col-xl-3">
+                    <label class="form-label">Lesson File</label>
+                    <input type="file" class="form-control">
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Assignment Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Assignment</label>
+                    <input type="text" class="form-control" placeholder="Title">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Deadline</label>
+                    <input type="date" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Instructor</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Total Marks</label>
+                    <input type="number" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Pass Marks</label>
+                    <input type="number" class="form-control">
+                </div>
+
+                <div class="col-xl-12">
+                    <label class="form-label">Assignment Description</label>
+                    <textarea class="form-control" rows="2"></textarea>
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">FAQ Details</h6>
+                </div>
+
+                <div class="col-xl-6">
+                    <label class="form-label">Question</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-6">
+                    <label class="form-label">Answer</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Student Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Max Students</label>
+                    <input type="number" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">State</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Postal Code</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-12 mt-3">
+                    <h6 class="fw-semibold mb-2">Course Visit Details</h6>
+                </div>
+
+                <div class="col-xl-2">
+                    <label class="form-label">Course Banner</label>
+                    <input type="file" class="form-control">
+                </div>
+
+                <div class="col-xl-4">
+                    <label class="form-label">What You Will Learn</label>
+                    <input type="text" class="form-control">
+                </div>
+
+                <div class="col-xl-6">
+                    <label class="form-label">Requirements</label>
+                    <textarea class="form-control" rows="2"></textarea>
+                </div>
+
+                <!-- Row 8 - Editor Descriptions -->
+                <div class="col-xl-12">
+                    <label class="form-label">Short Description</label>
+                    <textarea class="form-control" formControlName="shortDescription" rows="3"
+                        placeholder="Enter Short Description"></textarea>
+                </div>
+
+                <div class="col-xl-12">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" formControlName="isPrivateCourse"
+                            id="isPrivateCourse">
+                        <label class="form-check-label" for="isPrivateCourse">
+                            Keep it as a private course
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-xl-12 mb-5">
+                    <label class="form-label">Description</label>
+
+                    <quill-editor formControlName="description" [style]="{height: '100px'}">
+                    </quill-editor>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary" (click)="onSubmit()">
+            Save
+        </button>
+    </div>
+</ng-template>
+
+<!-- delete modal content-->
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+
+        <h5 class="mb-2">Are you sure?</h5>
+
+        <p class="text-muted mb-4">
+            Do you want to delete this ?
+        </p>
+
+        <button class="btn me-2" style="background:#845ef7;color:#fff;" (click)="modal.close()">
+            Delete
+        </button>
+
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+</ng-template>
+
+
+<!-- assignment modal content-->
+<ng-template #assignmentModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Assignment Details</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th width="30%">Title</th>
+                        <td>Angular Basics Assignment</td>
+                    </tr>
+                    <tr>
+                        <th>Deadline</th>
+                        <td>15/06/2026</td>
+                    </tr>
+                    <tr>
+                        <th>Instructor</th>
+                        <td>William Domain</td>
+                    </tr>
+                    <tr>
+                        <th>Section</th>
+                        <td>Section A</td>
+                    </tr>
+                    <tr>
+                        <th>Lesson</th>
+                        <td>Introduction to Angular</td>
+                    </tr>
+                    <tr>
+                        <th>Total Marks</th>
+                        <td>100</td>
+                    </tr>
+                    <tr>
+                        <th>Pass Marks</th>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>
+                            Complete all Angular Components, Directives and Services exercises.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.close()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- FAQ modal content-->
+<ng-template #faqModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Course FAQs</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="border rounded p-3 mb-3">
+            <h6 class="fw-bold mb-2">Q. What is this course about?</h6>
+            <p class="mb-0 text-muted">
+                This course covers Angular fundamentals, components,
+                directives, services, routing, and API integration.
+            </p>
+        </div>
+
+        <div class="border rounded p-3 mb-3">
+            <h6 class="fw-bold mb-2">Q. Is this course beginner friendly?</h6>
+            <p class="mb-0 text-muted">
+                Yes, this course is designed for beginners as well as
+                intermediate developers.
+            </p>
+        </div>
+
+        <div class="border rounded p-3 mb-3">
+            <h6 class="fw-bold mb-2">Q. Will I get a certificate?</h6>
+            <p class="mb-0 text-muted">
+                Yes, a certificate will be provided after successful
+                completion of the course.
+            </p>
+        </div>
+
+        <div class="border rounded p-3">
+            <h6 class="fw-bold mb-2">Q. Can I access the course lifetime?</h6>
+            <p class="mb-0 text-muted">
+                Yes, lifetime access is available once you enroll.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.close()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<!-- Curriculum modal content-->
+<ng-template #curriculumModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Course Curriculum</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Lesson Type</th>
+                    <th>Lesson Title</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>Module 1</td>
+                    <td>Video</td>
+                    <td>Introduction to Angular</td>
+                    <td>15:20</td>
+                </tr>
+
+                <tr>
+                    <td>Module 1</td>
+                    <td>Audio</td>
+                    <td>Angular Architecture</td>
+                    <td>08:10</td>
+                </tr>
+
+                <tr>
+                    <td>Module 1</td>
+                    <td>Document</td>
+                    <td>Angular Notes PDF</td>
+                    <td>-</td>
+                </tr>
+
+                <tr>
+                    <td>Module 2</td>
+                    <td>Video</td>
+                    <td>Creating Components</td>
+                    <td>20:15</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.close()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+
+<!-- ManageStudent modal content-->
+<ng-template #manageStudentModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Student Details</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row gy-3">
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">First Name</label>
+                <p class="mb-0">John</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">Last Name</label>
+                <p class="mb-0">Smith</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">Phone</label>
+                <p class="mb-0">9876543210</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">Email</label>
+                <p class="mb-0">john@gmail.com</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">Country</label>
+                <p class="mb-0">India</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">State</label>
+                <p class="mb-0">Maharashtra</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">City</label>
+                <p class="mb-0">Nagpur</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">Postal Code</label>
+                <p class="mb-0">440001</p>
+            </div>
+
+            <div class="col-md-4">
+                <label class="fw-semibold text-muted">Gender</label>
+                <p class="mb-0">Male</p>
+            </div>
+
+            <div class="col-12">
+                <label class="fw-semibold text-muted">Address</label>
+                <p class="mb-0">123 Main Street, Nagpur, Maharashtra</p>
+            </div>
+
+            <div class="col-12">
+                <label class="fw-semibold text-muted">About</label>
+                <p class="mb-0">
+                    Student enrolled in Angular Development Course and actively participating in assignments.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.close()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<!-- CouseModel modal content-->
+<ng-template #visitCourseModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Visit Courses</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Course Name</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Angular Masterclass</td>
+                        <td>Web Development</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>2</td>
+                        <td>React Advanced</td>
+                        <td>Frontend</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>3</td>
+                        <td>Flutter Bootcamp</td>
+                        <td>Mobile App</td>
+                        <td>
+                            <span class="badge bg-warning text-dark">
+                                Draft
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>4</td>
+                        <td>Node.js API Development</td>
+                        <td>Backend</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.close()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<!--EYE CouseModel modal content-->
+<ng-template #viewCourseModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Course Details</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row g-3">
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Course Title</label>
+                <div>Angular Course</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Category</label>
+                <div>Development</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Course Type</label>
+                <div>Course</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Language</label>
+                <div>English</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Subject</label>
+                <div>Web Development</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Course Level</label>
+                <div>Beginner</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Organization</label>
+                <div>Rurbix</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Instructor</label>
+                <div>John Smith</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Duration</label>
+                <div>72 Hours</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Course Tag</label>
+                <div>Angular</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Video Source</label>
+                <div>YouTube</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Price</label>
+                <div>₹499</div>
+            </div>
+
+        </div>
+
+        <hr>
+
+        <h6 class="fw-bold mb-3">Status</h6>
+
+        <div class="row g-3">
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Downloadable</label>
+                <div>Yes</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Featured</label>
+                <div>Yes</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Free</label>
+                <div>No</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Private</label>
+                <div>No</div>
+            </div>
+
+        </div>
+
+        <h6 class="fw-bold mt-4 mb-3">Curriculum Details</h6>
+
+        <div class="row g-3">
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Module</label>
+                <div>Introduction Module</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Lesson</label>
+                <div>Angular Basics</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Type</label>
+                <div>Video</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Duration</label>
+                <div>15:20</div>
+            </div>
+
+            <div class="col-xl-12">
+                <label class="fw-bold text-muted">Lesson File</label>
+                <div>angular-basics.pdf</div>
+            </div>
+        </div>
+
+        <h6 class="fw-bold mt-4 mb-3">Assignment Details</h6>
+
+        <div class="row g-3">
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Assignment</label>
+                <div>Angular Project</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Deadline</label>
+                <div>25-06-2026</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Instructor</label>
+                <div>John Smith</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Total Marks</label>
+                <div>100</div>
+            </div>
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Pass Marks</label>
+                <div>40</div>
+            </div>
+
+            <div class="col-xl-12">
+                <label class="fw-bold text-muted">Assignment Description</label>
+                <div class="border rounded p-2 bg-light">
+                    Build a complete Angular CRUD application.
+                </div>
+            </div>
+
+        </div>
+
+        <h6 class="fw-bold mt-4 mb-3">Student Details</h6>
+
+        <div class="row g-3">
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Max Students</label>
+                <div>100</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Country</label>
+                <div>India</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">State</label>
+                <div>Maharashtra</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">City</label>
+                <div>Nagpur</div>
+            </div>
+
+            <div class="col-xl-2">
+                <label class="fw-bold text-muted">Postal Code</label>
+                <div>440001</div>
+            </div>
+
+        </div>
+
+        <h6 class="fw-bold mt-4 mb-3">Course Visit Details</h6>
+
+        <div class="row g-3">
+
+            <div class="col-xl-3">
+                <label class="fw-bold text-muted">Course Banner</label>
+                <div>banner.jpg</div>
+            </div>
+
+            <div class="col-xl-9">
+                <label class="fw-bold text-muted">What You Will Learn</label>
+                <div>
+                    Angular Components, Routing, Services,
+                    API Integration, Forms and Deployment.
+                </div>
+            </div>
+
+            <div class="col-xl-12">
+                <label class="fw-bold text-muted">Requirements</label>
+                <div class="border rounded p-2 bg-light">
+                    Basic HTML, CSS and JavaScript knowledge.
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-xl-12">
+                <label class="fw-bold text-muted">Short Description</label>
+                <div class="border rounded p-2 bg-light">
+                    Learn Angular from beginner to advanced level.
+                </div>
+            </div>
+
+            <div class="col-xl-12 mt-3">
+                <label class="fw-bold text-muted">Description</label>
+                <div class="border rounded p-2 bg-light">
+                    Complete Angular course with Routing, API Integration,
+                    Services, Guards, Lazy Loading and Deployment.
+
+                </div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">
+            Close
+        </button>
+    </div>
+</ng-template>
+
+<!-- http://localhost:63132/advancedui/media-player -->

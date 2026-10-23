@@ -1,0 +1,17 @@
+
+export const environment = {
+  production: true,
+
+  apiUrl: 'https://api.learnli.online/api/v1',
+  baseUrl: 'https://api.learnli.online',
+
+  firebase: {
+    apiKey: '********************************',
+    authDomain: '********************************',
+    projectId: '********************************',
+    storageBucket: '********************************',
+    messagingSenderId: '********************************',
+    appId: '********************************',
+    measurementId: '********************************',
+  },
+};

@@ -1,0 +1,391 @@
+<app-breadcrumb title="Dashboards" [subtitle]='false' active_item="Dashboard"></app-breadcrumb>
+
+<!-- Start row 1 Dashboard -->
+<div class="row">
+  <div class="row">
+    @for (medical of MedicalCards; track $index) {
+    <div class="col-xl-3">
+      <spk-medical-card [medical]="medical"></spk-medical-card>
+    </div>
+    }
+
+  </div>
+  <div class="row">
+
+    <div class="row">
+
+    <!-- Left Side  Earning Report -->
+      <div class="col-xl-8">
+  <div class="card custom-card">
+
+    <div class="card-header justify-content-between">
+      <div class="card-title">
+        Earning Report
+      </div>
+
+      <spk-dropdowns
+        [Customclass]="'dropdown'"
+        [title]="'Last 7 Days'"
+        [Menuclass]="'dropdown-menu'">
+
+        <li><a class="dropdown-item" href="javascript:void(0);">Today</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a></li>
+        <li><a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a></li>
+
+      </spk-dropdowns>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Top Summary -->
+      <div class="row mb-4">
+
+        <div class="col-xl-4 col-md-4">
+          <div class="d-flex align-items-center">
+            <span class="avatar avatar-xl bg-primary-transparent me-3">
+              <i class="ri-group-line fs-3"></i>
+            </span>
+
+            <div>
+              <p class="mb-1 text-muted">New Students</p>
+              <h3 class="mb-0 fw-semibold">429</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4">
+          <div class="d-flex align-items-center">
+            <span class="avatar avatar-xl bg-success-transparent me-3">
+              <i class="ri-book-open-line fs-3"></i>
+            </span>
+
+            <div>
+              <p class="mb-1 text-muted">New Course</p>
+              <h3 class="mb-0 fw-semibold">71</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4">
+          <div class="d-flex align-items-center">
+            <span class="avatar avatar-xl bg-danger-transparent me-3">
+              <i class="ri-coins-line fs-3"></i>
+            </span>
+
+            <div>
+              <p class="mb-1 text-muted">Total Sale</p>
+              <h3 class="mb-0 fw-semibold">$248.4k</h3>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Chart -->
+      <div id="students-analysis">
+        <spk-apexcharts [chartOptions]="StudentOptions"></spk-apexcharts>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Right Side Cards instructor and students -->
+      <div class="col-xl-4">
+        <div class="row">
+          @for (medical of MedicalCardsnew; track $index) {
+          <div class="col-6">
+            <spk-medical-card [medical]="medical"></spk-medical-card>
+          </div>
+          }
+        </div>
+
+         <!-- Right Side Cards  Recent Payout -->
+          <div class="card custom-card">
+
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <div class="card-title">
+                Recent Payout
+              </div>
+
+              <div ngbDropdown>
+                <a href="javascript:void(0);" ngbDropdownToggle class="text-muted text-decoration-none">
+                  Today<!--- <i class="ti ti-chevron-down ms-1"></i> -->
+                </a>
+
+                <div ngbDropdownMenu>
+                  <button ngbDropdownItem>Today</button>
+                  <button ngbDropdownItem>Last 7 Days</button>
+                  <button ngbDropdownItem>Last 14 Days</button>
+                  <button ngbDropdownItem>Last Month</button>
+                  <button ngbDropdownItem>Last 6 Months</button>
+                  <button ngbDropdownItem>Last 12 Months</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table text-nowrap">
+                  <thead>
+                    <tr>
+                      <th>Organisation Name</th>
+                      <th>Date</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>SpaGreen Academy</td>
+                      <td>13/06/2023</td>
+                      <td>$20</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+    
+      </div>
+ </div>
+
+<!-- left side Best Selling Courses -->
+
+   <div class="col-xxl-6">
+  <div class="card custom-card overflow-hidden">
+
+    <div class="card-header justify-content-between">
+
+      <div class="card-title">
+        Best Selling Courses
+      </div>
+
+      <spk-dropdowns
+  [Customclass]="'dropdown'"
+  [Icon]="false"
+  [title]="'Last 7 Days'"
+  [class]="'p-0 border-0 bg-transparent fw-medium'"
+  [Menuclass]="'dropdown-menu'">
+
+  <li><a class="dropdown-item" href="javascript:void(0);">Today</a></li>
+  <li><a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a></li>
+  <li><a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a></li>
+
+</spk-dropdowns>
+
+    </div>
+
+    <div class="card-body p-0">
+
+      <div class="table-responsive campaigntable custom-sale-table">
+
+        <spk-reusable-tables
+          [columns]="CampaignsHeader"
+          tableClass="table text-nowrap top-campaigns-table"
+          [showCheckbox]="false">
+
+          @for (course of influencers; track $index) {
+
+          <tr>
+
+            <!-- Course Title -->
+            <td>
+              <div class="d-flex align-items-center">
+                <span class="avatar avatar-lg me-3">
+                  <img [src]="course.avatarUrl" alt="img">
+                </span>
+
+                <div>
+                  <p class="fw-medium mb-0 text-wrap">
+                    {{ course.name }}
+                  </p>
+                </div>
+              </div>
+            </td>
+
+            <!-- Price -->
+            <td>
+              <span class="fw-semibold">
+                {{ course.price }}
+              </span>
+            </td>
+
+            <!-- Enroll -->
+            <td>
+              <span class="fw-semibold">
+                {{ course.enroll }}
+              </span>
+            </td>
+
+          </tr>
+
+          }
+
+        </spk-reusable-tables>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!--right side  Best Instructors -->
+
+<div class="col-xxl-6">
+  <div class="card custom-card overflow-hidden">
+
+    <div class="card-header justify-content-between">
+
+      <div class="card-title">
+        Best Instructors
+      </div>
+<spk-dropdowns
+  [Customclass]="'dropdown'"
+  [Icon]="false"
+  [title]="'Last 7 Days'"
+  [class]="'p-0 border-0 bg-transparent fw-medium'"
+  [Menuclass]="'dropdown-menu'">
+
+  <li><a class="dropdown-item" href="javascript:void(0);">Today</a></li>
+  <li><a class="dropdown-item" href="javascript:void(0);">Last 7 Days</a></li>
+  <li><a class="dropdown-item" href="javascript:void(0);">Last 30 Days</a></li>
+
+</spk-dropdowns>
+
+    </div>
+
+    <div class="card-body p-0">
+
+      <div class="table-responsive campaigntable custom-sale-table">
+
+        <spk-reusable-tables
+          [columns]="CampaignsHeadernew"
+          tableClass="table text-nowrap top-campaigns-table"
+          [showCheckbox]="false">
+
+          @for (influencer of influencersnew; track $index) {
+
+          <tr>
+
+            <!-- Instructor -->
+            <td>
+              <div class="d-flex align-items-center">
+
+                <span class="avatar avatar-md me-3">
+                  <img [src]="influencer.avatarUrl" alt="img">
+                </span>
+
+                <div>
+                  <p class="fw-medium mb-1">
+                    {{ influencer.name }}
+                  </p>
+
+                  <span class="fs-12 text-muted">
+                    {{ influencer.role }}
+                  </span>
+                </div>
+
+              </div>
+            </td>
+
+            <!-- Rating -->
+            <td>
+              <span class="text-warning">
+                <i class="ri-star-fill"></i>
+              </span>
+              {{ influencer.rating }}
+            </td>
+
+            <!-- Course -->
+            <td>
+              {{ influencer.course }}
+            </td>
+
+            <!-- Total Sell -->
+            <td>
+              {{ influencer.totalSell }}
+            </td>
+
+          </tr>
+
+          }
+
+        </spk-reusable-tables>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+  <div class="row">
+
+  <!-- below row 3 card Manpower Information -->
+  <div class="col-xxl-4">
+    <div class="card custom-card">
+      <div class="card-header">
+        <div class="card-title">
+          Manpower Information
+        </div>
+      </div>
+
+      <div class="card-body">
+        @for(item of manpowerInfo; track $index){
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span>{{ item.label }}</span>
+          <span class="fw-semibold">{{ item.value }}</span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Information -->
+  <div class="col-xxl-4">
+    <div class="card custom-card">
+      <div class="card-header">
+        <div class="card-title">
+          Course Information
+        </div>
+      </div>
+
+      <div class="card-body">
+        @for(item of courseInfo; track $index){
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span>{{ item.label }}</span>
+          <span class="fw-semibold">{{ item.value }}</span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales Information -->
+  <div class="col-xxl-4">
+    <div class="card custom-card">
+      <div class="card-header">
+        <div class="card-title">
+          Sales Information
+        </div>
+      </div>
+
+      <div class="card-body">
+        @for(item of salesInfo; track $index){
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span>{{ item.label }}</span>
+          <span class="fw-semibold">{{ item.value }}</span>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+</div>
+ 
+</div>
+

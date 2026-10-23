@@ -1,0 +1,259 @@
+<div class="col-xl-12 mx-auto">
+    <div class="card custom-card border-0">
+
+        <!-- Header -->
+        <div class="card-header justify-content-between mb-3">
+            <div class="card-title mb-0">
+                Subjects Master
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <div>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedFilterCategory" (change)="onFilterCategoryChange()">
+                        <option [value]="null">All Categories</option>
+                        @for (cat of categories; track cat.id) {
+                            <option [value]="cat.id">{{ cat.category_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <select class="form-select form-select-sm" [(ngModel)]="selectedFilterSubcategory" [disabled]="!selectedFilterCategory" (change)="loadSubjects()">
+                        <option [value]="null">All Subcategories</option>
+                        @for (sub of filterSubcategories; track sub.id) {
+                            <option [value]="sub.id">{{ sub.subcategory_name }}</option>
+                        }
+                    </select>
+                </div>
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search Here" [(ngModel)]="searchText" (input)="applyFilter()">
+                </div>
+
+                <button class="btn btn-primary btn-wave" (click)="open(addSubjectModal)">
+                    <i class="ri-add-line align-middle me-1 fw-medium d-inline-block"></i>
+                    Add Subject
+                </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="card-body py-2 px-3">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <tr>
+                            <th style="width:15%">Sr No.</th>
+                            <th style="width:25%">Category Name</th>
+                            <th style="width:25%">Subcategory Name</th>
+                            <th style="width:25%">Subject Name</th>
+                            <th style="width:10%">Status</th>
+                            <th style="width:10%">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (subject of filteredSubjects; track subject.id; let i = $index) {
+                        <tr>
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ subject.category_name }}</td>
+                            <td>{{ subject.subcategory_name }}</td>
+                            <td>{{ subject.subject_name }}</td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox"
+                                        [checked]="subject.status === 'active'"
+                                        (change)="toggleStatus(subject)">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hstack gap-2">
+                                    <a href="javascript:void(0)" class="text-info fs-14"
+                                        (click)="openEdit(subject, editSubjectModal)">
+                                        <i class="ri-edit-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="text-primary fs-14"
+                                        (click)="openView(subject, eyeSubjectModal)">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="text-danger fs-14"
+                                        (click)="openDelete(subject, deleteModal)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No subjects found.</td>
+                        </tr>
+                        }
+                    </tbody>
+                </spk-reusable-tables>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Add Subject Modal -->
+<ng-template #addSubjectModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Add Subject</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+            <!-- Category -->
+            <div class="col-xl-12">
+                <label class="form-label">
+                    Category <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" [(ngModel)]="categoryId" (change)="onCategoryChange()">
+                    <option [value]="null" disabled selected>Select Category</option>
+                    @for (cat of categories; track cat.id) {
+                        <option [value]="cat.id">{{ cat.category_name }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Subcategory -->
+            <div class="col-xl-12">
+                <label class="form-label">
+                    Subcategory <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" [(ngModel)]="subcategoryId" [disabled]="!categoryId">
+                    <option [value]="null" disabled selected>Select Subcategory</option>
+                    @for (sub of filteredSubcategories; track sub.id) {
+                        <option [value]="sub.id">{{ sub.subcategory_name }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Subject Name -->
+            <div class="col-xl-12">
+                <label class="form-label">
+                    Subject Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" placeholder="Enter Subject Name" [(ngModel)]="subjectName">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-primary" (click)="addSubject(modal)">Submit</button>
+    </div>
+</ng-template>
+
+<!-- Edit Subject Modal -->
+<ng-template #editSubjectModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Edit Subject</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+            <!-- Category -->
+            <div class="col-xl-12">
+                <label class="form-label">
+                    Category <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" [(ngModel)]="editCategoryId" (change)="onEditCategoryChange()">
+                    <option [value]="null" disabled>Select Category</option>
+                    @for (cat of categories; track cat.id) {
+                        <option [value]="cat.id">{{ cat.category_name }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Subcategory -->
+            <div class="col-xl-12">
+                <label class="form-label">
+                    Subcategory <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" [(ngModel)]="editSubcategoryId" [disabled]="!editCategoryId">
+                    <option [value]="null" disabled>Select Subcategory</option>
+                    @for (sub of editFilteredSubcategories; track sub.id) {
+                        <option [value]="sub.id">{{ sub.subcategory_name }}</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Subject Name -->
+            <div class="col-xl-12">
+                <label class="form-label">
+                    Subject Name <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" [(ngModel)]="editSubjectName">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-primary" (click)="updateSubject(modal)">Save Changes</button>
+    </div>
+</ng-template>
+
+<!-- Delete Modal -->
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+        <h5>Are you sure?</h5>
+        <p class="text-muted">Do you want to delete this subject?</p>
+        <button class="btn me-2" style="background:#845ef7;color:#fff;" (click)="deleteSubject(selectedSubject.id, modal)">
+            Delete
+        </button>
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+    </div>
+</ng-template>
+
+<!-- Eye Subject Modal (View) -->
+<ng-template #eyeSubjectModal let-modal>
+    <div class="modal-header">
+        <h5 class="modal-title">Subject Details</h5>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row align-items-center">
+            <div class="col-md-12">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <td class="fw-semibold text-muted" width="180">Subject Name</td>
+                        <td>{{ selectedSubject?.subject_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold text-muted">Subcategory</td>
+                        <td>{{ selectedSubject?.subcategory_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold text-muted">Category</td>
+                        <td>{{ selectedSubject?.category_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold text-muted">Status</td>
+                        <td>
+                            @if (selectedSubject?.status === 'active') {
+                                <span class="badge bg-success">Active</span>
+                            } @else {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-semibold text-muted">Created At</td>
+                        <td>{{ selectedSubject?.created_at | date:'medium' }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    </div>
+</ng-template>

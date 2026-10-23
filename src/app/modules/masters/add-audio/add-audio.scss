@@ -1,0 +1,85 @@
+/* Add Audio Custom Styles */
+
+.border-dashed {
+    border-style: dashed !important;
+    border-width: 1.5px !important;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: rgba(132, 94, 247, 0.08);
+        border-color: var(--primary-color, #845ef7) !important;
+        color: var(--primary-color, #845ef7);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+audio {
+    border-radius: 6px;
+    outline: none;
+    
+    &::-webkit-media-controls-panel {
+        background-color: #f8f9fa;
+    }
+}
+
+.table > :not(caption) > * > * {
+    padding: 0.45rem 0.5rem;
+}
+
+/* Drag and Drop styles */
+.cursor-grab {
+  cursor: grab !important;
+}
+
+.cursor-grabbing {
+  cursor: grabbing !important;
+}
+
+/* Animate items as they're being sorted */
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Animate an item that has been released */
+.cdk-drag-animating {
+  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Drag preview styling (the item being moved) */
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.08),
+              0 8px 10px 1px rgba(0, 0, 0, 0.06),
+              0 3px 14px 2px rgba(0, 0, 0, 0.04);
+  background-color: var(--white);
+  display: table; /* crucial for table rows! */
+  width: 100%;
+  opacity: 0.9;
+}
+
+.cdk-drag-preview td {
+  padding: 10px;
+  background-color: var(--white);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Placeholder styling (where the item will land) */
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  background: var(--light) !important;
+  border: 2px dashed #845ef7 !important;
+}

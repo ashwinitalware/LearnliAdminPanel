@@ -1,0 +1,193 @@
+<div class="col-xl-12">
+    <div class="card custom-card border-0">
+
+        <div class="card-header justify-content-start mb-3">
+
+            <div class="d-flex justify-content-start gap-2 ">
+
+                <div class="card-title mb-0">
+                    All Certificate
+                </div>
+
+                <div>
+                    <input class="form-control form-control-sm" type="text" placeholder="Search Here"
+                        aria-label=".form-control-sm example">
+                </div>
+                <spk-dropdowns [Customclass]="'dropdown '" [Toggletext]="'Sort By'" [Icon]="true"
+                    [IconClass]="'ri-arrow-down-s-line align-middle ms-1 d-inline-block'"
+                    [class]="'btn btn-primary btn-sm btn-wave waves-effect waves-light no-caret'"
+                    [Menuclass]="'dropdown-menu dropdown-menu-end'">
+                    <li><a class="dropdown-item" href="javascript:void(0);">New</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Popular</a></li>
+                    <li><a class="dropdown-item" href="javascript:void(0);">Relevant</a></li>
+                </spk-dropdowns>
+
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <spk-reusable-tables tableClass="table text-nowrap" [showCheckbox]="false">
+                    <thead>
+                        <th>Sr No.</th>
+                        <th>Course</th>
+                        <th>Organization</th>
+                        <th>Instructor</th>
+                        <th>Added date</th>
+                        <th>Action</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>01</td>
+                            <td>Wordpress development</td>
+                            <td>10Minute School</td>
+                            <td>1. Denis fron 2. kofras namroe</td>
+                            <td>24 Oct, 2024</td>
+                            <td>
+                                <button class="badge bg-success-transparent rounded-pill text-success p-2 px-3"
+                                    (click)="open(content)">
+
+                                    Add certificate
+                                </button>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>02</td>
+                            <td>Título del curso</td>
+                            <td>SpaGreen Academy</td>
+                            <td>1. Abdul Mannan Zinnat</td>
+                            <td>15 Nov, 2024</td>
+                             <td>
+                                <button class="badge bg-success-transparent rounded-pill text-success p-2 px-3"
+                                    (click)="open(content)">
+
+                                    Add certificate
+                                </button>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>03</td>
+                            <td>The Complete 2020 Fullstack Web Developer Course</td>
+                            <td>SpaGreen Academy</td>
+                            <td>1. Abdul Mannan Zinnat</td>
+                            <td>13 Nov, 2024</td>
+                            <td>
+                                <button class="badge bg-success-transparent rounded-pill text-success p-2 px-3"
+                                    (click)="open(content)">
+
+                                    Add certificate
+                                </button>
+                            </td>
+
+                        </tr>
+
+                </spk-reusable-tables>
+            </div>
+        </div>
+        <div class="card-footer ">
+            <div class="d-flex align-items-center">
+                <div> Showing 6 Entries <i class="bi bi-arrow-right ms-2 fw-semibold"></i> </div>
+                <div class="ms-auto">
+                    <nav aria-label="Page navigation" class="pagination-style-2">
+                        <ul class="pagination mb-0 flex-wrap">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="javascript:void(0);">
+                                    Prev
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">1</a></li>
+                            <li class="page-item active"><a class="page-link" href="javascript:void(0);">2</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="javascript:void(0);">
+                                    <i class="bi bi-three-dots"></i>
+                                </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="javascript:void(0);">17</a></li>
+                            <li class="page-item">
+                                <a class="page-link text-primary" href="javascript:void(0);">
+                                    next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title">Edit Certificate</h6>
+        <button type="button" class="btn-close" (click)="modal.close()">
+        </button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row gy-3">
+            <h6>Certificate Information</h6>
+            <div class="col-xl-4">
+                <label class="form-label">Course Title</label>
+                <input type="text" class="form-control" placeholder="Enter Course Title">
+            </div>
+
+             <div class="col-xl-12">
+                <label class="form-label">Body Text</label>
+                <textarea class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">Instructor Signature (170x74)</label>
+                <input type="file" class="form-control">
+            </div>
+
+             <div class="col-xl-4">
+                <label class="form-label">Administrator Signature (170x74)</label>
+                <input type="file" class="form-control">
+            </div>
+
+            <div class="col-xl-4">
+                <label class="form-label">Logo Image (84x85)</label>
+                <input type="file" class="form-control">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+        <button class="btn btn-primary">
+            Submit
+        </button>
+    </div>
+</ng-template>
+
+<!-- delete instructor modal content-->
+
+<ng-template #deleteModal let-modal>
+    <div class="modal-body text-center py-4">
+
+        <i class="ri-error-warning-line mb-3" style="font-size:50px;color:#845ef7;"></i>
+
+        <h5 class="mb-2">Are you sure?</h5>
+
+        <p class="text-muted mb-4">
+            Do you want to delete this instructor?
+        </p>
+
+       <button class="btn me-2"
+    style="background:#845ef7;color:#fff;"
+    (click)="modal.close()">
+    Delete
+</button>
+
+        <button class="btn btn-light" (click)="modal.close()">
+            Cancel
+        </button>
+
+    </div>
+</ng-template>

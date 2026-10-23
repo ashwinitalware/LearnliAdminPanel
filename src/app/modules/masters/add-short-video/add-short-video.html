@@ -1,0 +1,665 @@
+<div class="col-xl-12 mx-auto">
+
+  <div class="card custom-card border-0">
+
+    <!-- Card Header with Title, Simple Count Badges, Filter Buttons, Add Button and Search -->
+    <div class="card-header justify-content-between mb-3 d-flex flex-wrap align-items-center gap-3">
+
+      <div>
+        <div class="card-title mb-1">
+          Add Short Video Concepts
+        </div>
+
+        <!-- Simple count labels as requested ("only basic count show simple me label ke sath") -->
+        <div class="d-flex align-items-center gap-2 flex-wrap pt-1">
+          <span class="badge bg-light text-dark border">
+            Total Concepts: <strong class="text-primary">{{ totalCount }}</strong>
+          </span>
+          <span class="badge bg-purple-transparent text-purple border border-purple-subtle">
+            <i class="ri-smartphone-line me-1"></i>Vertical (9:16): <strong>{{ verticalCount }}</strong>
+          </span>
+          <span class="badge bg-info-transparent text-info border border-info-subtle">
+            <i class="ri-tv-line me-1"></i>Horizontal (16:9): <strong>{{ horizontalCount }}</strong>
+          </span>
+          <span class="badge bg-success-transparent text-success border border-success-subtle">
+            <i class="ri-checkbox-circle-line me-1"></i>Active: <strong>{{ activeCount }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center flex-wrap gap-2">
+
+        <!-- Orientation Filter Pills -->
+        <div class="btn-group btn-group-sm" role="group">
+          <button type="button" class="btn btn-sm"
+            [ngClass]="selectedOrientationFilter === 'all' ? 'btn-primary' : 'btn-outline-primary'"
+            (click)="setOrientationFilter('all')">
+            All
+          </button>
+          <button type="button" class="btn btn-sm"
+            [ngClass]="selectedOrientationFilter === 'vertical' ? 'btn-purple text-white' : 'btn-outline-purple'"
+            (click)="setOrientationFilter('vertical')">
+            <i class="ri-smartphone-line me-1"></i>Vertical (9:16)
+          </button>
+          <button type="button" class="btn btn-sm"
+            [ngClass]="selectedOrientationFilter === 'horizontal' ? 'btn-info text-white' : 'btn-outline-info'"
+            (click)="setOrientationFilter('horizontal')">
+            <i class="ri-tv-line me-1"></i>Horizontal (16:9)
+          </button>
+        </div>
+
+        <!-- Add Short Video Concept Button -->
+        <button class="btn btn-primary btn-wave d-inline-flex align-items-center gap-1"
+          (click)="openAddModal(addConceptModal)">
+          <i class="ri-add-line align-middle fw-medium"></i>
+          Add Short Video Concept
+        </button>
+
+        <!-- Search Input -->
+        <div>
+          <input class="form-control form-control-sm" type="text" placeholder="Search Here" [(ngModel)]="searchTerm"
+            (input)="filterConcepts()">
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- MAIN DATA TABLE -->
+    <div class="card-body py-2 px-3">
+      <div class="table-responsive">
+        <spk-reusable-tables tableClass="table text-nowrap table-hover" [showCheckbox]="false">
+          <thead>
+            <tr>
+              <th style="width: 5%">Sr No.</th>
+              <th style="width: 20%">Video Preview (Click to Play)</th>
+              <th style="width: 30%">Title of the Video</th>
+              <th style="width: 15%">Orientation Format</th>
+              <th style="width: 8%">Status</th>
+              <th style="width: 7%">Action</th>
+            </tr>
+          </thead>
+
+          <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+            @for (item of filteredConcepts; track item.id; let i = $index) {
+            <tr cdkDrag>
+
+              <!-- 1. Sr No. & Drag Handle -->
+              <td class="align-middle">
+                <span class="drag-handle cursor-grab me-2" cdkDragHandle title="Drag to reorder">
+                  <i class="ri-drag-move-2-fill fs-14 align-middle text-muted"></i>
+                </span>
+                {{ i + 1 }}
+              </td>
+
+              <!-- 2. Video Preview Thumbnail (Click opens Popup Video Player) -->
+              <td class="align-middle">
+                <div
+                  class="video-preview-thumbnail position-relative rounded overflow-hidden cursor-pointer shadow-sm border"
+                  [ngClass]="item.orientation === 'vertical' ? 'thumb-vertical' : 'thumb-horizontal'"
+                  (click)="openViewModal(item, viewConceptModal)" title="Click to Play in Popup">
+
+                  <video [src]="item.videoUrl" class="w-100 h-100 object-fit-cover" preload="metadata" muted></video>
+
+                  <!-- Play Overlay on Thumbnail -->
+                  <div
+                    class="thumbnail-play-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                    <div class="play-badge-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="ri-play-fill text-white fs-14"></i>
+                    </div>
+                  </div>
+
+                  <!-- Duration Badge -->
+                  <span
+                    class="position-absolute bottom-0 end-0 m-1 badge bg-dark bg-opacity-75 text-white fs-10 px-1 py-0 rounded">
+                    {{ item.duration || '00:45' }}
+                  </span>
+                </div>
+              </td>
+
+              <!-- 3. Video Title & Description (Clicking title also opens Popup) -->
+              <td class="align-middle">
+                <div class="d-flex flex-column">
+                  <a href="javascript:void(0)" class="fw-semibold text-dark fs-13 text-hover-primary text-truncate-2"
+                    (click)="openViewModal(item, viewConceptModal)">
+                    {{ item.title }}
+                  </a>
+                  @if (item.description) {
+                  <span class="text-muted fs-11 text-truncate-2 mt-1">
+                    {{ item.description }}
+                  </span>
+                  }
+                </div>
+              </td>
+
+              <!-- 4. Video Format / Orientation Badge -->
+              <td class="align-middle">
+                @if (item.orientation === 'vertical') {
+                <span
+                  class="badge bg-purple-transparent text-purple border border-purple-subtle rounded-pill px-2 py-1 fs-11">
+                  <i class="ri-smartphone-line me-1"></i>Vertical (9:16)
+                </span>
+                } @else {
+                <span
+                  class="badge bg-info-transparent text-info border border-info-subtle rounded-pill px-2 py-1 fs-11">
+                  <i class="ri-tv-line me-1"></i>Horizontal (16:9)
+                </span>
+                }
+              </td>
+
+
+
+              <!-- 6. Status Toggle Switch -->
+              <td class="align-middle">
+                <div class="form-check form-switch">
+                  <input class="form-check-input cursor-pointer" type="checkbox" [checked]="item.status === 'active'"
+                    (change)="toggleStatus(item)">
+                </div>
+              </td>
+
+              <!-- 7. Action Icons: Play Popup, Edit, Delete -->
+              <td class="align-middle">
+                <div class="hstack gap-2">
+                  <!-- Play in Popup -->
+                  <a href="javascript:void(0)" class="text-primary fs-15"
+                    (click)="openViewModal(item, viewConceptModal)" title="Play Video in Popup">
+                    <i class="ri-play-circle-line"></i>
+                  </a>
+
+                  <!-- Edit -->
+                  <a href="javascript:void(0)" class="text-info fs-14" (click)="openEditModal(item, editConceptModal)"
+                    title="Edit Concept">
+                    <i class="ri-edit-line"></i>
+                  </a>
+
+                  <!-- Delete -->
+                  <a href="javascript:void(0)" class="text-danger fs-14"
+                    (click)="openDeleteModal(item, deleteConceptModal)" title="Delete Concept">
+                    <i class="ri-delete-bin-line"></i>
+                  </a>
+                </div>
+              </td>
+
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">
+                No short video concepts found. Click "Add Short Video Concept" to create one.
+              </td>
+            </tr>
+            }
+          </tbody>
+        </spk-reusable-tables>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ========================================================================= -->
+<!-- POPUP MODAL: VIDEO PLAYER ON CLICK (With Autoplay, Play, Pause, Stop, Seek) -->
+<!-- ========================================================================= -->
+<ng-template #viewConceptModal let-modal>
+  <div class="modal-header bg-dark text-white border-bottom border-secondary py-2 px-3">
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge" [ngClass]="selectedConcept?.orientation === 'vertical' ? 'bg-purple' : 'bg-info'">
+        <i [class]="selectedConcept?.orientation === 'vertical' ? 'ri-smartphone-line me-1' : 'ri-tv-line me-1'"></i>
+        {{ selectedConcept?.orientation === 'vertical' ? 'Vertical 9:16' : 'Horizontal 16:9' }}
+      </span>
+      <h6 class="modal-title fw-bold text-white mb-0 text-truncate" style="max-width: 400px;">
+        {{ selectedConcept?.title }}
+      </h6>
+    </div>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div
+    class="modal-body p-0 bg-black text-center d-flex flex-column align-items-center justify-content-center position-relative">
+
+    <!-- Video Player Frame: Mobile Phone Bezel for Vertical (9:16) vs Cinema for Horizontal (16:9) -->
+    <div
+      [ngClass]="selectedConcept?.orientation === 'vertical' ? 'mobile-phone-frame my-3 shadow-lg' : 'cinema-screen-frame w-100'">
+
+      <!-- Mobile Notch header if vertical -->
+      @if (selectedConcept?.orientation === 'vertical') {
+      <div class="phone-top-bar d-flex align-items-center justify-content-between px-3 py-1 bg-black text-white fs-10">
+        <span>9:41</span>
+        <div class="camera-notch rounded-pill bg-dark" style="width: 60px; height: 12px;"></div>
+        <div class="d-flex align-items-center gap-1">
+          <i class="ri-wifi-line"></i>
+          <i class="ri-battery-charge-line"></i>
+        </div>
+      </div>
+      }
+
+      <!-- Video element with Autoplay -->
+      <div class="video-holder position-relative bg-black">
+        <video #modalPlayerVideo [src]="selectedConcept?.videoUrl" class="w-100"
+          [style.max-height]="selectedConcept?.orientation === 'vertical' ? '460px' : '380px'"
+          [ngClass]="selectedConcept?.orientation === 'vertical' ? 'object-fit-contain' : 'object-fit-contain'" controls
+          autoplay playsinline>
+        </video>
+      </div>
+
+    </div>
+
+    <!-- Toolbar with Play, Pause, STOP (Reset to 0:00), Speed options -->
+    <div class="w-100 bg-dark text-white p-3 border-top border-secondary text-start">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+        <div>
+          <h6 class="fw-bold text-white mb-1">{{ selectedConcept?.title }}</h6>
+          <span class="badge bg-secondary fs-11 me-2">{{ selectedConcept?.category }}</span>
+          <span class="text-muted fs-11"><i class="ri-time-line me-1"></i>{{ selectedConcept?.duration }}</span>
+        </div>
+
+        <!-- Stop & Play Controls Toolbar ("shtop vagaer krte aana chhaiye aisa") -->
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-outline-light" (click)="modalPlayerVideo.play()">
+            <i class="ri-play-fill me-1"></i>Play
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-light" (click)="modalPlayerVideo.pause()">
+            <i class="ri-pause-fill me-1"></i>Pause
+          </button>
+          <button type="button" class="btn btn-sm btn-warning fw-semibold"
+            (click)="modalPlayerVideo.pause(); modalPlayerVideo.currentTime = 0">
+            <i class="ri-stop-fill me-1"></i>Stop (Reset 0:00)
+          </button>
+        </div>
+      </div>
+
+      @if (selectedConcept?.description) {
+      <p class="text-white-50 fs-12 mb-2">{{ selectedConcept?.description }}</p>
+      }
+
+      <!-- Playback Speed Switcher -->
+      <div class="d-flex align-items-center gap-2 pt-2 border-top border-secondary">
+        <span class="fs-11 text-muted">Playback Speed:</span>
+        <div class="btn-group btn-group-sm" role="group">
+          @for (spd of [0.75, 1, 1.25, 1.5, 2]; track spd) {
+          <button type="button" class="btn btn-xs"
+            [ngClass]="modalPlaybackSpeed === spd ? 'btn-primary' : 'btn-outline-secondary text-white'"
+            (click)="setModalSpeed(spd, modalPlayerVideo)">
+            {{ spd }}x
+          </button>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- MODAL: ADD SHORT VIDEO CONCEPT -->
+<!-- ========================================================================= -->
+<ng-template #addConceptModal let-modal>
+  <div class="modal-header bg-light border-bottom py-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="avatar avatar-sm bg-primary text-white rounded-circle">
+        <i class="ri-video-add-line fs-16"></i>
+      </div>
+      <div>
+        <h6 class="modal-title fw-bold text-dark mb-0">Add Short Video Concept</h6>
+        <span class="text-muted fs-11">Upload Horizontal or Vertical video concept with title</span>
+      </div>
+    </div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body p-4">
+    <div class="row g-3">
+
+      <!-- 1. CHOOSE ORIENTATION ACCESS (Horizontal vs Vertical) -->
+      <div class="col-12">
+        <label class="form-label fw-bold text-dark fs-12 mb-2">
+          Select Video Format / Orientation <span class="text-danger">*</span>
+        </label>
+        <div class="row g-3">
+
+          <!-- Vertical Option Card -->
+          <div class="col-md-6 col-12">
+            <div
+              class="orientation-select-card p-3 rounded-3 border cursor-pointer transition-all d-flex align-items-center gap-3"
+              [ngClass]="{'selected-orientation border-purple bg-purple-transparent': formOrientation === 'vertical'}"
+              (click)="formOrientation = 'vertical'">
+              <div class="orientation-icon-box bg-purple text-white rounded-circle p-2 fs-20">
+                <i class="ri-smartphone-line"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h6 class="fw-bold mb-0 text-dark">Vertical (9:16)</h6>
+                  @if (formOrientation === 'vertical') {
+                  <i class="ri-checkbox-circle-fill text-purple fs-18"></i>
+                  }
+                </div>
+                <p class="text-muted fs-11 mb-0">Reels, Shorts & Mobile micro-learning</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Horizontal Option Card -->
+          <div class="col-md-6 col-12">
+            <div
+              class="orientation-select-card p-3 rounded-3 border cursor-pointer transition-all d-flex align-items-center gap-3"
+              [ngClass]="{'selected-orientation border-info bg-info-transparent': formOrientation === 'horizontal'}"
+              (click)="formOrientation = 'horizontal'">
+              <div class="orientation-icon-box bg-info text-white rounded-circle p-2 fs-20">
+                <i class="ri-tv-line"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h6 class="fw-bold mb-0 text-dark">Horizontal (16:9)</h6>
+                  @if (formOrientation === 'horizontal') {
+                  <i class="ri-checkbox-circle-fill text-info fs-18"></i>
+                  }
+                </div>
+                <p class="text-muted fs-11 mb-0">Widescreen lessons & desktop tutorials</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 2. VIDEO TITLE (Primary requirement: "title of the video thats it") -->
+      <div class="col-12">
+        <label class="form-label fw-bold text-dark fs-12 mb-1">
+          Title of the Video <span class="text-danger">*</span>
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-light text-muted"><i class="ri-font-size"></i></span>
+          <input type="text" class="form-control" placeholder="e.g. Mitochondria Powerhouse Concept in 60 Seconds"
+            [(ngModel)]="formTitle" required>
+        </div>
+      </div>
+
+      <!-- 3. VIDEO SOURCE SELECTION (Upload File vs Video URL) -->
+      <div class="col-12">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <label class="form-label fw-bold text-dark fs-12 mb-0">Video Media Source <span
+              class="text-danger">*</span></label>
+          <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-sm"
+              [ngClass]="formSourceType === 'file' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="formSourceType = 'file'">
+              <i class="ri-upload-cloud-line me-1"></i> Upload File
+            </button>
+            <button type="button" class="btn btn-sm"
+              [ngClass]="formSourceType === 'url' ? 'btn-primary' : 'btn-outline-secondary'"
+              (click)="formSourceType = 'url'">
+              <i class="ri-link me-1"></i> Video URL
+            </button>
+          </div>
+        </div>
+
+        <!-- File Upload Dropzone -->
+        @if (formSourceType === 'file') {
+        <div
+          class="upload-dropzone p-4 text-center border border-2 border-dashed rounded-3 bg-light-subtle cursor-pointer position-relative mb-2">
+          <input type="file" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer"
+            accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska" (change)="onVideoFileSelected($event, false)">
+          <div class="avatar avatar-md bg-primary-transparent text-primary rounded-circle mx-auto mb-2">
+            <i class="ri-video-upload-line fs-22"></i>
+          </div>
+          <h6 class="fw-semibold text-dark fs-13 mb-1">
+            {{ formVideoFile ? formVideoFile.name : 'Click to select or drag video file here' }}
+          </h6>
+          <p class="text-muted fs-11 mb-0">Supports MP4, WebM, MOV, MKV (Max: 500 MB)</p>
+        </div>
+        }
+
+        <!-- Direct Video URL Input -->
+        @if (formSourceType === 'url') {
+        <div class="input-group mb-2">
+          <span class="input-group-text bg-light text-muted"><i class="ri-link-m"></i></span>
+          <input type="url" class="form-control" placeholder="Paste direct MP4 / WebM / CDN video stream link..."
+            [(ngModel)]="formVideoUrl" (input)="onUrlChanged(false)">
+        </div>
+        }
+
+        <!-- 📌 Recommended Video Specs Guidance Box -->
+        <div class="card border border-primary-subtle bg-primary-transparent rounded-3 p-3 mb-0 shadow-none">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2 pb-1 border-bottom border-primary-subtle">
+            <span class="fw-bold text-primary fs-12 d-flex align-items-center gap-1">
+              <i class="ri-video-line fs-15"></i>
+              Recommended Video Specs for Short Videos / Reels
+            </span>
+            <span class="badge bg-primary text-white fs-10 px-2 py-1">Max: 500 MB Allowed</span>
+          </div>
+
+          <div class="row g-2 text-dark fs-11">
+            <div class="col-md-6 col-12">
+              <div class="d-flex align-items-start gap-1">
+                <i class="ri-speed-line text-success fs-13 mt-0.5"></i>
+                <div>
+                  <strong>Optimal Size:</strong> Under 50 MB – 100 MB
+                  <span class="text-muted d-block fs-10">30s–60s videos under 100 MB play instantly without buffering in the Flutter mobile app.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 col-12">
+              <div class="d-flex align-items-start gap-1">
+                <i class="ri-file-video-line text-info fs-13 mt-0.5"></i>
+                <div>
+                  <strong>Supported Formats:</strong> .mp4, .mov, .webm, .mkv
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="d-flex align-items-start gap-1">
+                <i class="ri-aspect-ratio-line text-warning fs-13 mt-0.5"></i>
+                <div>
+                  <strong>Aspect Ratio:</strong>
+                  <span class="badge bg-light text-dark border ms-1 me-1">9:16 Vertical (1080x1920)</span> for Reels / Shorts or
+                  <span class="badge bg-light text-dark border ms-1">16:9 Horizontal (1920x1080)</span> for Widescreen.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. INSTANT LIVE VIDEO PREVIEW & TEST CONTROLS -->
+      @if (formVideoPreviewUrl || formVideoFile) {
+      <div class="col-12">
+        <div class="card bg-dark border-0 rounded-3 overflow-hidden shadow-sm">
+          <div
+            class="card-header bg-dark text-white py-2 px-3 d-flex align-items-center justify-content-between border-bottom border-secondary">
+            <span class="fs-12 fw-semibold d-flex align-items-center gap-1">
+              <i class="ri-film-line text-warning"></i> Live Test Preview ({{ formOrientation | titlecase }})
+            </span>
+            <span class="badge bg-secondary fs-10 font-monospace">Ready</span>
+          </div>
+          <div class="card-body p-0 text-center position-relative bg-black"
+            [style.max-height]="formOrientation === 'vertical' ? '260px' : '200px'">
+
+            <video #modalPreviewVideo [src]="formVideoPreviewUrl" class="w-100 h-100 object-fit-contain"
+              style="max-height: 220px;" controls playsinline autoplay muted>
+            </video>
+          </div>
+
+          <div class="card-footer bg-dark text-white py-2 px-3 d-flex align-items-center justify-content-between">
+            <span class="fs-11 text-muted">Test playback controls before saving:</span>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-light py-0 px-2 fs-11"
+                (click)="modalPreviewVideo.play()">
+                <i class="ri-play-fill me-1"></i> Play
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-light py-0 px-2 fs-11"
+                (click)="modalPreviewVideo.pause()">
+                <i class="ri-pause-fill me-1"></i> Pause
+              </button>
+              <button type="button" class="btn btn-sm btn-warning py-0 px-2 fs-11"
+                (click)="modalPreviewVideo.pause(); modalPreviewVideo.currentTime = 0">
+                <i class="ri-stop-fill me-1"></i> Stop (Reset)
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      }
+
+
+
+
+
+      <div class="col-12">
+        <label class="form-label fw-bold text-dark fs-12 mb-1">Description (Optional)</label>
+        <textarea class="form-control" rows="2"
+          placeholder="Brief summary of what students will learn from this short video concept..."
+          [(ngModel)]="formDescription"></textarea>
+      </div>
+
+      <!-- 6. Status Switch -->
+      <div class="col-12">
+        <div class="form-check form-switch pt-1">
+          <input class="form-check-input" type="checkbox" id="formStatusSw" [checked]="formStatus === 'active'"
+            (change)="formStatus = formStatus === 'active' ? 'inactive' : 'active'">
+          <label class="form-check-label fs-12 fw-medium" for="formStatusSw">
+            Publish status: <span class="fw-bold" [ngClass]="formStatus === 'active' ? 'text-success' : 'text-muted'">{{
+              formStatus | titlecase }}</span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-footer bg-light border-top py-2 px-3">
+    <button type="button" class="btn btn-outline-secondary px-3" (click)="modal.dismiss('Cancel')">
+      Cancel
+    </button>
+    <button type="button" class="btn btn-primary px-4 d-inline-flex align-items-center gap-1 shadow-sm"
+      [disabled]="isUploading || !formTitle" (click)="saveConcept(modal)">
+      @if (isUploading) {
+      <span class="spinner-border spinner-border-sm me-1" role="status"></span> Saving...
+      } @else {
+      <i class="ri-check-line fs-16"></i> Save Short Video Concept
+      }
+    </button>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- MODAL: EDIT SHORT VIDEO CONCEPT -->
+<!-- ========================================================================= -->
+<ng-template #editConceptModal let-modal>
+  <div class="modal-header bg-light border-bottom py-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="avatar avatar-sm bg-info text-white rounded-circle">
+        <i class="ri-edit-line fs-16"></i>
+      </div>
+      <div>
+        <h6 class="modal-title fw-bold text-dark mb-0">Edit Short Video Concept</h6>
+        <span class="text-muted fs-11">Update video title, orientation or source</span>
+      </div>
+    </div>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body p-4">
+    <div class="row g-3">
+      <!-- Orientation Selection -->
+      <div class="col-12">
+        <label class="form-label fw-bold text-dark fs-12 mb-2">Video Orientation</label>
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="p-2 rounded border cursor-pointer text-center"
+              [ngClass]="{'border-purple bg-purple-transparent text-purple fw-bold': editOrientation === 'vertical'}"
+              (click)="editOrientation = 'vertical'">
+              <i class="ri-smartphone-line me-1"></i> Vertical (9:16)
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-2 rounded border cursor-pointer text-center"
+              [ngClass]="{'border-info bg-info-transparent text-info fw-bold': editOrientation === 'horizontal'}"
+              (click)="editOrientation = 'horizontal'">
+              <i class="ri-tv-line me-1"></i> Horizontal (16:9)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Title Input -->
+      <div class="col-12">
+        <label class="form-label fw-bold text-dark fs-12 mb-1">Title of the Video <span
+            class="text-danger">*</span></label>
+        <input type="text" class="form-control" [(ngModel)]="editTitle" required>
+      </div>
+
+      <!-- Video URL or File -->
+      <div class="col-12">
+        <label class="form-label fw-bold text-dark fs-12 mb-1">Video Source </label>
+        <div class="input-group mb-1">
+          <input type="text" class="form-control" [(ngModel)]="editVideoUrl" (input)="onUrlChanged(true)">
+          <button class="btn btn-outline-secondary" type="button">
+            <input type="file" class="d-none" #editFileInput accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-matroska"
+              (change)="onVideoFileSelected($event, true)">
+            <span (click)="editFileInput.click()"><i class="ri-upload-2-line me-1"></i>Replace File</span>
+          </button>
+        </div>
+        <div class="d-flex align-items-center justify-content-between flex-wrap text-muted fs-11 px-1">
+          <span><i class="ri-information-line me-1 text-primary"></i><strong>Max:</strong> 500 MB | <strong>Optimal:</strong> Under 50–100 MB</span>
+          <span class="badge bg-light text-dark border">9:16 (1080x1920) or 16:9 (1920x1080)</span>
+        </div>
+      </div>
+
+
+
+      <!-- Description -->
+      <div class="col-12">
+        <label class="form-label fw-bold text-dark fs-12 mb-1">Description</label>
+        <textarea class="form-control" rows="2" [(ngModel)]="editDescription"></textarea>
+      </div>
+
+      <!-- Status -->
+      <div class="col-12">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="editStatusSw" [checked]="editStatus === 'active'"
+            (change)="editStatus = editStatus === 'active' ? 'inactive' : 'active'">
+          <label class="form-check-label fs-12 fw-medium" for="editStatusSw">
+            Status: <span class="fw-bold" [ngClass]="editStatus === 'active' ? 'text-success' : 'text-muted'">{{
+              editStatus | titlecase }}</span>
+          </label>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-footer bg-light border-top py-2 px-3">
+    <button type="button" class="btn btn-outline-secondary px-3" (click)="modal.dismiss('Cancel')">Cancel</button>
+    <button type="button" class="btn btn-info px-4 text-white shadow-sm" (click)="updateConcept(modal)">
+      <i class="ri-save-line me-1"></i> Update Concept
+    </button>
+  </div>
+</ng-template>
+
+<!-- ========================================================================= -->
+<!-- MODAL: DELETE CONFIRMATION -->
+<!-- ========================================================================= -->
+<ng-template #deleteConceptModal let-modal>
+  <div class="modal-body p-4 text-center">
+    <div class="avatar avatar-xl bg-danger-transparent text-danger rounded-circle mx-auto mb-3">
+      <i class="ri-delete-bin-line fs-28"></i>
+    </div>
+    <h5 class="fw-bold text-dark mb-1">Delete Short Video Concept?</h5>
+    <p class="text-muted fs-12 mb-3">
+      Are you sure you want to delete <strong class="text-dark">"{{ selectedConcept?.title }}"</strong>? This action
+      cannot be undone.
+    </p>
+
+    <div class="d-flex align-items-center justify-content-center gap-2">
+      <button type="button" class="btn btn-light px-3" (click)="modal.dismiss('Cancel')">Cancel</button>
+      <button type="button" class="btn btn-danger px-4 shadow-sm" (click)="deleteConcept(selectedConcept?.id!, modal)">
+        Yes, Delete
+      </button>
+    </div>
+  </div>
+</ng-template>

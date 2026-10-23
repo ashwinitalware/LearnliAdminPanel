@@ -1,0 +1,1503 @@
+<div class="col-xl-12 mx-auto">
+
+    <!-- Top Header Bar with View Switcher & Title -->
+    <div class="card custom-card border-0 shadow-sm mb-3">
+        <div class="card-header justify-content-between align-items-center flex-wrap gap-2 py-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="avatar avatar-md bg-primary-transparent text-primary rounded-3">
+                    <i class="ri-broadcast-line fs-20"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">Mentor Live Session Bookings</h5>
+                    <small class="text-muted">Webinar.gg Live Mentorship, Booking Lifecycles, Room Links, Recordings & Webhook Monitoring</small>
+                </div>
+            </div>
+
+            <!-- View Mode Switcher Pills & Refresh -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <div class="btn-group view-switcher-group" role="group">
+                    <button type="button" class="btn btn-sm" 
+                            [class.btn-primary]="activeViewMode === 'slot_wise'"
+                            [class.btn-outline-light]="activeViewMode !== 'slot_wise'"
+                            [class.text-dark]="activeViewMode !== 'slot_wise'"
+                            (click)="switchViewMode('slot_wise')">
+                        <i class="ri-layout-grid-line me-1 align-middle"></i> Slot-Wise Bookings
+                    </button>
+                    <button type="button" class="btn btn-sm" 
+                            [class.btn-primary]="activeViewMode === 'table'"
+                            [class.btn-outline-light]="activeViewMode !== 'table'"
+                            [class.text-dark]="activeViewMode !== 'table'"
+                            (click)="switchViewMode('table')">
+                        <i class="ri-table-line me-1 align-middle"></i> All Bookings (Table)
+                    </button>
+                    <button type="button" class="btn btn-sm" 
+                            [class.btn-primary]="activeViewMode === 'webhooks'"
+                            [class.btn-outline-light]="activeViewMode !== 'webhooks'"
+                            [class.text-dark]="activeViewMode !== 'webhooks'"
+                            (click)="switchViewMode('webhooks')">
+                        <i class="ri-radar-line me-1 align-middle"></i> Webhook Monitoring
+                        @if (kpiCounts.failed_webhooks && kpiCounts.failed_webhooks > 0) {
+                            <span class="badge bg-danger ms-1">{{ kpiCounts.failed_webhooks }}</span>
+                        }
+                    </button>
+                </div>
+
+                <button class="btn btn-outline-light btn-wave btn-sm text-dark" 
+                        (click)="refreshAll()" 
+                        title="Refresh Data">
+                    <i class="ri-refresh-line align-middle me-1"></i> Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW MODE 1: SLOT-WISE STUDENT BOOKINGS EXPLORER
+         ==================================================================== -->
+    @if (activeViewMode === 'slot_wise') {
+        
+        <!-- Mentor Selection & Filters Ribbon -->
+        <div class="card custom-card border-0 shadow-sm mb-3">
+            <div class="card-body p-3">
+                <div class="row g-2 align-items-end">
+                    <!-- Mentor Dropdown -->
+                    <div class="col-lg-4 col-md-6">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-user-star-line text-primary me-1"></i> Select Mentor
+                        </label>
+                        <select class="form-select select-mentor-highlight" [(ngModel)]="selectedSlotMentorId" (change)="onSlotMentorChange()">
+                            <option value="" disabled>-- Select a Mentor --</option>
+                            @for (mentor of mentorsList; track mentor.id) {
+                                <option [value]="mentor.id">
+                                    {{ mentor.full_name }} ({{ mentor.qualification || 'Mentor' }})
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-calendar-event-line text-primary me-1"></i> Booking Date
+                        </label>
+                        <input type="date" class="form-control form-control-sm" [(ngModel)]="slotFilterDate" (change)="onSlotFilterChange()">
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="col-lg-2 col-md-3 col-sm-6">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-filter-3-line text-primary me-1"></i> Status / View
+                        </label>
+                        <select class="form-select form-select-sm" [(ngModel)]="slotFilterStatus" (change)="onSlotFilterChange()">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending ⏳</option>
+                            <option value="confirmed">Confirmed ✅</option>
+                            <option value="live">Live Sessions 🔴</option>
+                            <option value="upcoming">Upcoming 📅</option>
+                            <option value="completed">Completed 🏁</option>
+                            <option value="rejected">Rejected ❌</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="col-lg-3 col-md-8">
+                        <label class="form-label fs-12 fw-semibold text-muted mb-1">
+                            <i class="ri-search-line text-primary me-1"></i> Search Student / Booking #
+                        </label>
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" placeholder="Student name, mobile, email..." 
+                                   [(ngModel)]="slotSearchTerm" (input)="onSlotFilterChange()">
+                        </div>
+                    </div>
+
+                    <!-- Reset Button -->
+                    <div class="col-lg-1 col-md-4 text-end">
+                        <button class="btn btn-outline-secondary btn-sm w-100" (click)="resetSlotFilters()" title="Reset Filters">
+                            <i class="ri-filter-off-line"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State for Slot-Wise -->
+        @if (isLoadingSlotWise) {
+            <div class="card custom-card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <span class="spinner-border spinner-border-lg text-primary mb-3"></span>
+                    <h6 class="text-dark fw-bold mb-1">Loading Mentor Slots & Student Bookings...</h6>
+                    <p class="text-muted fs-12 mb-0">Fetching real-time slots and reservations for this mentor.</p>
+                </div>
+            </div>
+        } @else if (slotWiseData && slotWiseData.mentor) {
+            
+            <!-- Mentor Summary & KPI Banner -->
+            <div class="card custom-card border-0 shadow-sm mb-3 mentor-banner-card overflow-hidden">
+                <div class="card-body p-3">
+                    <div class="row align-items-center g-3">
+                        <!-- Left: Mentor Info Profile -->
+                        <div class="col-xl-5 col-lg-6">
+                            <div class="d-flex align-items-center gap-3">
+                                <img [src]="getPhotoUrl(slotWiseData.mentor.photo)" alt="Mentor Photo" 
+                                     class="avatar avatar-xxl avatar-rounded border border-2 border-white shadow-sm flex-shrink-0">
+                                <div class="overflow-hidden">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <h5 class="fw-bold text-dark mb-0">{{ slotWiseData.mentor.full_name }}</h5>
+                                        <span class="badge bg-primary-transparent fs-11">{{ slotWiseData.mentor.qualification || 'Mentor' }}</span>
+                                    </div>
+                                    <div class="text-muted fs-12 mt-1">
+                                        <i class="ri-phone-line text-primary me-1"></i>{{ slotWiseData.mentor.mobile_number || '-' }} 
+                                        <span class="mx-1">•</span>
+                                        <i class="ri-mail-line text-primary me-1"></i>{{ slotWiseData.mentor.email || '-' }}
+                                    </div>
+                                    <div class="text-muted fs-12 mt-1">
+                                        <strong>Expert in:</strong> {{ slotWiseData.mentor.expert_in || 'All Topics' }}
+                                        @if (slotWiseData.mentor.experience) {
+                                             <span class="badge bg-light text-dark ms-2">{{ slotWiseData.mentor.experience }} Exp</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: Mentor Booking Statistics -->
+                        <div class="col-xl-7 col-lg-6">
+                            <div class="row g-2 text-center">
+                                <div class="col-sm-3 col-6">
+                                    <div class="p-2 bg-light rounded border">
+                                        <span class="text-muted fs-11 d-block fw-medium">Configured Slots</span>
+                                        <span class="fs-16 fw-bold text-dark">{{ slotWiseData.summary.total_slots }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-6">
+                                    <div class="p-2 bg-warning-transparent rounded border border-warning-subtle">
+                                        <span class="text-warning fs-11 d-block fw-medium">Pending Requests</span>
+                                        <span class="fs-16 fw-bold text-warning">{{ slotWiseData.summary.pending_bookings }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-6">
+                                    <div class="p-2 bg-success-transparent rounded border border-success-subtle">
+                                        <span class="text-success fs-11 d-block fw-medium">Confirmed / Live</span>
+                                        <span class="fs-16 fw-bold text-success">{{ slotWiseData.summary.confirmed_bookings }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-6">
+                                    <div class="p-2 bg-info-transparent rounded border border-info-subtle">
+                                        <span class="text-info fs-11 d-block fw-medium">Completed</span>
+                                        <span class="fs-16 fw-bold text-info">{{ slotWiseData.summary.completed_bookings }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slots Control Ribbon -->
+            <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+                <div class="d-flex align-items-center gap-2">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="ri-time-line text-primary me-1"></i> Configured Recurring Slots ({{ slotWiseData.slots.length }})
+                    </h6>
+                    <span class="badge bg-light text-muted fs-11">Total Reservations: {{ slotWiseData.summary.total_bookings }}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-xs btn-outline-secondary" (click)="expandAllSlots()">
+                        <i class="ri-expand-vertical-line me-1"></i> Expand All
+                    </button>
+                    <button class="btn btn-xs btn-outline-secondary" (click)="collapseAllSlots()">
+                        <i class="ri-collapse-vertical-line me-1"></i> Collapse All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Slots Accordion / Cards List -->
+            @if (slotWiseData.slots && slotWiseData.slots.length > 0) {
+                <div class="d-flex flex-column gap-3 mb-4">
+                    @for (slot of slotWiseData.slots; track slot.slot_id) {
+                        <div class="card custom-card border shadow-sm slot-group-card">
+                            <!-- Slot Header Bar -->
+                            <div class="card-header slot-header-bar d-flex align-items-center justify-content-between p-3 cursor-pointer" 
+                                 (click)="toggleSlotCollapse(slot)">
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <div class="avatar avatar-sm rounded-circle bg-primary-transparent text-primary">
+                                        <i class="ri-time-line"></i>
+                                    </div>
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-light text-dark font-monospace fs-13 border">
+                                                {{ slot.start_time }} - {{ slot.end_time }}
+                                            </span>
+                                            <span class="badge bg-primary-transparent text-primary fs-12 fw-medium">
+                                                {{ slot.day_of_week || 'All Days' }}
+                                            </span>
+                                            @if (slot.status === 'active') {
+                                                <span class="badge bg-success-transparent text-success fs-11">Active Slot</span>
+                                            } @else {
+                                                <span class="badge bg-secondary-transparent text-muted fs-11">{{ slot.status }}</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3">
+                                    <!-- Booking Count Badges -->
+                                    <div class="d-flex align-items-center gap-1">
+                                        @if (slot.pending_count > 0) {
+                                            <span class="badge bg-warning-transparent text-warning fs-11" title="Pending Bookings">
+                                                {{ slot.pending_count }} Pending
+                                            </span>
+                                        }
+                                        @if (slot.confirmed_count > 0) {
+                                            <span class="badge bg-success-transparent text-success fs-11" title="Confirmed Bookings">
+                                                {{ slot.confirmed_count }} Confirmed
+                                            </span>
+                                        }
+                                        <span class="badge bg-light text-dark border fs-12">
+                                            {{ slot.bookings.length }} Bookings
+                                        </span>
+                                    </div>
+
+                                    <i class="ri-arrow-down-s-line fs-20 text-muted transition-transform" 
+                                       [class.rotate-180]="!slot.is_collapsed"></i>
+                                </div>
+                            </div>
+
+                            <!-- Slot Bookings List Table (Collapsible) -->
+                            @if (!slot.is_collapsed) {
+                                <div class="card-body p-0 border-top">
+                                    @if (slot.bookings && slot.bookings.length > 0) {
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th style="width:14%">Booking #</th>
+                                                        <th style="width:18%">Student Details</th>
+                                                        <th style="width:14%">Booking Date</th>
+                                                        <th style="width:14%">Topic</th>
+                                                        <th style="width:16%">Webinar.gg / Meeting</th>
+                                                        <th style="width:10%">Payment</th>
+                                                        <th style="width:14%">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (booking of slot.bookings; track booking.id) {
+                                                        <tr>
+                                                            <!-- Booking # & Status Badge -->
+                                                            <td>
+                                                                <span class="fw-bold text-primary fs-13 d-block">{{ booking.booking_number }}</span>
+                                                                <span class="badge px-2 py-1 fs-11 mt-1" [ngClass]="getStatusBadgeClass(booking.status)">
+                                                                    {{ booking.status | uppercase }}
+                                                                </span>
+                                                            </td>
+
+                                                            <!-- Student Details -->
+                                                            <td>
+                                                                <div class="d-flex align-items-center gap-2">
+                                                                    <div class="avatar avatar-sm avatar-rounded bg-primary-transparent text-primary fw-bold">
+                                                                        {{ (booking.student?.full_name?.charAt(0) || 'S') | uppercase }}
+                                                                    </div>
+                                                                    <div>
+                                                                        <span class="fw-semibold text-dark d-block">{{ booking.student?.full_name || 'Student #' + (booking.student?.id || '-') }}</span>
+                                                                        <small class="text-muted d-block fs-11">
+                                                                            <i class="ri-phone-line me-1"></i>{{ booking.student?.mobile || '-' }}
+                                                                        </small>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Booking Date -->
+                                                            <td>
+                                                                <span class="fw-medium text-dark d-block">
+                                                                    <i class="ri-calendar-line text-primary me-1"></i>{{ booking.booking_date | date:'mediumDate' }}
+                                                                </span>
+                                                                <small class="text-muted font-monospace">{{ booking.start_time }} - {{ booking.end_time }}</small>
+                                                            </td>
+
+                                                            <!-- Topic -->
+                                                            <td>
+                                                                <span class="text-truncate d-inline-block" style="max-width: 140px;" [title]="booking.topic || '-'">
+                                                                    {{ booking.topic || '-' }}
+                                                                </span>
+                                                            </td>
+
+                                                            <!-- Webinar.gg Live Session / Meeting Connection -->
+                                                            <td>
+                                                                <div>
+                                                                    @if (isWebinarBooking(booking) || booking.status === 'confirmed') {
+                                                                        @if (getWebinarStatus(booking) === 'live') {
+                                                                            <span class="badge webinar-badge-live fs-11 px-2 py-1">
+                                                                                <span class="live-pulse-dot"></span> LIVE
+                                                                            </span>
+                                                                        } @else if (getWebinarStatus(booking) === 'scheduled') {
+                                                                            <span class="badge webinar-badge-scheduled fs-11 px-2 py-1">
+                                                                                <i class="ri-video-chat-line me-1"></i>Scheduled
+                                                                            </span>
+                                                                        } @else if (getWebinarStatus(booking) === 'ended') {
+                                                                            <span class="badge webinar-badge-ended fs-11 px-2 py-1">
+                                                                                <i class="ri-check-double-line me-1"></i>Ended
+                                                                            </span>
+                                                                        } @else {
+                                                                            <span class="badge webinar-badge-pending fs-11 px-2 py-1">
+                                                                                <i class="ri-time-line me-1"></i>Webinar Pending
+                                                                            </span>
+                                                                        }
+
+                                                                        @if (getRoomUrl(booking)) {
+                                                                            <div class="mt-1 d-flex align-items-center gap-1 flex-wrap">
+                                                                                <a [href]="getRoomUrl(booking)" target="_blank" rel="noopener noreferrer" 
+                                                                                   class="btn btn-xs btn-primary d-inline-flex align-items-center gap-1" 
+                                                                                   title="Join Live Webinar.gg Session">
+                                                                                    <i class="ri-video-chat-line"></i> Join Webinar
+                                                                                </a>
+                                                                                <button type="button" class="btn btn-xs btn-outline-secondary" 
+                                                                                        (click)="copySessionRoomLink(getRoomUrl(booking))" 
+                                                                                        title="Copy Shareable Room Link">
+                                                                                    <i class="ri-file-copy-line"></i>
+                                                                                </button>
+                                                                                @if (hasRecording(booking)) {
+                                                                                    <button type="button" class="btn btn-xs btn-outline-purple" 
+                                                                                            style="color: #7c3aed; border-color: rgba(139, 92, 246, 0.4);"
+                                                                                            (click)="openRecording(getRecordingUrl(booking))" 
+                                                                                            title="Watch Recording">
+                                                                                        <i class="ri-film-line"></i>
+                                                                                    </button>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    } @else {
+                                                                        <span class="text-muted fs-11">No Session</span>
+                                                                    }
+                                                                </div>
+                                                            </td>
+
+                                                            <!-- Payment Status -->
+                                                            <td>
+                                                                <span class="badge px-2 py-1 fs-11" [ngClass]="getPaymentBadgeClass(booking.payment_status)">
+                                                                    {{ getBookingPaymentStatus(booking) }}
+                                                                </span>
+                                                                <small class="text-muted d-block mt-1">
+                                                                    {{ booking.amount && booking.amount !== '0.00' ? ('₹' + booking.amount) : 'Free' }}
+                                                                </small>
+                                                            </td>
+
+                                                            <!-- Actions -->
+                                                            <td>
+                                                                <div class="hstack gap-1">
+                                                                    <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-light text-primary" 
+                                                                       (click)="openViewModal(booking, viewBookingModal)" title="View Session Details">
+                                                                        <i class="ri-eye-line"></i>
+                                                                    </a>
+
+                                                                    @if (booking.status === 'pending') {
+                                                                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success-light text-success" 
+                                                                           (click)="openAcceptModal(booking, acceptModal)" title="Accept & Schedule Webinar">
+                                                                            <i class="ri-check-line"></i>
+                                                                        </a>
+                                                                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger-light text-danger" 
+                                                                           (click)="openRejectModal(booking, rejectModal)" title="Reject Request">
+                                                                            <i class="ri-close-line"></i>
+                                                                        </a>
+                                                                    }
+
+                                                                    @if (booking.status === 'confirmed') {
+                                                                        <button type="button" class="btn btn-sm btn-icon btn-outline-primary" 
+                                                                                [disabled]="isSyncingWebinar[booking.id]" 
+                                                                                (click)="syncWebinar(booking, $event)" 
+                                                                                title="Sync Webinar.gg Session">
+                                                                            <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingWebinar[booking.id]"></i>
+                                                                        </button>
+                                                                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary-light text-primary" 
+                                                                           (click)="markSessionCompleted(booking)" title="Mark Session Completed">
+                                                                            <i class="ri-checkbox-circle-fill"></i>
+                                                                        </a>
+                                                                    }
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    } @else {
+                                        <div class="text-center py-4 px-3 text-muted">
+                                            <i class="ri-calendar-event-line fs-28 d-block mb-1 text-muted"></i>
+                                            <p class="mb-0 fs-13">No student bookings found for this time slot with the current filters.</p>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            } @else {
+                <div class="card custom-card border-0 shadow-sm text-center py-5">
+                    <div class="card-body">
+                        <i class="ri-calendar-close-line fs-40 text-muted d-block mb-2"></i>
+                        <h6 class="fw-bold text-dark">No Available Slots Found</h6>
+                        <p class="text-muted fs-12 mb-0">This mentor does not have any recurring time slots configured yet.</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Unassigned Bookings Section (If any) -->
+            @if (slotWiseData.unassigned_bookings && slotWiseData.unassigned_bookings.length > 0) {
+                <div class="card custom-card border border-warning shadow-sm mt-3 mb-4">
+                    <div class="card-header bg-warning-transparent justify-content-between align-items-center py-2 px-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="ri-alert-line text-warning fs-18"></i>
+                            <h6 class="fw-bold text-dark mb-0">Unassigned / Custom Bookings ({{ slotWiseData.unassigned_bookings.length }})</h6>
+                        </div>
+                        <span class="badge bg-warning text-dark fs-11">Not mapped to standard slot</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:14%">Booking #</th>
+                                        <th style="width:18%">Student Details</th>
+                                        <th style="width:14%">Booking Date & Time</th>
+                                        <th style="width:16%">Topic</th>
+                                        <th style="width:16%">Meeting / Session</th>
+                                        <th style="width:10%">Payment</th>
+                                        <th style="width:12%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (booking of slotWiseData.unassigned_bookings; track booking.id) {
+                                        <tr>
+                                            <td>
+                                                <span class="fw-bold text-primary fs-13">{{ booking.booking_number }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="fw-semibold text-dark d-block">{{ booking.student?.full_name || 'Student' }}</span>
+                                                <small class="text-muted d-block fs-11">{{ booking.student?.mobile || '-' }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="fw-medium text-dark d-block">{{ booking.booking_date | date:'mediumDate' }}</span>
+                                                <small class="text-muted font-monospace">{{ booking.start_time }} - {{ booking.end_time }}</small>
+                                            </td>
+                                            <td>{{ booking.topic || '-' }}</td>
+                                            <td>
+                                                @if (getRoomUrl(booking)) {
+                                                    <span class="badge webinar-badge-scheduled fs-11 mb-1 d-inline-block">
+                                                        <i class="ri-broadcast-line me-1"></i>Webinar.gg
+                                                    </span>
+                                                    <div>
+                                                        <a [href]="getRoomUrl(booking)" target="_blank" rel="noopener noreferrer" 
+                                                           class="btn btn-xs btn-primary d-inline-flex align-items-center gap-1">
+                                                            <i class="ri-video-chat-line"></i> Join Webinar
+                                                        </a>
+                                                    </div>
+                                                } @else {
+                                                    <span class="text-muted fs-11">None</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge px-2 py-1 fs-11" [ngClass]="getPaymentBadgeClass(booking.payment_status)">
+                                                    {{ getBookingPaymentStatus(booking) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="hstack gap-1">
+                                                    <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-light text-primary" 
+                                                       (click)="openViewModal(booking, viewBookingModal)">
+                                                        <i class="ri-eye-line"></i>
+                                                    </a>
+                                                    @if (booking.status === 'pending') {
+                                                        <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success-light text-success" 
+                                                           (click)="openAcceptModal(booking, acceptModal)">
+                                                            <i class="ri-check-line"></i>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        } @else {
+            <div class="card custom-card border-0 shadow-sm text-center py-5">
+                <div class="card-body">
+                    <i class="ri-user-search-line fs-48 text-primary d-block mb-3"></i>
+                    <h5 class="fw-bold text-dark mb-1">Select a Mentor to View Slot-Wise Bookings</h5>
+                    <p class="text-muted fs-13 mb-3">Choose a mentor from the dropdown above to inspect their available slots, student session bookings, and Webinar.gg sessions.</p>
+                </div>
+            </div>
+        }
+
+    }
+
+    <!-- ====================================================================
+         VIEW MODE 2: ALL BOOKINGS LIST (GLOBAL FLAT TABLE VIEW)
+         ==================================================================== -->
+    @if (activeViewMode === 'table') {
+        
+        <!-- KPI Metric Cards Ribbon -->
+        <div class="row g-3 mb-3">
+            <!-- Total -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-primary]="selectedStatus === 'all'" (click)="onStatusTabChange('all')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Total Bookings</span>
+                        <h4 class="fw-bold mb-0 text-dark">{{ kpiCounts.all }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-primary-transparent text-primary">
+                        <i class="ri-calendar-todo-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-warning]="selectedStatus === 'pending'" (click)="onStatusTabChange('pending')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Pending ⏳</span>
+                        <h4 class="fw-bold mb-0 text-warning">{{ kpiCounts.pending }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-warning-transparent text-warning">
+                        <i class="ri-time-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmed -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-success]="selectedStatus === 'confirmed'" (click)="onStatusTabChange('confirmed')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Confirmed ✅</span>
+                        <h4 class="fw-bold mb-0 text-success">{{ kpiCounts.confirmed }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-success-transparent text-success">
+                        <i class="ri-checkbox-circle-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Sessions -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-danger]="selectedStatus === 'live'" (click)="onStatusTabChange('live')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Live Now 🔴</span>
+                        <h4 class="fw-bold mb-0 text-danger">{{ kpiCounts.live }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-danger-transparent text-danger">
+                        <i class="ri-live-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Sessions -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-info]="selectedStatus === 'upcoming'" (click)="onStatusTabChange('upcoming')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Upcoming 📅</span>
+                        <h4 class="fw-bold mb-0 text-info">{{ kpiCounts.upcoming }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-info-transparent text-info">
+                        <i class="ri-calendar-check-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recordings Available -->
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card cursor-pointer" [class.border-purple]="selectedStatus === 'recordings'" (click)="onStatusTabChange('recordings')">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Recordings 🎬</span>
+                        <h4 class="fw-bold mb-0" style="color: #8b5cf6;">{{ kpiCounts.recordings }}</h4>
+                    </div>
+                    <div class="kpi-icon-box" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                        <i class="ri-film-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Table Card -->
+        <div class="card custom-card border-0 shadow-sm">
+            <div class="card-body pt-3 pb-2 px-3">
+                <!-- Status Tabs Bar -->
+                <ul class="nav nav-status-tabs mb-3 flex-wrap">
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'all'" href="javascript:void(0)" (click)="onStatusTabChange('all')">
+                            All Bookings <span class="badge rounded-pill bg-light text-dark ms-1">{{ kpiCounts.all }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'pending'" href="javascript:void(0)" (click)="onStatusTabChange('pending')">
+                            Pending ⏳ <span class="badge rounded-pill bg-warning-transparent text-warning ms-1">{{ kpiCounts.pending }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'confirmed'" href="javascript:void(0)" (click)="onStatusTabChange('confirmed')">
+                            Confirmed ✅ <span class="badge rounded-pill bg-success-transparent text-success ms-1">{{ kpiCounts.confirmed }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'upcoming'" href="javascript:void(0)" (click)="onStatusTabChange('upcoming')">
+                            Upcoming 📅 <span class="badge rounded-pill bg-info-transparent text-info ms-1">{{ kpiCounts.upcoming }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'live'" href="javascript:void(0)" (click)="onStatusTabChange('live')">
+                            Live Sessions 🔴 <span class="badge rounded-pill bg-danger-transparent text-danger ms-1">{{ kpiCounts.live }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'recordings'" href="javascript:void(0)" (click)="onStatusTabChange('recordings')">
+                            With Recordings 🎬 <span class="badge rounded-pill bg-purple-transparent text-purple ms-1">{{ kpiCounts.recordings }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'completed'" href="javascript:void(0)" (click)="onStatusTabChange('completed')">
+                            Completed 🏁 <span class="badge rounded-pill bg-info-transparent text-info ms-1">{{ kpiCounts.completed }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'rejected'" href="javascript:void(0)" (click)="onStatusTabChange('rejected')">
+                            Rejected ❌ <span class="badge rounded-pill bg-danger-transparent text-danger ms-1">{{ kpiCounts.rejected }}</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" [class.active]="selectedStatus === 'cancelled'" href="javascript:void(0)" (click)="onStatusTabChange('cancelled')">
+                            Cancelled <span class="badge rounded-pill bg-light text-muted ms-1">{{ kpiCounts.cancelled }}</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Filters Bar -->
+                <div class="row g-2 align-items-center mb-3 p-2 bg-light rounded border">
+                    <!-- Search Input -->
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="ri-search-line text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0" placeholder="Search by Student, Mentor, Booking #..." [(ngModel)]="searchTerm" (input)="onSearchChange()">
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="col-md-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="ri-calendar-event-line text-muted"></i></span>
+                            <input type="date" class="form-control border-start-0" [(ngModel)]="filterDate" (change)="onDateFilterChange()">
+                        </div>
+                    </div>
+
+                    <!-- Mentor Dropdown Filter -->
+                    <div class="col-md-3">
+                        <select class="form-select form-select-sm" [(ngModel)]="filterMentorId" (change)="onMentorFilterChange()">
+                            <option value="">All Mentors</option>
+                            @for (mentor of mentorsList; track mentor.id) {
+                                <option [value]="mentor.id">{{ mentor.full_name }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Reset Filter Button -->
+                    <div class="col-md-2 text-end">
+                        <button class="btn btn-outline-secondary btn-sm w-100" (click)="resetFilters()">
+                            <i class="ri-filter-off-line me-1"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-responsive">
+                    <spk-reusable-tables tableClass="table text-nowrap align-middle" [showCheckbox]="false">
+                        <thead>
+                            <tr>
+                                <th style="width:13%">Booking #</th>
+                                <th style="width:16%">Student</th>
+                                <th style="width:16%">Mentor</th>
+                                <th style="width:14%">Slot Date & Time</th>
+                                <th style="width:11%">Topic</th>
+                                <th style="width:16%">Webinar.gg Session</th>
+                                <th style="width:8%">Payment</th>
+                                <th style="width:8%">Status</th>
+                                <th style="width:8%">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (isLoading) {
+                                <tr>
+                                    <td colspan="9" class="text-center py-4 text-muted">
+                                        <span class="spinner-border spinner-border-sm me-2 text-primary"></span> Loading bookings...
+                                    </td>
+                                </tr>
+                            } @else if (bookings.length === 0) {
+                                <tr>
+                                    <td colspan="9" class="text-center py-5 text-muted">
+                                        <i class="ri-inbox-line fs-32 d-block mb-2 text-muted"></i>
+                                        <h6 class="fw-bold mb-1">No Bookings Found</h6>
+                                        <p class="fs-12 mb-0">No booking requests match the selected status or filters.</p>
+                                    </td>
+                                </tr>
+                            } @else {
+                                @for (booking of bookings; track booking.id; let i = $index) {
+                                <tr>
+                                    <!-- Booking # -->
+                                    <td>
+                                        <span class="fw-bold text-primary fs-13 d-block">{{ booking.booking_number }}</span>
+                                        <small class="text-muted fs-11">
+                                            <i class="ri-time-line me-1"></i>{{ booking.created_at | date:'shortDate' }}
+                                        </small>
+                                    </td>
+
+                                    <!-- Student Info -->
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar avatar-sm avatar-rounded bg-primary-transparent text-primary fw-bold">
+                                                {{ (booking.student?.full_name?.charAt(0) || 'S') | uppercase }}
+                                            </div>
+                                            <div>
+                                                <span class="fw-semibold text-dark d-block">{{ booking.student?.full_name || 'Student #' + (booking.student?.id || '-') }}</span>
+                                                <small class="text-muted d-block fs-11"><i class="ri-phone-line me-1"></i>{{ booking.student?.mobile || '-' }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Mentor Info -->
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img [src]="getPhotoUrl(booking.mentor?.photo)" alt="Photo" class="avatar avatar-sm avatar-rounded">
+                                            <div>
+                                                <span class="fw-semibold text-dark d-block">{{ booking.mentor?.full_name || 'Mentor #' + (booking.mentor?.id || '-') }}</span>
+                                                <small class="text-muted d-block fs-11">{{ booking.mentor?.expert_in || '-' }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Session Date & Time -->
+                                    <td>
+                                        <span class="fw-medium text-dark d-block">
+                                            <i class="ri-calendar-line text-primary me-1"></i>{{ booking.booking_date | date:'mediumDate' }}
+                                        </span>
+                                        <span class="badge bg-light text-dark font-monospace fs-11 mt-1">
+                                            <i class="ri-time-line me-1 text-muted"></i>{{ booking.start_time }} - {{ booking.end_time }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Topic / Subject -->
+                                    <td>
+                                        <span class="text-truncate d-inline-block" style="max-width: 130px;" [title]="booking.topic || '-'">
+                                            {{ booking.topic || '-' }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Webinar.gg Session Status & Links -->
+                                    <td>
+                                        <div>
+                                            @if (getWebinarStatus(booking) === 'live') {
+                                                <span class="badge webinar-badge-live px-2 py-1 fs-12 mb-1">
+                                                    <span class="live-pulse-dot"></span> LIVE NOW
+                                                </span>
+                                            } @else if (getWebinarStatus(booking) === 'scheduled') {
+                                                <span class="badge webinar-badge-scheduled px-2 py-1 fs-11 mb-1">
+                                                    <i class="ri-checkbox-circle-line me-1"></i>Scheduled
+                                                </span>
+                                            } @else if (getWebinarStatus(booking) === 'ended') {
+                                                <span class="badge webinar-badge-ended px-2 py-1 fs-11 mb-1">
+                                                    <i class="ri-check-double-line me-1"></i>Ended
+                                                </span>
+                                            } @else if (booking.status === 'confirmed') {
+                                                <span class="badge webinar-badge-pending px-2 py-1 fs-11 mb-1">
+                                                    <i class="ri-time-line me-1"></i>Pending Session
+                                                </span>
+                                            } @else {
+                                                <span class="text-muted fs-11">No Session</span>
+                                            }
+
+                                            <!-- Actions: Shareable Room URL / Recording URL -->
+                                            <div class="d-flex align-items-center gap-1 mt-1 flex-wrap">
+                                                @if (getRoomUrl(booking)) {
+                                                    <a [href]="getRoomUrl(booking)" target="_blank" rel="noopener noreferrer" 
+                                                       class="btn btn-xs btn-primary d-inline-flex align-items-center gap-1" 
+                                                       title="Open Webinar.gg Room">
+                                                        <i class="ri-video-chat-line"></i> Join Webinar
+                                                    </a>
+                                                    <button type="button" class="btn btn-xs btn-outline-secondary" 
+                                                            (click)="copySessionRoomLink(getRoomUrl(booking))" 
+                                                            title="Copy Shareable Room Link">
+                                                        <i class="ri-file-copy-line"></i>
+                                                    </button>
+                                                }
+                                                @if (hasRecording(booking)) {
+                                                    <button type="button" class="btn btn-xs btn-outline-purple" 
+                                                            style="color: #7c3aed; border-color: rgba(139, 92, 246, 0.4);"
+                                                            (click)="openRecording(getRecordingUrl(booking))" 
+                                                            title="Watch Recording">
+                                                        <i class="ri-play-circle-line me-1"></i>Recording
+                                                    </button>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Payment Status -->
+                                    <td>
+                                        <span class="badge px-2 py-1 fs-11 fw-semibold d-inline-block" [ngClass]="getPaymentBadgeClass(booking.payment_status)">
+                                            {{ getBookingPaymentStatus(booking) }}
+                                        </span>
+                                        <small class="text-muted d-block mt-1">
+                                            {{ booking.amount && booking.amount !== '0.00' ? ('₹' + booking.amount) : 'Free' }}
+                                        </small>
+                                    </td>
+
+                                    <!-- Booking Status -->
+                                    <td>
+                                        <span class="badge px-2 py-1 fs-11" [ngClass]="getStatusBadgeClass(booking.status)">
+                                            {{ booking.status | uppercase }}
+                                        </span>
+                                    </td>
+
+                                    <!-- Action Buttons -->
+                                    <td>
+                                        <div class="hstack gap-1">
+                                            <!-- View Details Modal Trigger -->
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-light text-primary" 
+                                               (click)="openViewModal(booking, viewBookingModal)" title="View Session Details">
+                                                <i class="ri-eye-line"></i>
+                                            </a>
+
+                                            <!-- Accept (If Pending) -->
+                                            @if (booking.status === 'pending') {
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-success-light text-success" 
+                                                   (click)="openAcceptModal(booking, acceptModal)" title="Accept Booking & Schedule Webinar">
+                                                    <i class="ri-check-line"></i>
+                                                </a>
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-danger-light text-danger" 
+                                                   (click)="openRejectModal(booking, rejectModal)" title="Reject Request">
+                                                    <i class="ri-close-line"></i>
+                                                </a>
+                                            }
+
+                                            <!-- Sync Webinar (If Confirmed) -->
+                                            @if (booking.status === 'confirmed') {
+                                                <button type="button" class="btn btn-sm btn-icon btn-outline-primary" 
+                                                        [disabled]="isSyncingWebinar[booking.id]" 
+                                                        (click)="syncWebinar(booking, $event)" 
+                                                        title="Sync Webinar.gg Session">
+                                                    <i class="ri-refresh-line" [class.ri-loader-4-line]="isSyncingWebinar[booking.id]"></i>
+                                                </button>
+                                                <a href="javascript:void(0)" class="btn btn-sm btn-icon btn-primary-light text-primary" 
+                                                   (click)="markSessionCompleted(booking)" title="Mark Session Completed">
+                                                    <i class="ri-checkbox-circle-fill"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                            }
+                        </tbody>
+                    </spk-reusable-tables>
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1) {
+                    <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                        <small class="text-muted">Showing {{ (page - 1) * limit + 1 }} to {{ page * limit > total ? total : page * limit }} of {{ total }} bookings</small>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item" [class.disabled]="page === 1">
+                                    <button class="page-link" (click)="goToPage(page - 1)">Previous</button>
+                                </li>
+                                @for (p of [].constructor(totalPages); track $index) {
+                                    <li class="page-item" [class.active]="page === ($index + 1)">
+                                        <button class="page-link" (click)="goToPage($index + 1)">{{ $index + 1 }}</button>
+                                    </li>
+                                }
+                                <li class="page-item" [class.disabled]="page === totalPages">
+                                    <button class="page-link" (click)="goToPage(page + 1)">Next</button>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- ====================================================================
+         VIEW MODE 3: WEBINAR WEBHOOK EVENTS & SESSIONS MONITORING
+         ==================================================================== -->
+    @if (activeViewMode === 'webhooks') {
+        <!-- Webinar Session & Webhook Health Summary Cards -->
+        <div class="row g-3 mb-3">
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Live Now 🔴</span>
+                        <h4 class="fw-bold mb-0 text-danger">{{ kpiCounts.live }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-danger-transparent text-danger">
+                        <i class="ri-live-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Upcoming 📅</span>
+                        <h4 class="fw-bold mb-0 text-info">{{ kpiCounts.upcoming }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-info-transparent text-info">
+                        <i class="ri-calendar-check-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="kpi-card">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Ended Sessions 🏁</span>
+                        <h4 class="fw-bold mb-0 text-secondary">{{ kpiCounts.completed }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-light text-secondary">
+                        <i class="ri-check-double-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 col-sm-6">
+                <div class="kpi-card">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Recordings Available 🎬</span>
+                        <h4 class="fw-bold mb-0" style="color: #8b5cf6;">{{ kpiCounts.recordings }}</h4>
+                    </div>
+                    <div class="kpi-icon-box" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                        <i class="ri-film-line"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-3 col-md-6 col-sm-12">
+                <div class="kpi-card border-danger">
+                    <div>
+                        <span class="text-muted fs-12 fw-medium d-block mb-1">Failed Webhooks ⚠️</span>
+                        <h4 class="fw-bold mb-0 text-danger">{{ webhookTotal }}</h4>
+                    </div>
+                    <div class="kpi-icon-box bg-danger-transparent text-danger">
+                        <i class="ri-error-warning-line"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card custom-card border-0 shadow-sm webhook-monitor-card mb-4">
+            <div class="card-header justify-content-between align-items-center flex-wrap gap-2 py-3 bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar avatar-sm bg-danger-transparent text-danger rounded">
+                        <i class="ri-radar-line fs-18"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Webinar.gg Webhook Events Audit Log</h6>
+                        <small class="text-muted">Monitor incoming webhook delivery, lifecycle sync status, and retry failed webhook events</small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <select class="form-select form-select-sm" [(ngModel)]="webhookFilterStatus" (change)="onWebhookStatusFilterChange()">
+                        <option value="failed">Failed Events Only ⚠️</option>
+                        <option value="all">All Events 📋</option>
+                        <option value="processed">Processed Events ✅</option>
+                        <option value="pending">Pending Events ⏳</option>
+                    </select>
+
+                    <button class="btn btn-sm btn-outline-secondary" (click)="loadWebhookEvents()" title="Refresh Webhook Logs">
+                        <i class="ri-refresh-line me-1"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width:8%">Log ID</th>
+                                <th style="width:20%">Event Type</th>
+                                <th style="width:20%">Webinar ID</th>
+                                <th style="width:16%">Received At</th>
+                                <th style="width:12%">Status</th>
+                                <th style="width:16%">Error / Notes</th>
+                                <th style="width:8%">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (isLoadingWebhooks) {
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-muted">
+                                        <span class="spinner-border spinner-border-sm me-2 text-primary"></span> Loading webhook events...
+                                    </td>
+                                </tr>
+                            } @else if (webhookEvents.length === 0) {
+                                <tr>
+                                    <td colspan="7" class="text-center py-5 text-muted">
+                                        <i class="ri-checkbox-circle-line fs-32 text-success d-block mb-2"></i>
+                                        <h6 class="fw-bold text-dark mb-1">No {{ webhookFilterStatus === 'failed' ? 'Failed' : '' }} Webhook Events Found</h6>
+                                        <p class="fs-12 mb-0">All webhook events from Webinar.gg have been successfully received and processed.</p>
+                                    </td>
+                                </tr>
+                            } @else {
+                                @for (ev of webhookEvents; track ev.id) {
+                                    <tr>
+                                        <td>
+                                            <span class="font-monospace text-muted fs-12">#{{ ev.id }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark font-monospace fs-12 border">
+                                                {{ ev.event_type }}
+                                            </span>
+                                            @if (ev.event_id) {
+                                                <small class="text-muted d-block fs-11 font-monospace mt-1 text-truncate" style="max-width: 160px;" [title]="ev.event_id">
+                                                    ID: {{ ev.event_id }}
+                                                </small>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (ev.webinar_id) {
+                                                <div class="d-flex align-items-center gap-1">
+                                                    <code class="fw-bold text-dark font-monospace fs-12">{{ ev.webinar_id }}</code>
+                                                    <button type="button" class="btn btn-xs btn-icon btn-light" (click)="copyWebinarId(ev.webinar_id)" title="Copy Webinar ID">
+                                                        <i class="ri-file-copy-line"></i>
+                                                    </button>
+                                                </div>
+                                            } @else {
+                                                <span class="text-muted fs-12">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="text-dark fs-12 d-block">{{ ev.created_at | date:'mediumDate' }}</span>
+                                            <small class="text-muted fs-11 font-monospace">{{ ev.created_at | date:'mediumTime' }}</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge px-2 py-1 fs-11" [ngClass]="getWebhookStatusBadgeClass(ev.processed_status)">
+                                                {{ ev.processed_status | uppercase }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="text-danger fs-12 d-block word-break-anywhere" style="max-width: 220px;" [title]="ev.error_message || 'None'">
+                                                {{ ev.error_message || '-' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (ev.processed_status === 'failed' || ev.processed_status === 'pending') {
+                                                <button type="button" class="btn btn-xs btn-outline-danger" 
+                                                        [disabled]="isRetryingWebhook[ev.id]" 
+                                                        (click)="retryWebhookEvent(ev, $event)" 
+                                                        title="Retry Event">
+                                                    <span class="spinner-border spinner-border-sm me-1" *ngIf="isRetryingWebhook[ev.id]"></span>
+                                                    <i class="ri-refresh-line me-1" *ngIf="!isRetryingWebhook[ev.id]"></i> Retry
+                                                </button>
+                                            } @else {
+                                                <span class="text-success fs-12"><i class="ri-check-line"></i> OK</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+<!-- ========================================================================
+     MODALS SECTION
+     ======================================================================== -->
+
+<!-- ==========================================
+     VIEW SINGLE BOOKING & WEBINAR DETAILS MODAL
+     ========================================== -->
+<ng-template #viewBookingModal let-modal>
+    <div class="modal-header">
+        <div class="d-flex align-items-center gap-2">
+            <h6 class="modal-title fw-bold text-dark mb-0">Booking #{{ selectedBooking?.booking_number }}</h6>
+            <span class="badge px-2 py-1 fs-11" [ngClass]="getStatusBadgeClass(selectedBooking?.status || '')">
+                {{ (selectedBooking?.status || '') | uppercase }}
+            </span>
+        </div>
+        <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="row g-3">
+            <!-- Student Information Card -->
+            <div class="col-md-6">
+                <div class="detail-section-card h-100">
+                    <h6 class="fs-13 fw-bold text-muted border-bottom pb-2 mb-2">
+                        <i class="ri-user-line text-primary me-1"></i> Student Information
+                    </h6>
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <div class="avatar avatar-md avatar-rounded bg-primary-transparent text-primary fw-bold fs-16">
+                            {{ (selectedBooking?.student?.full_name?.charAt(0) || 'S') | uppercase }}
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0">{{ selectedBooking?.student?.full_name || 'Student' }}</h6>
+                            <span class="text-muted fs-12">User ID: #{{ selectedBooking?.student?.id }}</span>
+                        </div>
+                    </div>
+                    <div class="fs-12 text-muted">
+                        <div class="mb-1"><i class="ri-phone-line text-primary me-2"></i>{{ selectedBooking?.student?.mobile || '-' }}</div>
+                        <div class="mb-1"><i class="ri-mail-line text-primary me-2"></i>{{ selectedBooking?.student?.email || '-' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mentor Information Card -->
+            <div class="col-md-6">
+                <div class="detail-section-card h-100">
+                    <h6 class="fs-13 fw-bold text-muted border-bottom pb-2 mb-2">
+                        <i class="ri-user-star-line text-primary me-1"></i> Assigned Mentor
+                    </h6>
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <img [src]="getPhotoUrl(selectedBooking?.mentor?.photo)" alt="Photo" class="avatar avatar-md avatar-rounded">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-0">{{ selectedBooking?.mentor?.full_name || 'Mentor' }}</h6>
+                            <span class="badge bg-primary-transparent fs-11">{{ selectedBooking?.mentor?.qualification || 'Mentor' }}</span>
+                        </div>
+                    </div>
+                    <div class="fs-12 text-muted">
+                        <div class="mb-1"><i class="ri-phone-line text-primary me-2"></i>{{ selectedBooking?.mentor?.mobile_number || '-' }}</div>
+                        <div class="mb-1"><i class="ri-mail-line text-primary me-2"></i>{{ selectedBooking?.mentor?.email || '-' }}</div>
+                        <div><strong>Expertise:</strong> {{ selectedBooking?.mentor?.expert_in || '-' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slot Date & Timing Details -->
+            <div class="col-12">
+                <div class="detail-section-card">
+                    <h6 class="fs-13 fw-bold text-muted border-bottom pb-2 mb-2">
+                        <i class="ri-calendar-event-line text-primary me-1"></i> Session Schedule & Payment Status
+                    </h6>
+                    <div class="row g-2">
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Slot Date</small>
+                            <strong class="text-dark fs-13">{{ selectedBooking?.booking_date | date:'fullDate' }}</strong>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Time Window</small>
+                            <span class="badge bg-light text-dark font-monospace fs-12 border">
+                                {{ selectedBooking?.start_time }} - {{ selectedBooking?.end_time }}
+                            </span>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Amount & Payment</small>
+                            <span class="badge px-2 py-1 fs-12" [ngClass]="getPaymentBadgeClass(selectedBooking?.payment_status)">
+                                {{ getBookingPaymentStatus(selectedBooking) }}
+                            </span>
+                            <span class="text-dark fw-bold ms-1">
+                                {{ selectedBooking?.amount && selectedBooking?.amount !== '0.00' ? ('₹' + selectedBooking?.amount) : 'Free' }}
+                            </span>
+                        </div>
+                        <div class="col-sm-3 col-6">
+                            <small class="text-muted d-block">Payment Method / ID</small>
+                            <span class="text-muted fs-12 font-monospace">
+                                {{ selectedBooking?.payment_method || 'Razorpay' }} / {{ selectedBooking?.razorpay_payment_id || selectedBooking?.transaction_id || '-' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==============================================================
+                 PRIMARY WEBINAR.GG LIVE SESSION DETAILS CARD
+                 ============================================================== -->
+            <div class="col-12">
+                <div class="webinar-session-card shadow-sm">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 border-bottom pb-2 mb-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar avatar-sm bg-primary text-white rounded">
+                                <i class="ri-broadcast-fill fs-16"></i>
+                            </div>
+                            <div>
+                                <h6 class="fs-14 fw-bold text-dark mb-0">Webinar.gg Live Session</h6>
+                                <small class="text-muted">Cloud Video Conference & Mentorship Room Details</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Status Badges -->
+                            @if (getWebinarStatus(selectedBooking) === 'live') {
+                                <span class="badge webinar-badge-live px-2 py-1 fs-12 fw-semibold">
+                                    <span class="live-pulse-dot"></span> LIVE NOW
+                                </span>
+                            } @else if (getWebinarStatus(selectedBooking) === 'scheduled') {
+                                <span class="badge webinar-badge-scheduled px-2 py-1 fs-12 fw-semibold">
+                                    <i class="ri-checkbox-circle-line me-1"></i>Scheduled
+                                </span>
+                            } @else if (getWebinarStatus(selectedBooking) === 'ended') {
+                                <span class="badge webinar-badge-ended px-2 py-1 fs-12 fw-semibold">
+                                    <i class="ri-check-double-line me-1"></i>Session Ended
+                                </span>
+                            } @else {
+                                <span class="badge webinar-badge-pending px-2 py-1 fs-12 fw-semibold">
+                                    <i class="ri-time-line me-1"></i>Pending Session
+                                </span>
+                            }
+
+                            <!-- Sync Webinar Button -->
+                            <button type="button" class="btn btn-sm btn-outline-primary" 
+                                    [disabled]="isSyncingWebinar[selectedBooking!.id]"
+                                    (click)="syncWebinar(selectedBooking!)">
+                                <span class="spinner-border spinner-border-sm me-1" *ngIf="isSyncingWebinar[selectedBooking!.id]"></span>
+                                <i class="ri-refresh-line me-1" *ngIf="!isSyncingWebinar[selectedBooking!.id]"></i>
+                                {{ isSyncingWebinar[selectedBooking!.id] ? 'Syncing...' : 'Sync Webinar' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Session Metadata Row -->
+                    @if (getWebinarId(selectedBooking)) {
+                        <div class="row g-2 mb-3">
+                            <!-- Webinar ID Box -->
+                            <div class="col-md-6">
+                                <div class="webinar-credential-box">
+                                    <div>
+                                        <span class="text-muted fs-11 fw-medium d-block">Webinar.gg ID</span>
+                                        <code class="fs-15 fw-bold text-dark font-monospace">{{ getWebinarId(selectedBooking) }}</code>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="copyWebinarId(getWebinarId(selectedBooking))" title="Copy Webinar ID">
+                                        <i class="ri-file-copy-line me-1"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Duration & Timezone Box -->
+                            <div class="col-md-6">
+                                <div class="webinar-credential-box">
+                                    <div>
+                                        <span class="text-muted fs-11 fw-medium d-block">Duration & Timezone</span>
+                                        <span class="fs-14 fw-bold text-dark">{{ selectedBooking?.duration_minutes || selectedBooking?.webinar?.duration_minutes || 60 }} Minutes ({{ selectedBooking?.webinar?.timezone || 'Asia/Kolkata' }})</span>
+                                    </div>
+                                    <span class="badge bg-light text-muted fs-11">Learnli Live</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Session Title and Timing -->
+                        <div class="row g-2 mb-3 text-muted fs-12 px-1">
+                            <div class="col-sm-6">
+                                <i class="ri-file-text-line me-1 text-primary"></i> <strong>Title:</strong> {{ selectedBooking?.webinar?.webinar_title || selectedBooking?.topic || ('Mentor Session #' + selectedBooking?.booking_number) }}
+                            </div>
+                            <div class="col-sm-6">
+                                <i class="ri-time-line me-1 text-primary"></i> <strong>Scheduled:</strong> {{ selectedBooking?.booking_date | date:'mediumDate' }} ({{ selectedBooking?.start_time }} - {{ selectedBooking?.end_time }})
+                            </div>
+                        </div>
+
+                        <!-- Action Links: Room Link & Recording -->
+                        <div class="d-flex flex-wrap align-items-center gap-2 pt-2 border-top">
+                            <!-- Shareable Room URL -->
+                            @if (getRoomUrl(selectedBooking)) {
+                                <a [href]="getRoomUrl(selectedBooking)" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1">
+                                    <i class="ri-video-chat-line me-1"></i> Join Webinar
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="copySessionRoomLink(getRoomUrl(selectedBooking))">
+                                    <i class="ri-file-copy-line me-1"></i> Copy Room Link
+                                </button>
+                            }
+
+                            <!-- Recording URL -->
+                            @if (hasRecording(selectedBooking)) {
+                                <button type="button" class="btn btn-webinar-recording btn-sm" (click)="openRecording(getRecordingUrl(selectedBooking))">
+                                    <i class="ri-play-circle-line me-1"></i> Watch Recording
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="copyRecordingUrl(getRecordingUrl(selectedBooking))">
+                                    <i class="ri-film-line me-1"></i> Copy Recording URL
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Notice regarding secure in-app join -->
+                        <div class="mt-3 p-2 bg-light rounded text-muted fs-11 border">
+                            <i class="ri-shield-check-line text-success me-1"></i>
+                            <strong>Security & In-App Join:</strong> Students and mentors connect securely via the Learnli App using automated, short-lived participant tokens. The shareable room link above can be copied for calendar invites.
+                        </div>
+
+                    } @else {
+                        <div class="alert alert-warning mb-0">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="ri-time-line fs-20 text-warning"></i>
+                                <div>
+                                    <strong class="d-block">Webinar.gg Live Session Pending</strong>
+                                    <small>This booking is not provisioned with a Webinar.gg live session yet. Click <strong>Sync Webinar</strong> above to create the live room now.</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Notes & Instructions -->
+            @if (selectedBooking?.student_notes || selectedBooking?.meeting_notes) {
+                <div class="col-12">
+                    <div class="detail-section-card">
+                        <h6 class="fs-13 fw-bold text-muted border-bottom pb-2 mb-2">
+                            <i class="ri-sticky-note-line text-primary me-1"></i> Notes & Student Instructions
+                        </h6>
+                        @if (selectedBooking?.student_notes) {
+                            <div class="mb-2">
+                                <small class="text-muted d-block fw-semibold">Student Query / Notes:</small>
+                                <p class="mb-0 fs-13 text-dark">{{ selectedBooking?.student_notes }}</p>
+                            </div>
+                        }
+                        @if (selectedBooking?.meeting_notes) {
+                            <div>
+                                <small class="text-muted d-block fw-semibold">Session Instructions:</small>
+                                <p class="mb-0 fs-13 text-dark">{{ selectedBooking?.meeting_notes }}</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        @if (selectedBooking?.status === 'pending') {
+            <button class="btn btn-danger" (click)="openRejectModal(selectedBooking!, rejectModal, modal)">Reject</button>
+            <button class="btn btn-success" (click)="openAcceptModal(selectedBooking!, acceptModal, modal)">
+                <i class="ri-check-line me-1"></i> Accept & Provision Webinar
+            </button>
+        }
+        @if (selectedBooking?.status === 'confirmed') {
+            <button class="btn btn-outline-primary" [disabled]="isSyncingWebinar[selectedBooking!.id]" (click)="syncWebinar(selectedBooking!)">
+                <i class="ri-refresh-line me-1"></i> Sync Webinar
+            </button>
+            <button class="btn btn-primary" (click)="markSessionCompleted(selectedBooking!, modal)">Mark Completed</button>
+        }
+        <button class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    </div>
+</ng-template>
+
+<!-- ==========================================
+     ACCEPT BOOKING & PROVISION WEBINAR MODAL
+     ========================================== -->
+<ng-template #acceptModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title fw-bold text-success">
+            <i class="ri-check-circle-line me-1"></i> Accept Booking & Schedule Webinar.gg Session
+        </h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="alert alert-light border mb-3">
+            <small class="text-muted d-block">Booking Number:</small>
+            <strong class="text-primary">{{ selectedBooking?.booking_number }}</strong>
+            <span class="text-muted d-block mt-1">
+                Student: <strong>{{ selectedBooking?.student?.full_name }}</strong> | Mentor: <strong>{{ selectedBooking?.mentor?.full_name }}</strong>
+            </span>
+            <span class="badge bg-light text-dark font-monospace mt-1">
+                {{ selectedBooking?.booking_date | date:'mediumDate' }} ({{ selectedBooking?.start_time }} - {{ selectedBooking?.end_time }})
+            </span>
+        </div>
+
+        <!-- Automated Webinar.gg Provisioning Info Banner -->
+        <div class="alert alert-info border border-info-subtle mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <i class="ri-broadcast-line fs-22 text-info"></i>
+                <div class="fs-13 text-dark">
+                    <strong>A live session link will be automatically generated via Webinar.gg.</strong>
+                    <div class="text-muted fs-12 mt-1">Accepting this booking automatically provisions a live webinar session. The student and mentor will receive in-app notifications and secure credentials to join.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Meeting Notes (Optional)</label>
+            <textarea class="form-control" rows="3" placeholder="Please join the session on time. Keep your camera and audio enabled." [(ngModel)]="acceptMeetNotes"></textarea>
+            <small class="text-muted">These instructions will be visible in the student's booking view.</small>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-success" [disabled]="isSubmittingAccept" (click)="submitAcceptBooking(modal)">
+            <span class="spinner-border spinner-border-sm me-1" *ngIf="isSubmittingAccept"></span>
+            Confirm & Schedule Webinar
+        </button>
+    </div>
+</ng-template>
+
+<!-- ==========================================
+     REJECT BOOKING MODAL
+     ========================================== -->
+<ng-template #rejectModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title fw-bold text-danger">Reject Booking Request</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="alert alert-light border mb-3">
+            <small class="text-muted d-block">Booking Number:</small>
+            <strong class="text-danger">{{ selectedBooking?.booking_number }}</strong>
+            <span class="text-muted d-block mt-1">
+                Student: <strong>{{ selectedBooking?.student?.full_name }}</strong> ({{ selectedBooking?.student?.mobile }})
+            </span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Reason for Rejection <span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" placeholder="e.g. Mentor unavailable due to scheduled workshop." [(ngModel)]="rejectionReason"></textarea>
+            <small class="text-muted">This reason will be visible to the student.</small>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-danger" [disabled]="isSubmittingReject" (click)="submitRejectBooking(modal)">
+            <span class="spinner-border spinner-border-sm me-1" *ngIf="isSubmittingReject"></span>
+            Reject Request
+        </button>
+    </div>
+</ng-template>
+
+<!-- ==========================================
+     EDIT MEET LINK MODAL
+     ========================================== -->
+<ng-template #editMeetModal let-modal>
+    <div class="modal-header">
+        <h6 class="modal-title fw-bold">Update Session Meeting Link</h6>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Meeting URL <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="ri-video-line text-primary"></i></span>
+                <input type="url" class="form-control" [(ngModel)]="editMeetUrl">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Meeting Notes / Instructions</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="editMeetNotes"></textarea>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-light" (click)="modal.close()">Cancel</button>
+        <button class="btn btn-primary" [disabled]="isSubmittingEditMeet" (click)="submitEditMeet(modal)">
+            <span class="spinner-border spinner-border-sm me-1" *ngIf="isSubmittingEditMeet"></span>
+            Save Changes
+        </button>
+    </div>
+</ng-template>

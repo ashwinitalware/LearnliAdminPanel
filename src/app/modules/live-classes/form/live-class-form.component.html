@@ -1,0 +1,407 @@
+<!-- ========================================================================= -->
+<!-- 1. PAGE HEADER & BREADCRUMB -->
+<!-- ========================================================================= -->
+<div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2 mb-4">
+  <div>
+    <h1 class="page-title fw-semibold fs-20 mb-1">
+      {{ isEditMode ? 'Edit Live Class' : 'Create New Live Class' }}
+    </h1>
+    <p class="text-muted mb-0 fs-13">
+      {{ isEditMode ? 'Update live class schedule, description, pricing, or capacity.' : 'Configure live broadcasting details, assign mentor, select subject, set schedule, and publish.' }}
+    </p>
+  </div>
+  <div class="btn-list d-flex gap-2">
+    <button type="button" class="btn btn-outline-secondary btn-wave" (click)="cancel()">
+      <i class="ri-arrow-left-line me-1"></i> Back to Catalog
+    </button>
+  </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="text-muted mt-2 fs-13">Loading live class details...</p>
+</div>
+
+<!-- ========================================================================= -->
+<!-- 2. FORM BODY -->
+<!-- ========================================================================= -->
+<form [formGroup]="form" *ngIf="!isLoading">
+  <div class="row g-4">
+    <!-- LEFT COLUMN: MAIN FORM -->
+    <div class="col-xl-8 col-lg-7">
+      
+      <!-- 2.1 BASIC INFORMATION CARD -->
+      <div class="card custom-card shadow-sm border-0 mb-4">
+        <div class="card-header py-3">
+          <h5 class="card-title mb-0 fw-semibold fs-15">
+            <i class="ri-file-list-line text-primary me-2"></i>Class Information
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <!-- Mentor Selection -->
+            <div class="col-md-6">
+              <label class="form-label fw-medium">Assigned Mentor <span class="text-danger">*</span></label>
+              <select 
+                class="form-select" 
+                formControlName="mentor_id" 
+                (change)="onMentorChange(form.get('mentor_id')?.value)"
+                [class.is-invalid]="form.get('mentor_id')?.touched && form.get('mentor_id')?.invalid">
+                <option value="" disabled>-- Select Mentor --</option>
+                <option *ngFor="let m of mentors" [value]="m.id">
+                  {{ m.full_name }} ({{ m.expert_in || m.qualification || 'Mentor' }})
+                </option>
+              </select>
+              <div class="invalid-feedback">Please select a mentor.</div>
+              <div *ngIf="selectedMentorData" class="mentor-badge mt-2 p-2 bg-light rounded d-flex align-items-center gap-2">
+                <img [src]="getMentorPhoto(selectedMentorData.photo)" class="avatar avatar-xs rounded-circle" alt="Mentor">
+                <span class="fs-12 text-muted">
+                  Default Charges: <strong class="text-dark">₹{{ selectedMentorData.default_charges || 0 }}</strong>
+                  <span *ngIf="selectedMentorData.qualification"> • {{ selectedMentorData.qualification }}</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- Subject Selection -->
+            <div class="col-md-6">
+              <label class="form-label fw-medium">Subject <span class="text-danger">*</span></label>
+              <select 
+                class="form-select" 
+                formControlName="subject"
+                [class.is-invalid]="form.get('subject')?.touched && form.get('subject')?.invalid">
+                <option value="" disabled>-- Select Subject --</option>
+                <option *ngFor="let s of subjects" [value]="s.subject_name">{{ s.subject_name }}</option>
+              </select>
+              <div class="invalid-feedback">Subject is required.</div>
+            </div>
+
+            <!-- Title -->
+            <div class="col-12">
+              <label class="form-label fw-medium">Class Title <span class="text-danger">*</span></label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="e.g. Master Class: Advanced Calculus & Differential Equations"
+                formControlName="title"
+                [class.is-invalid]="form.get('title')?.touched && form.get('title')?.invalid">
+              <div class="invalid-feedback">Title is required (max 255 characters).</div>
+            </div>
+
+            <!-- Topic -->
+            <div class="col-12">
+              <label class="form-label fw-medium">Specific Topic / Focus Area</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="e.g. Integration by Parts, Real-world Application Problems"
+                formControlName="topic">
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+              <label class="form-label fw-medium">Class Description</label>
+              <textarea 
+                rows="4" 
+                class="form-control" 
+                placeholder="Provide students with an overview of what will be covered during this live interactive session..."
+                formControlName="description"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.2 DISCUSSION POINTS & LEARNING OUTCOMES -->
+      <div class="card custom-card shadow-sm border-0 mb-4">
+        <div class="card-header py-3">
+          <h5 class="card-title mb-0 fw-semibold fs-15">
+            <i class="ri-lightbulb-line text-warning me-2"></i>Curriculum & Outcomes
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-4">
+            <!-- Discussion Points -->
+            <div class="col-md-6">
+              <label class="form-label fw-medium d-flex justify-content-between">
+                <span>Discussion Points</span>
+                <span class="text-muted fs-11">({{ discussionPointsList.length }} items)</span>
+              </label>
+              <div class="input-group mb-2">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="e.g. Key Concept Breakdown" 
+                  [(ngModel)]="newDiscussionPoint" 
+                  [ngModelOptions]="{standalone: true}"
+                  (keyup.enter)="addDiscussionPoint()">
+                <button type="button" class="btn btn-outline-primary" (click)="addDiscussionPoint()">
+                  <i class="ri-add-line"></i> Add
+                </button>
+              </div>
+              <div class="tag-container p-2 bg-light rounded min-h-80">
+                <span *ngIf="discussionPointsList.length === 0" class="text-muted fs-12 fst-italic">
+                  No discussion points added yet. Type above and press Add.
+                </span>
+                <span *ngFor="let point of discussionPointsList; let i = index" class="badge bg-primary text-white me-1 mb-1 p-2 fs-12 d-inline-flex align-items-center gap-1">
+                  {{ point }}
+                  <i class="ri-close-line cursor-pointer ms-1" (click)="removeDiscussionPoint(i)"></i>
+                </span>
+              </div>
+            </div>
+
+            <!-- Learning Outcomes -->
+            <div class="col-md-6">
+              <label class="form-label fw-medium d-flex justify-content-between">
+                <span>Learning Outcomes</span>
+                <span class="text-muted fs-11">({{ learningOutcomesList.length }} items)</span>
+              </label>
+              <div class="input-group mb-2">
+                <input 
+                  type="text" 
+                  class="form-control" 
+                  placeholder="e.g. Solve Complex Equations Independently" 
+                  [(ngModel)]="newLearningOutcome" 
+                  [ngModelOptions]="{standalone: true}"
+                  (keyup.enter)="addLearningOutcome()">
+                <button type="button" class="btn btn-outline-success" (click)="addLearningOutcome()">
+                  <i class="ri-add-line"></i> Add
+                </button>
+              </div>
+              <div class="tag-container p-2 bg-light rounded min-h-80">
+                <span *ngIf="learningOutcomesList.length === 0" class="text-muted fs-12 fst-italic">
+                  No outcomes added yet. Type above and press Add.
+                </span>
+                <span *ngFor="let outcome of learningOutcomesList; let i = index" class="badge bg-success text-white me-1 mb-1 p-2 fs-12 d-inline-flex align-items-center gap-1">
+                  {{ outcome }}
+                  <i class="ri-close-line cursor-pointer ms-1" (click)="removeLearningOutcome(i)"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.3 SCHEDULE & TIMING -->
+      <div class="card custom-card shadow-sm border-0 mb-4">
+        <div class="card-header py-3">
+          <h5 class="card-title mb-0 fw-semibold fs-15">
+            <i class="ri-calendar-2-line text-info me-2"></i>Schedule & Timing Window
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-medium">Class Date <span class="text-danger">*</span></label>
+              <input 
+                type="date" 
+                class="form-control" 
+                formControlName="class_date"
+                [class.is-invalid]="form.get('class_date')?.touched && form.get('class_date')?.invalid">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-medium">Start Time <span class="text-danger">*</span></label>
+              <input 
+                type="time" 
+                class="form-control" 
+                formControlName="start_time"
+                [class.is-invalid]="form.get('start_time')?.touched && form.get('start_time')?.invalid">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-medium">End Time <span class="text-danger">*</span></label>
+              <input 
+                type="time" 
+                class="form-control" 
+                formControlName="end_time"
+                [class.is-invalid]="form.get('end_time')?.touched && form.get('end_time')?.invalid">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-medium">Duration (minutes) <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  min="15" 
+                  step="5" 
+                  formControlName="duration"
+                  [class.is-invalid]="form.get('duration')?.touched && form.get('duration')?.invalid">
+                <span class="input-group-text">minutes</span>
+              </div>
+              <span class="text-muted fs-11">Calculated automatically from Start & End time or adjust manually.</span>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-medium">Timezone</label>
+              <input type="text" class="form-control" formControlName="timezone" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: PRICING, CAPACITY, THUMBNAIL & PUBLISH -->
+    <div class="col-xl-4 col-lg-5">
+
+      <!-- 2.4 CLASS TYPE & CAPACITY -->
+      <div class="card custom-card shadow-sm border-0 mb-4">
+        <div class="card-header py-3">
+          <h5 class="card-title mb-0 fw-semibold fs-15">
+            <i class="ri-team-line text-primary me-2"></i>Class Type & Capacity
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Class Type Radio -->
+          <div class="mb-3">
+            <label class="form-label fw-medium d-block">Class Format <span class="text-danger">*</span></label>
+            <div class="d-flex gap-3">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" value="group" id="typeGroup" formControlName="class_type">
+                <label class="form-check-label fw-medium" for="typeGroup">Group Class</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" value="individual" id="typeIndividual" formControlName="class_type">
+                <label class="form-check-label fw-medium" for="typeIndividual">Individual (1-on-1)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Maximum Students -->
+          <div class="mb-2">
+            <label class="form-label fw-medium">Maximum Students</label>
+            <input 
+              type="number" 
+              class="form-control" 
+              min="1" 
+              formControlName="max_students"
+              [class.is-invalid]="form.get('max_students')?.touched && form.get('max_students')?.invalid">
+            <span class="text-muted fs-11" *ngIf="form.get('class_type')?.value === 'group'">
+              Recommended capacity for interactive video rooms: 10 - 25 students.
+            </span>
+            <span class="text-muted fs-11" *ngIf="form.get('class_type')?.value === 'individual'">
+              Locked to 1 student for individual classes.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.5 PRICING & MENTOR CHARGES -->
+      <div class="card custom-card shadow-sm border-0 mb-4">
+        <div class="card-header py-3">
+          <h5 class="card-title mb-0 fw-semibold fs-15">
+            <i class="ri-money-rupee-circle-line text-success me-2"></i>Pricing & Charges
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Free Class Toggle -->
+          <div class="form-check form-switch mb-3 p-2 bg-light rounded">
+            <input class="form-check-input ms-0 me-2" type="checkbox" id="freeClassToggle" formControlName="is_free">
+            <label class="form-check-label fw-semibold text-dark" for="freeClassToggle">
+              Offer as Free Class (₹0)
+            </label>
+          </div>
+
+          <!-- Use Mentor Default Toggle -->
+          <div *ngIf="!form.get('is_free')?.value" class="form-check form-switch mb-3 p-2 bg-light rounded">
+            <input class="form-check-input ms-0 me-2" type="checkbox" id="mentorDefaultToggle" formControlName="use_mentor_default">
+            <label class="form-check-label fw-semibold text-dark" for="mentorDefaultToggle">
+              Use Mentor Default Rate
+            </label>
+            <div *ngIf="form.get('use_mentor_default')?.value" class="text-muted fs-11 mt-1">
+              Rate set to Mentor's default charge: <strong>₹{{ selectedMentorData?.default_charges || 0 }}</strong>
+            </div>
+          </div>
+
+          <!-- Custom Fees Inputs (if not mentor default and not free) -->
+          <div *ngIf="!form.get('is_free')?.value && !form.get('use_mentor_default')?.value" class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-medium fs-12">Regular Fee (₹)</label>
+              <input type="number" min="0" class="form-control" formControlName="fees" placeholder="e.g. 499">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-medium fs-12">Discounted Fee (₹)</label>
+              <input type="number" min="0" class="form-control" formControlName="discounted_fees" placeholder="e.g. 299">
+            </div>
+          </div>
+
+          <!-- Effective Fee Summary -->
+          <div class="p-3 bg-primary-transparent rounded border border-primary text-center">
+            <span class="text-muted fs-11 text-uppercase fw-semibold d-block">Effective Student Payable Fee</span>
+            <h3 class="fw-bold text-primary mb-0">
+              <span *ngIf="previewEffectiveFee === 0" class="badge bg-success fs-14">FREE</span>
+              <span *ngIf="previewEffectiveFee > 0">₹{{ previewEffectiveFee }}</span>
+            </h3>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2.6 THUMBNAIL UPLOAD -->
+      <div class="card custom-card shadow-sm border-0 mb-4">
+        <div class="card-header py-3">
+          <h5 class="card-title mb-0 fw-semibold fs-15">
+            <i class="ri-image-line text-primary me-2"></i>Class Thumbnail
+          </h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="thumbnailPreview || existingThumbnailUrl" class="position-relative mb-3 text-center">
+            <img [src]="thumbnailPreview || existingThumbnailUrl" alt="Thumbnail Preview" class="img-fluid rounded border object-fit-cover w-100" style="max-height: 180px;">
+            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle" (click)="removeThumbnail()" title="Remove image">
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
+
+          <div *ngIf="!thumbnailPreview && !existingThumbnailUrl" class="upload-dropzone p-4 text-center border-dashed rounded bg-light mb-3">
+            <i class="ri-upload-cloud-line fs-32 text-muted mb-2 d-block"></i>
+            <span class="fw-medium fs-13 d-block text-dark">Upload Class Cover Image</span>
+            <span class="text-muted fs-11 d-block mb-3">JPG, PNG, WebP up to 5MB</span>
+            <label class="btn btn-sm btn-outline-primary mb-0">
+              Browse Image
+              <input type="file" accept="image/*" class="d-none" (change)="onFileSelected($event)">
+            </label>
+          </div>
+
+          <label *ngIf="thumbnailPreview || existingThumbnailUrl" class="btn btn-sm btn-outline-secondary w-100 mb-0">
+            Change Image
+            <input type="file" accept="image/*" class="d-none" (change)="onFileSelected($event)">
+          </label>
+        </div>
+      </div>
+
+      <!-- 2.7 PUBLISH / DRAFT ACTIONS -->
+      <div class="card custom-card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <!-- Publish Button -->
+            <button 
+              type="button" 
+              class="btn btn-success btn-wave btn-lg d-flex align-items-center justify-content-center gap-2 shadow-sm"
+              [disabled]="isSubmitting"
+              (click)="onSubmit('published')">
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"></span>
+              <i *ngIf="!isSubmitting" class="ri-checkbox-circle-line fs-18"></i>
+              <span>{{ isEditMode ? 'Update & Publish' : 'Publish Live Class' }}</span>
+            </button>
+
+            <!-- Save as Draft Button -->
+            <button 
+              type="button" 
+              class="btn btn-outline-warning btn-wave"
+              [disabled]="isSubmitting"
+              (click)="onSubmit('draft')">
+              <i class="ri-draft-line me-1"></i> Save as Draft
+            </button>
+
+            <!-- Cancel Button -->
+            <button type="button" class="btn btn-light btn-wave" (click)="cancel()" [disabled]="isSubmitting">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</form>

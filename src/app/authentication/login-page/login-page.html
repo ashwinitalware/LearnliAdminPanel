@@ -1,0 +1,161 @@
+<div class="authentication-basic-background">
+  <img src="./assets/images/media/backgrounds/9.png" alt="">
+</div>
+<ngx-particles [id]="id" [options]="particlesOptions" (particlesLoaded)="particlesLoaded($event)"></ngx-particles>
+
+<div class="container">
+  <div class="row justify-content-center align-items-center authentication authentication-basic h-100">
+    <div class="col-xxl-4 col-xl-5 col-lg-6 col-md-6 col-sm-8 col-12">
+
+      <div class="card custom-card border-0 my-4">
+        <div class="card-body ">
+          <ul ngbNav #nav="ngbNav" [(activeId)]="active"
+            class="nav-tabs rounded-2 justify-content-center  border-bottom-0">
+            <li ngbNavItem="Firebase">
+              <!-- <a ngbNavLink class="firebase-img">
+                <img src="./assets/images/firebase.svg" class="firebase" alt="" />
+              </a> -->
+              <ng-template ngbNavContent>
+                <div class="card custom-card border-0 my-4 shadow-none">
+                  <div class="card-body ">
+                    <div class="mb-4">
+                      <a [routerLink]="['/dashboards/dashboard']">
+                        <img src="./assets/images/brand-logos/toggle-logo.png" alt="logo" class="desktop-dark">
+                      </a>
+                    </div>
+                    <div clsass="text-lg"></div>
+                    <div>
+                      <h4 class="mb-1 fw-semibold">Hi,Welcome back!</h4>
+                      <p class="mb-4 text-muted fw-normal">Please enter your credentials</p>
+                    </div>
+                    <form [formGroup]="loginForm" (ngSubmit)="Submit()">
+                      @if(errorMessage.length > 0){
+
+                      <p class="text-danger">
+                        {{ errorMessage }}
+                      </p>
+                      } @if(_error.message.length > 0){
+
+                      <p class="text-danger">
+                        {{ _error.message }}
+                      </p>
+                      }
+                      <div class="row gy-3">
+                        <div class="col-xl-12">
+                          <label for="signin-email" class="form-label text-default">Email</label>
+                          <input type="text" class="form-control  " id="signin-username" placeholder="user name"
+                            autocomplete formControlName="username" [(ngModel)]="email" required />
+                        </div>
+                        <div class="col-xl-12 mb-2">
+                          <label for="signin-password" class="form-label text-default d-block">Password</label>
+                          <div class="position-relative">
+                            <input [type]="showPassword ? 'text' : 'password'" autocomplete formControlName="password"
+                              [(ngModel)]="password" required class="form-control" id="signin-password"
+                              placeholder="password" />
+                            <a href="javascript:void(0);" class="show-password-button text-muted"
+                              (click)="togglePassword()" id="button-addon2"><i
+                                class="{{toggleClass}} align-middle"></i></a>
+                          </div>
+                          <div class="mt-2">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
+                              <label class="form-check-label" for="defaultCheck1">
+                                Remember me
+                              </label>
+                              <a [routerLink]="['/pages/authentication/reset-password/basic']"
+                                class="float-end link-danger ms-1 fw-medium fs-12">Forget
+                                password ?</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="d-grid mt-3">
+                        <button [disabled]="!loginForm.valid || authservice.showLoader" autofocus
+                          [class.loader--text]="authservice.showLoader" class="btn btn-primary{{
+                        disabled
+                      }}">Sign In</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </ng-template>
+            <li ngbNavItem="Angular">
+              <!-- <a ngbNavLink class="firebase-img">
+                <img src="./assets/images/favicon.svg" class="firebase" alt="" />
+              </a> -->
+              <ng-template ngbNavContent>
+                <div class="card custom-card border-0 my-4 shadow-none">
+                  <div class="card-body ">
+                    <div class="mb-4">
+                      <a [routerLink]="['/dashboards/dashboard']">
+                        <img src="./assets/images/brand-logos/toggle-logo.png" alt="logo" class="desktop-dark">
+                      </a>
+                    </div>
+                    <div>
+                      <h4 class="mb-1 fw-semibold">Hi,Welcome back!</h4>
+                      <p class="mb-4 text-muted fw-normal">Please enter your credentials</p>
+                    </div>
+                    <form [formGroup]="loginForm" (ngSubmit)="Submit()">
+                      @if(errorMessage.length > 0){
+
+                      <p class="text-danger">
+                        {{errorMessage}}</p>
+                      }
+                      @if(_error.message.length > 0){
+
+
+                      <p class="text-danger">
+                        {{_error.message}} </p>
+                      }
+                      <div class="row gy-3">
+                        <div class="col-xl-12">
+                          <label for="signin-email" class="form-label text-default">Email</label>
+                          <input type="text" class="form-control" id="signin-username" placeholder="user name"
+                            autocomplete formControlName="username" [ngModel]="email" required>
+                        </div>
+                        <div class="col-xl-12 mb-2">
+                          <label for="signin-password" class="form-label text-default d-block">Password</label>
+                          <div class="position-relative">
+                            <input type="password" class="form-control create-password-input" id="signin-password"
+                              autocomplete placeholder="password" [type]="showPassword ? 'text' : 'password'"
+                              autocomplete placeholder="Password" formControlName="password" [ngModel]="password"
+                              required>
+                            <a href="javascript:void(0);" class="show-password-button text-muted"
+                              (click)="togglePassword()" id="button-addon2"><i
+                                class="{{toggleClass}} align-middle"></i></a>
+                          </div>
+                          <div class="mt-2">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" checked>
+                              <label class="form-check-label" for="defaultCheck1">
+                                Remember me
+                              </label>
+                              <a [routerLink]="['/pages/authentication/reset-password/basic']"
+                                class="float-end link-danger ms-1 fw-medium fs-12">Forget
+                                password ?</a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="d-grid mt-3">
+                        <button [disabled]="!loginForm.valid || authservice.showLoader" autofocus
+                          [class.loader--text]="authservice.showLoader" class="btn btn-primary{{
+                                disabled
+                              }}">Sign In</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </ng-template>
+            </li>
+          </ul>
+          <div [ngbNavOutlet]="nav"></div>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <a [routerLink]="['/privacy-policy']" class="text-muted fs-12 text-decoration-underline me-3">Privacy Policy</a>
+        <a href="https://learnli.online" target="_blank" class="text-muted fs-12 text-decoration-underline">Learnli Website</a>
+      </div>
+    </div>
+  </div>
+</div>
